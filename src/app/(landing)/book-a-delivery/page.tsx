@@ -2,9 +2,12 @@ import { BookADeliveryForm } from "@/components/delivery/book-a-delivery-form";
 
 function BookaDeliveryPage() {
   return (
-    <section className="h-auto max-w-screen-xl w-full mx-auto p-4 my-10">
-      <BookADeliveryForm />
-    </section>
+    <main className="min-h-screen flex justify-center items-start py-10 px-4">
+      <div className="w-full max-w-screen-xl">
+        <BookADeliveryForm />
+      </div>
+    </main>
   );
 }
+
 export default BookaDeliveryPage;
