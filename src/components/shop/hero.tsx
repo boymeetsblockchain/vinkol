@@ -1,7 +1,9 @@
+"use client";
 import { MapPin } from "lucide-react";
 import { Button } from "../button";
-
+import { useRouter } from "next/navigation";
 export const ShopHero = () => {
+  const router = useRouter();
   return (
     <section className="max-w-screen-2xl bg-[#FAFAFA] w-full px-4 py-10 md:px-20 md:py-20 mx-auto h-auto">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
@@ -24,7 +26,12 @@ export const ShopHero = () => {
                 placeholder="Enter delivery address"
               />
             </div>
-            <Button className="rounded-full px-6 py-3">Search</Button>
+            <Button
+              className="rounded-full px-6 py-3"
+              onClick={() => router.push("/shops")}
+            >
+              Search
+            </Button>
           </div>
           <p className="text-sm  cursor-pointer">
             Don’t see your address? Add manually
