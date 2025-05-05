@@ -2,7 +2,7 @@ import { GoArrowUpRight } from "react-icons/go";
 
 export const Deliver = () => {
   return (
-    <section className="w-full relative">
+    <section className="w-full  relative">
       {/* Black section */}
       <div className="bg-black w-full py-16 md:py-0">
         <div className="flex flex-col md:flex-row justify-between items-center max-w-6xl mx-auto px-4 h-auto md:h-[80vh]">
@@ -41,10 +41,8 @@ export const Deliver = () => {
       </div>
 
       {/* White section */}
-      <div className="bg-white w-full py-8">
-        <div className="flex justify-center items-center h-full">
-          {/* Optional centered delivery text or CTA */}
-        </div>
+      <div className="w-full py-8 mt-[-100px]">
+        <img src="/assets/deliver.png" className="h-[150px] w-full" />
       </div>
     </section>
   );
