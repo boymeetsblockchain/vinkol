@@ -3,7 +3,7 @@ import { FcGoogle } from "react-icons/fc";
 import { FaApple } from "react-icons/fa6";
 import { Button } from "../button";
 import { useState } from "react";
-
+import { useRouter } from "next/navigation";
 interface RiderAuthModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -18,6 +18,8 @@ export const RiderAuthModal = ({ isOpen, onClose }: RiderAuthModalProps) => {
   if (!isOpen) return null;
 
   const isLogin = swithAuthType === "login";
+
+  const router = useRouter();
 
   return (
     <div className="fixed inset-0 z-50 flex items-center overflow-y-hidden text-black justify-center min-h-screen bg-black/80">
@@ -79,7 +81,14 @@ export const RiderAuthModal = ({ isOpen, onClose }: RiderAuthModalProps) => {
             )}
           </div>
 
-          <Button size="lg" variant="auth" className="rounded-[5px] w-3/4 my-4">
+          <Button
+            size="lg"
+            variant="auth"
+            className="rounded-[5px] w-3/4 my-4"
+            onClick={() => {
+              router.push("/rider/auth");
+            }}
+          >
             {isLogin ? "Log In" : "Sign Up"}
           </Button>
 
