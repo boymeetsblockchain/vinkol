@@ -1,9 +1,11 @@
-"use client ";
+"use client";
 import { Button } from "@/components/button";
 
+import { useRouter } from "next/navigation";
 function CompleteAuthPage() {
+  const router = useRouter();
   const handleClick = () => {
-    window.location.href = "/rider/dashboard";
+    router.push("/rider/dashboard");
   };
   return (
     <section className="max-w-screen-2xl min-h-screen w-full px-4 md:px-20 py-10 mx-auto">
