@@ -22,7 +22,7 @@ export const RiderAuthModal = ({ isOpen, onClose }: RiderAuthModalProps) => {
   const router = useRouter();
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center overflow-y-hidden text-black justify-center min-h-screen bg-black/80">
+    <div className="fixed inset-0 z-50 flex items-center overflow-y-hidden  text-black justify-center min-h-screen bg-black/80">
       <div className="w-full h-full flex md:items-end md:justify-end">
         <div className="w-full md:w-1/2 bg-white h-full flex flex-col p-8 gap-y-4 items-center justify-center">
           <div className="text-center">

@@ -115,9 +115,6 @@ function Orders() {
               <h1 className="text-lg font-semibold text-gray-800">
                 {data.customer}
               </h1>
-              <p className="bg-blue-primary text-white text-xs px-3 py-1 rounded-full">
-                {data.timeAgo}
-              </p>
             </div>
 
             <p className="text-sm text-gray-500">
@@ -160,11 +157,6 @@ function Orders() {
               Amount: <span className="text-blue-primary">{data.price}</span>
             </p>
             <p className="text-sm italic text-gray-600">Note: {data.note}</p>
-
-            <div className="flex justify-end gap-3 pt-4">
-              <Button variant="secondary">Decline</Button>
-              <Button>Accept</Button>
-            </div>
           </div>
         ))}
       </div>
