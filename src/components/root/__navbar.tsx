@@ -37,9 +37,9 @@ export const Navbar = () => {
     <nav className="h-auto w-full bg-white fixed top-0 left-0 z-10 max-w-screen-2xl  mx-auto py-2 px-4 md:px-10">
       <div className="flex justify-between items-center">
         {/* logo */}
-        <div>
+        <Link href={"/"}>
           <img src="/logo.png" alt="" className="w-28 h-12" />
-        </div>
+        </Link>
         <div className=" hidden md:flex items-center space-x-4  ">
           {navbarArray.map((data, index) => (
             <Link
