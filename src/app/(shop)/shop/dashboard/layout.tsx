@@ -3,6 +3,7 @@ import { ReactNode, useState } from "react";
 import { Menu } from "lucide-react";
 import { RiderDashBoardSidebBar } from "@/components/rider/sidebar";
 import { Profile } from "@/components/rider/profile";
+import { ShopperDashBoardSidebBar } from "@/components/shop/sidebar";
 
 const Layout = ({ children }: { children: ReactNode }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -17,7 +18,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
       </div>
 
       {/* Sidebar */}
-      <RiderDashBoardSidebBar
+      <ShopperDashBoardSidebBar
         isOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}
       />
