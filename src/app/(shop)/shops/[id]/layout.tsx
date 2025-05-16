@@ -8,7 +8,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
-    <main className="h-screen">
+    <div className="flex flex-col md:flex-row h-screen overflow-hidden">
       {/* Mobile hamburger */}
       <div className="md:hidden fixed top-4 left-4 z-50">
         <button onClick={() => setIsSidebarOpen(true)}>
@@ -16,19 +16,21 @@ const Layout = ({ children }: { children: ReactNode }) => {
         </button>
       </div>
 
-      {/* Sidebar */}
+      {/* Sidebar - hidden on mobile unless opened */}
       <ShopSideBar
         isOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}
       />
 
-      {/* Main layout */}
-      <div className="md:ml-[25%]">
-        <div className="max-w-screen-2xl  mx-auto w-full px-4 md:px-10 gap-6 mt-6">
-          <main className="w-full h-full">{children}</main>
-        </div>
+      {/* Main content area */}
+      <div className="flex-1 flex flex-col overflow-auto">
+        {/* Header would go here if you have one */}
+        {/* <ShopHeader /> */}
+
+        {/* Scrollable content */}
+        <div className="flex-1 overflow-auto">{children}</div>
       </div>
-    </main>
+    </div>
   );
 };
 

@@ -4,7 +4,7 @@ import { SuperMarket } from "@/components/shop-page/super-market";
 function ShopsPage() {
   return (
     <section>
-      <ShopHeader />
+      <ShopHeader isLogo={true} />
       <SuperMarket />
     </section>
   );

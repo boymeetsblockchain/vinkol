@@ -1,17 +1,19 @@
 import { MapPin, Pen, Search } from "lucide-react";
 import { BsCart } from "react-icons/bs";
 
-export const ShopHeader = () => {
+export const ShopHeader = ({ isLogo = true }: { isLogo: boolean }) => {
   return (
     <header className="md:flex hidden  items-center justify-between max-w-screen-2xl w-full mx-auto p-4 md:px-10  gap-4">
       {/* Logo */}
-      <div className="flex-shrink-0 mr-10">
-        <img
-          src="/logo.png"
-          alt="Vinkol Logo"
-          className="w-28 h-12 object-contain"
-        />
-      </div>
+      {isLogo && (
+        <div className="flex-shrink-0 mr-10">
+          <img
+            src="/logo.png"
+            alt="Vinkol Logo"
+            className="w-28 h-12 object-contain"
+          />
+        </div>
+      )}
       <div className="w-full border-b-2  px-4 py-2  flex gap-x-3  justify-end items-center">
         <div className="relative w-1/2">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
