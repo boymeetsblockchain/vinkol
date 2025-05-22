@@ -2,7 +2,7 @@ export const HowitWorks = () => {
   return (
     <section className="max-w-screen-2xl w-full p-10 md:p-20 mx-auto">
       <div>
-        <h1 className="text-5xl text-black font-bold mb-10">
+        <h1 className="text-2xl md:text-5xl text-center md:text-left text-black  font-bold mb-10">
           How Vinkol Works
         </h1>
       </div>
@@ -11,7 +11,7 @@ export const HowitWorks = () => {
           <img
             src="/assets/request.svg"
             alt="Request Icon"
-            className="w-[68px] h-[68px]"
+            className="md:w-[68px] w-[40px] md:h-[68px] h-[40px]"
           />
           <h1 className="font-bold text-2xl text-center md:text-left">
             Request
@@ -28,7 +28,7 @@ export const HowitWorks = () => {
           <img
             src="/assets/match.svg"
             alt="Match Icon"
-            className="w-[68px] h-[68px]"
+            className="md:w-[68px] w-[40px] md:h-[68px] h-[40px]"
           />
           <h1 className="font-bold text-2xl text-center md:text-left">Match</h1>
           <p className="text-sm text-center md:text-left font-medium">
@@ -43,7 +43,7 @@ export const HowitWorks = () => {
           <img
             src="/assets/delivered.svg"
             alt="Delivered Icon"
-            className="w-[68px] h-[68px]"
+            className="md:w-[68px] w-[40px] md:h-[68px] h-[40px]"
           />
           <h1 className="font-bold text-2xl text-center md:text-left">
             Delivered

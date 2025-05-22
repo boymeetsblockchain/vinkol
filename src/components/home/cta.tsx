@@ -5,7 +5,7 @@ import { GiLightningElectron } from "react-icons/gi";
 
 export const CTA = () => {
   return (
-    <section className="h-auto w-full bg-blue-primary pt-10 px-10 max-w-screen-2xl mx-auto">
+    <section className="h-auto w-full bg-blue-primary pt-10 px-4  md:px-10 max-w-screen-2xl mx-auto">
       <div className="grid grid-cols-1 md:grid-cols-3 w-full h-full gap-10 px-4 md:px-0">
         <div className="md:col-span-2">
           {/* call to action */}
@@ -14,7 +14,7 @@ export const CTA = () => {
               <GiLightningElectron />
               Call to Action
             </button>
-            <p className="text-2xl md:text-4xl  max-w-2xl font-semibold text-center md:text-left">
+            <p className="text-2xl md:text-4xl  md:max-w-2xl sm:w-full font-semibold text-center md:text-left">
               Elevate Your Delivery Experience with Our Easy-to-Use Vinkol App
               Today!
             </p>
