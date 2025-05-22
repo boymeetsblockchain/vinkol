@@ -52,7 +52,7 @@ export const WhyChooseUs = () => {
                   {data.linkText}
                 </Button>
               ) : (
-                <Button size="lg" variant="">
+                <Button size="lg" variant="outline">
                   <span className="h-4 w-4 rounded-full bg-black mr-4"></span>{" "}
                   {data.linkText}
                 </Button>
