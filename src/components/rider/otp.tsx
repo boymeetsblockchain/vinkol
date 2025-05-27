@@ -18,7 +18,7 @@ interface VerifyOtpPageProps {
  * VerifyOtpPage component allows users to enter an OTP received via email
  * to verify their account. It also provides an option to resend the OTP.
  */
-export default function VerifyOtpPage({}: VerifyOtpPageProps) {
+export const VerifyOtpPage = ({}: VerifyOtpPageProps) => {
   // State to store the OTP entered by the user
   const [otp, setOtp] = useState<string>("");
   // State to store the email, potentially pre-filled from URL params or previous navigation
@@ -209,4 +209,4 @@ export default function VerifyOtpPage({}: VerifyOtpPageProps) {
       </div>
     </div>
   );
-}
+};
