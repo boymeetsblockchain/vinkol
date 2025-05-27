@@ -1,16 +1,18 @@
 import { CTA } from "@/components/home/cta";
-import { Deliver } from "@/components/home/deliver";
-import { ShopHero } from "@/components/shop/hero";
-import { ShopList } from "@/components/shop/shop-list";
+import { Benefits } from "@/components/rider/benefits";
+import { Question } from "@/components/rider/questions";
+import { Steps } from "@/components/rider/steps";
+import { Hero } from "@/components/shop/shop-hero";
 
-function ShopperPage() {
+function BecomeARider() {
   return (
     <section>
-      <ShopHero />
-      <ShopList />
+      <Hero />
+      <Steps />
+      <Benefits />
+      <Question />
       <CTA />
-      <Deliver />
     </section>
   );
 }
-export default ShopperPage;
+export default BecomeARider;

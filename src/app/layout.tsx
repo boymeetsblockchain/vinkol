@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 
 import "./globals.css";
-import { Navbar } from "@/components/root/__navbar";
+import ReactQueryProvider from "@/providers/react-query";
+import { Toaster } from "@/components/ui/sonner";
 
 export const metadata: Metadata = {
   title: "Vinkol",
@@ -15,7 +16,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={` antialiased`}>{children}</body>
+      <body className={` antialiased`}>
+        <ReactQueryProvider>{children}</ReactQueryProvider>
+      </body>
+      <Toaster position="top-right" />
     </html>
   );
 }
