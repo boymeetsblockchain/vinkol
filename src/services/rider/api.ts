@@ -157,3 +157,29 @@ export const updateProfile = async (
     handleApiError(error, "Failed to update profile.");
   }
 };
+
+export const submitKyc = async (data: any) => {
+  try {
+    const response = await axiosInstance.post("/kyc/submit-id", data, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    handleApiError(error, "Failed to submit KYC.");
+  }
+};
+
+export const submitVehicle = async (data: any) => {
+  try {
+    const response = await axiosInstance.patch("/kyc/submit-vehicle", data, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    handleApiError(error, "Failed to submit vehicle.");
+  }
+};

@@ -4,34 +4,36 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/button";
-import { useSubmitKycMutation } from "@/services/rider/mutation";
+import { useSubmitVechicle } from "@/services/rider/mutation";
 
-function Complete() {
+function SubmitVehicle() {
+  // Corrected spelling here
   const router = useRouter();
 
-  const [idType, setIdType] = useState<string>("");
+  const [vehicleType, setVehicleType] = useState<string>(""); // Corrected spelling
   const [idImage, setIdImage] = useState<File | null>(null);
 
-  const { mutate: submitKyc, isPending } = useSubmitKycMutation();
+  const { mutate: submitVehicle, isPending } = useSubmitVechicle(); // Corrected spelling
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     const formData = new FormData();
-    formData.append("idType", idType);
+    formData.append("vehicleType", vehicleType);
     if (idImage) {
       formData.append("image", idImage);
     }
 
-    console.log("Submitting KYC with formData:", formData.values());
-    submitKyc(formData, {
+    console.log("Submitting Vehicle with formData:", formData.values());
+    submitVehicle(formData, {
+      // Corrected spelling
       onSuccess: () => {
-        toast.success("KYC submitted successfully!");
-        router.push("/rider/vechicle");
+        toast.success("Vehicle submitted successfully!"); // Corrected spelling
+        router.push("/become-a-rider"); // Corrected spelling for navigation
       },
-      onError: (error) => {
-        console.error("KYC submission failed:", error);
-        toast.error(error.message || "Failed to submit KYC.");
+      onError: (error: any) => {
+        console.error("Vehicle submission failed:", error); // Corrected spelling
+        toast.error(error.message || "Failed to submit Vehicle."); // Corrected spelling
       },
     });
   };
@@ -49,33 +51,36 @@ function Complete() {
           {/* Left: Form Section */}
           <div className="w-full flex flex-col gap-6">
             <div>
-              <h1 className="text-3xl font-bold ">Complete Registration</h1>
+              <h1 className="text-3xl font-bold ">Submit Vehicle</h1>{" "}
+              {/* Corrected spelling */}
               <p className="text-sm text-gray-600 mt-1">Submit the following</p>
             </div>
 
             {/* Form */}
             <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-              {/* ID Type Select */}
+              {/* Vehicle Type Select */} {/* Corrected spelling */}
               <div className="flex flex-col gap-2">
-                <label htmlFor="idType" className="text-sm text-gray-700">
-                  Select ID Type
+                <label htmlFor="vehicleType" className="text-sm text-gray-700">
+                  {" "}
+                  {/* Corrected spelling */}
+                  Select Vehicle Type {/* Corrected spelling */}
                 </label>
                 <select
-                  id="idType"
+                  id="vehicleType" // Corrected spelling
                   className="w-full py-2 px-4 border border-gray-300 rounded-md text-gray-700 focus:outline-none"
-                  value={idType}
-                  onChange={(e) => setIdType(e.target.value)}
+                  value={vehicleType} // Corrected spelling
+                  onChange={(e) => setVehicleType(e.target.value)} // Corrected spelling
                   disabled={isPending}
                   required
                 >
-                  <option value="">Select ID Type</option>
-                  <option value="nin">NIN</option>
-                  <option value="national_id">National ID</option>
-                  <option value="drivers_license">Driver's License</option>
-                  <option value="passport">Passport</option>
+                  <option value="">Select Vehicle Type</option>{" "}
+                  {/* Corrected spelling */}
+                  {/* These options seem to be for ID types. If they are truly vehicle types, ensure they are relevant. 
+                      Otherwise, you might want to adjust them, e.g., "Car", "Motorcycle", "Bicycle". */}
+                  <option value="car">Car</option>
+                  <option value="truck">Truck</option>
                 </select>
               </div>
-
               {/* ID Image Upload */}
               <div className="flex flex-col gap-2">
                 <label htmlFor="idImage" className="text-sm text-gray-700">
@@ -98,7 +103,6 @@ function Complete() {
                   </p>
                 )}
               </div>
-
               {/* Submit Button */}
               <Button
                 variant="auth"
@@ -106,7 +110,8 @@ function Complete() {
                 type="submit"
                 disabled={isPending}
               >
-                {isPending ? "Submitting..." : "Submit KYC"}
+                {isPending ? "Submitting..." : "Submit Vehicle"}{" "}
+                {/* Corrected spelling */}
               </Button>
             </form>
           </div>
@@ -125,4 +130,4 @@ function Complete() {
   );
 }
 
-export default Complete;
+export default SubmitVehicle; // Corrected spelling

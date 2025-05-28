@@ -80,7 +80,7 @@ export const VerifyOtpPage = ({}: VerifyOtpPageProps) => {
     if (isVerifySuccess) {
       toast.success("Email verified successfully!");
       // Redirect to a dashboard or login page after successful verification
-      router.push("/become-a-rider");
+      router.push("/rider/auth");
     }
     if (isVerifyError) {
       const errorMessage = verifyError?.message || "Email verification failed.";

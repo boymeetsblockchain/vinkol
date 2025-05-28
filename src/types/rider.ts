@@ -38,5 +38,15 @@ export const resetPasswordSchema = z.object({
 export const updateProfileSchema = z.object({
   firstName: z.string().min(1, { message: "First name is required" }),
   state: z.string().min(1, { message: "State is required" }),
-  avatar: z.instanceof(File, { message: "Avatar must be a file" }),
+  avatar: z.instanceof(File, { message: "Avatar must be a file" }).optional(),
+});
+
+export const submitKycSchema = z.object({
+  idType: z.string().min(1, { message: "ID type is required" }),
+  image: z.instanceof(File, { message: "Image must be a file" }),
+});
+
+export const submitVechicleSchema = z.object({
+  vehicleType: z.string().min(1, { message: "ID type is required" }),
+  image: z.instanceof(File, { message: "Image must be a file" }),
 });

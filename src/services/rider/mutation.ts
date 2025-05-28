@@ -17,6 +17,8 @@ import {
   forgotPassword,
   resetPassword,
   updateProfile,
+  submitKyc,
+  submitVehicle,
 } from "./api"; // Assuming 'api' is the file containing all the API functions
 
 /**
@@ -187,6 +189,48 @@ export function useUpdateProfileMutation(
     },
     onError: (errorData: Error) => {
       console.error("Profile update failed:", errorData.message);
+      options?.onError?.(errorData);
+    },
+  });
+
+  return { mutate, data, error, isPending, isSuccess, isError };
+}
+
+export function useSubmitKycMutation(options?: MutationOptions<any, Error>) {
+  // Placeholder for KYC submission mutation
+  const { mutate, data, error, isPending, isSuccess, isError } = useMutation({
+    mutationFn: async (payload: any) => {
+      // Implement the KYC submission logic here
+      console.log("Submitting KYC with payload:", payload);
+      return await submitKyc(payload); // Assuming submitKyc is defined in your API file
+    },
+    onSuccess: (responseData) => {
+      console.log("KYC submission successful:", responseData);
+      options?.onSuccess?.(responseData);
+    },
+    onError: (errorData: Error) => {
+      console.error("KYC submission failed:", errorData.message);
+      options?.onError?.(errorData);
+    },
+  });
+
+  return { mutate, data, error, isPending, isSuccess, isError };
+}
+
+export function useSubmitVechicle(options?: MutationOptions<any, Error>) {
+  // Placeholder for KYC submission mutation
+  const { mutate, data, error, isPending, isSuccess, isError } = useMutation({
+    mutationFn: async (payload: any) => {
+      // Implement the KYC submission logic here
+      console.log("Submitting vehicle with payload:", payload);
+      return await submitVehicle(payload); // Assuming submitKyc is defined in your API file
+    },
+    onSuccess: (responseData) => {
+      console.log("vehicle submission successful:", responseData);
+      options?.onSuccess?.(responseData);
+    },
+    onError: (errorData: Error) => {
+      console.error("vehicle submission failed:", errorData.message);
       options?.onError?.(errorData);
     },
   });

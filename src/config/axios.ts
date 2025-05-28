@@ -11,13 +11,14 @@ const axiosInstance = axios.create({
 });
 
 const getToken = () => {
-  return localStorage.getItem("authToken");
+  return localStorage.getItem("riderAuthToken");
 };
 
 // Attach token to every request
 axiosInstance.interceptors.request.use(
   (config) => {
     const token = getToken();
+    console.log("Token:", token); // Log the token for debugging
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
