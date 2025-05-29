@@ -1,11 +1,14 @@
-import React from "react";
+"use client";
+import React, { useState } from "react";
 import { FaGooglePlay } from "react-icons/fa6";
 import { IoLogoApple } from "react-icons/io";
 
 import { Button } from "../button";
 import { AppStoreCard } from "../shared/appstore";
+import Link from "next/link";
 
 export const Hero = () => {
+  const [trackDelivery, setTrackDelivery] = useState<boolean>(false);
   return (
     <div
       className="relative text-white bg-cover bg-center md:h-[100vh] h-[600px]"
@@ -24,6 +27,37 @@ export const Hero = () => {
             up purchases from any store.
           </p>
         </div>
+        {trackDelivery ? (
+          <div className="relative my-4 flex items-center justify-center w-full ">
+            <input
+              type="text"
+              placeholder="Enter package number..."
+              className="flex-grow py-3 px-6 pr-16 border border-gray-300 rounded-full text-gray-800 bg-white  placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300 ease-in-out shadow-sm"
+            />
+            <div className="absolute right-0 mr-1.5">
+              {" "}
+              <Button
+                size="lg"
+                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-6 rounded-full shadow-md transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              >
+                Track
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <div className="mt-6 flex  items-start sm:items-center gap-4">
+            <Button size="lg">
+              <Link href="/book-a-delivery">Book a Delivery</Link>
+            </Button>
+            <Button
+              size="lg"
+              variant="secondary"
+              onClick={() => setTrackDelivery(true)}
+            >
+              Track a Delivery
+            </Button>
+          </div>
+        )}
         <div className="mt-6 flex  items-start sm:items-center gap-4">
           <AppStoreCard
             platform="Google Play"

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Button } from "../button";
 
 export const Shop = () => {
@@ -15,7 +16,7 @@ export const Shop = () => {
           </h1>
           <div>
             <Button variant="secondary" size="md">
-              Explore Supermarket
+              <Link href={"/explore-shop"}>Explore supermarket</Link>
             </Button>
           </div>
         </div>

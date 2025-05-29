@@ -1,4 +1,5 @@
 import { AboutVinkol } from "@/components/about/about-vinkol";
+import { Mission } from "@/components/about/mission";
 import { AboutHero } from "@/components/shared/hero";
 
 function About() {
@@ -6,6 +7,7 @@ function About() {
     <section className="min-h-screen">
       <AboutHero />
       <AboutVinkol />
+      <Mission />
     </section>
   );
 }
