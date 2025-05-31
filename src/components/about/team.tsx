@@ -26,7 +26,7 @@ export const Teams = () => {
         {teamsArray.map((teamMember) => (
           <div
             key={teamMember.name}
-            className="bg-white shadow-lg rounded-xl h-[306px   ] overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-2xl"
+            className="bg-white shadow-lg rounded-xl h-[306px] overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-2xl"
           >
             <div className="relative h-[75%] w-full">
               <img
