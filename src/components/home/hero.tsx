@@ -11,7 +11,7 @@ export const Hero = () => {
   const [trackDelivery, setTrackDelivery] = useState<boolean>(false);
   return (
     <div
-      className="relative text-white bg-cover bg-center md:h-[100vh] h-[600px]"
+      className="relative text-white bg-cover  md:h-[100vh] h-[600px]"
       style={{ backgroundImage: `url('/assets/hero.png')` }}
     >
       <div className="absolute bottom-10 left-4 md:left-20 px-4">

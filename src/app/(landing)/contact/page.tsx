@@ -1,6 +1,7 @@
 import { ContactForm } from "@/components/contact/form";
 import { ContactHero } from "@/components/contact/hero";
 import { Socials } from "@/components/contact/socials";
+import { Deliver } from "@/components/home/deliver";
 
 function ContactPage() {
   return (
@@ -24,6 +25,7 @@ function ContactPage() {
           </div>
         </div>
       </div>
+      <Deliver />
     </section>
   );
 }

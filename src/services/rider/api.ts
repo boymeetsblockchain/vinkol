@@ -151,7 +151,11 @@ export const updateProfile = async (
   data: z.infer<typeof updateProfileSchema>
 ) => {
   try {
-    const response = await axiosInstance.put("/users/update-profile", data);
+    const response = await axiosInstance.put("/users/update-profile", data, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
     return response.data;
   } catch (error: any) {
     handleApiError(error, "Failed to update profile.");
@@ -181,5 +185,23 @@ export const submitVehicle = async (data: any) => {
     return response.data;
   } catch (error) {
     handleApiError(error, "Failed to submit vehicle.");
+  }
+};
+
+export const getUserProfile = async () => {
+  try {
+    const response = await axiosInstance.get("/users/profile");
+    return response.data;
+  } catch (error) {
+    handleApiError(error, "Failed to Get User profile");
+  }
+};
+
+export const getKyc = async () => {
+  try {
+    const response = await axiosInstance.get("/kyc");
+    return response.data;
+  } catch (error) {
+    handleApiError(error, "Failed to Get User profile");
   }
 };
