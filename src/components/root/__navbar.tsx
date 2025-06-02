@@ -29,10 +29,18 @@ const navbarArray = [
     path: "/become-a-personal-shopper",
   },
 ];
-export const Navbar = () => {
+export const Navbar: React.FC<{ shop?: boolean }> = ({ shop }) => {
   const [mobile, setMobile] = useState<boolean>(false);
   const pathname = usePathname();
   const router = useRouter();
+
+  const navigate = () => {
+    if (shop) {
+      router.push("/shop");
+    } else {
+      router.push("/book-a-delivery");
+    }
+  };
   return (
     <nav className="h-auto w-full bg-white fixed top-0 left-0 z-10 max-w-screen-2xl  mx-auto py-2 px-4 md:px-10">
       <div className="flex justify-between items-center">
@@ -54,8 +62,8 @@ export const Navbar = () => {
           ))}
         </div>
         <div className="hidden md:block">
-          <Button size="lg" onClick={() => router.push("/book-a-delivery")}>
-            Book a Delivery
+          <Button size="lg" onClick={navigate}>
+            {shop ? "Register Store on Vinkol" : "Book a Delivery"}
           </Button>
         </div>
         {/* mobile nav */}
@@ -82,8 +90,8 @@ export const Navbar = () => {
               </Link>
             ))}
             <div className="block md:hidden">
-              <Button size="lg" onClick={() => router.push("/book-a-delivery")}>
-                Book a Delivery
+              <Button size="lg" onClick={navigate}>
+                {shop ? "Register Store on Vinkol" : "Book a Delivery"}
               </Button>
             </div>
           </div>
