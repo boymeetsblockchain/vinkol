@@ -126,3 +126,49 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+.pac-container {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 8px 0;
+  z-index: 10000;
+  border: 1px solid #e0e0e0;
+}
+
+.pac-item {
+  padding: 12px 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.pac-item:last-child {
+  border-bottom: none;
+}
+
+.pac-item:hover {
+  background-color: #f5f5f5;
+}
+
+.pac-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.pac-item-query {
+  font-weight: 500;
+  color: #333;
+}
+
+.pac-matched {
+  font-weight: 700;
+  color: #2196f3;
+}
+
+.pac-item-query + span {
+  color: #757575;
+  font-size: 0.9em;
+}

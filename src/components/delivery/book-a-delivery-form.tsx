@@ -9,13 +9,17 @@ import {
   FormField,
   FormItem,
   FormMessage,
+  FormLabel,
 } from "@/components/ui/form";
 import { deliverySchema } from "@/dto/delivery.form.schema";
 import { Button } from "../button";
+import Autocomplete from "react-google-autocomplete";
+import { useGetQuoteMutation } from "@/services/orders/mutation";
+import { toast } from "sonner";
 
 const getCurrentTime = () => {
   const now = new Date();
-  return now.toTimeString().slice(0, 5); // "HH:mm"
+  return now.toTimeString().slice(0, 5);
 };
 
 export const BookADeliveryForm = () => {
@@ -28,16 +32,53 @@ export const BookADeliveryForm = () => {
       date: "",
       time: getCurrentTime(),
       email: "",
-      vehicle: "",
+      type: "regular",
+      vehicle: "bike",
       priority: "low",
       note: "",
+      state: "",
     },
   });
 
+  const pickupCoords = form.watch("pickupCoords");
+  const dropoffCoords = form.watch("dropoffCoords");
+  const { mutate, isPending } = useGetQuoteMutation();
   const onSubmit = (data: z.infer<typeof deliverySchema>) => {
-    console.log("Form data", data);
+    mutate(
+      {
+        state: data.state, // Assuming 'state' is part of your deliverySchema
+        orderType: "Delivery",
+        pickupLocation: data.pickupCoords
+          ? {
+              lat: String(data.pickupCoords.lat),
+              lng: String(data.pickupCoords.lng),
+            }
+          : { lat: "", lng: "" },
+        dropoffLocation: data.dropoffCoords
+          ? {
+              lat: String(data.dropoffCoords.lat),
+              lng: String(data.dropoffCoords.lng),
+            }
+          : { lat: "", lng: "" },
+        deliveryType: data.type, // Assuming 'type' is part of your deliverySchema
+        vehicleRequest: data.vehicle,
+      },
+      {
+        onSuccess: (responseData) => {
+          // Renamed 'data' to 'responseData' to avoid conflict
+          console.log(responseData);
+          toast.success("Yay😇😇😇😇. ");
+          // FIX: Stringify the responseData before storing it
+          localStorage.setItem("quote-data", JSON.stringify(responseData));
+          window.location.href = "quote";
+        },
+        onError: (error: any) => {
+          console.error("Get Quote failed:", error);
+          toast.error(error.message || "Failed to get Quote.");
+        },
+      }
+    );
   };
-
   return (
     <section className="py-12 max-w-screen-xl mx-auto px-4">
       <div className="space-y-4 mb-6">
@@ -57,6 +98,7 @@ export const BookADeliveryForm = () => {
             name="fullname"
             render={({ field }) => (
               <FormItem>
+                {/* <FormLabel>Full Name</FormLabel> Add a label for better UX */}
                 <FormControl>
                   <input
                     {...field}
@@ -75,6 +117,7 @@ export const BookADeliveryForm = () => {
             name="email"
             render={({ field }) => (
               <FormItem>
+                {/* <FormLabel>Email</FormLabel> */}
                 <FormControl>
                   <input
                     {...field}
@@ -90,14 +133,15 @@ export const BookADeliveryForm = () => {
 
           <FormField
             control={form.control}
-            name="pickup"
+            name="state"
             render={({ field }) => (
               <FormItem>
+                {/* <FormLabel>Email</FormLabel> */}
                 <FormControl>
                   <input
                     {...field}
-                    type="text"
-                    placeholder="Pickup Location"
+                    type="state"
+                    placeholder="Select state"
                     className="w-full border border-blue-primary placeholder:text-blue-primary py-4 px-3 rounded-md"
                   />
                 </FormControl>
@@ -106,17 +150,79 @@ export const BookADeliveryForm = () => {
             )}
           />
 
+          {/* Pickup Location with Autocomplete */}
+          <FormField
+            control={form.control}
+            name="pickup"
+            render={({ field }) => (
+              <FormItem>
+                {/* <FormLabel>Pickup Location</FormLabel> */}
+                <FormControl>
+                  <Autocomplete
+                    apiKey={process.env.NEXT_PUBLIC_Maps_API_KEY} // Corrected API key env variable
+                    onPlaceSelected={(place) => {
+                      const lat = place.geometry?.location?.lat();
+                      const lng = place.geometry?.location?.lng();
+                      form.setValue(
+                        "pickup",
+                        place.formatted_address || place.name
+                      );
+                      form.setValue("pickupCoords", { lat, lng });
+                    }}
+                    options={{
+                      types: ["address"],
+                      componentRestrictions: { country: ["ng"] }, // Restrict to Nigeria
+                      fields: [
+                        "formatted_address",
+                        "name",
+                        "geometry.location",
+                      ],
+                    }}
+                    placeholder="Pickup Location"
+                    className="w-full border border-blue-primary placeholder:text-blue-primary py-4 px-3 rounded-md"
+                    defaultValue={field.value}
+                    onBlur={field.onBlur}
+                    onChange={field.onChange}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Dropoff Location with Autocomplete */}
           <FormField
             control={form.control}
             name="dropoff"
             render={({ field }) => (
               <FormItem>
+                {/* <FormLabel>Dropoff Location</FormLabel> */}
                 <FormControl>
-                  <input
-                    {...field}
-                    type="text"
+                  <Autocomplete
+                    apiKey={process.env.NEXT_PUBLIC_Maps_API_KEY} // Corrected API key env variable
+                    onPlaceSelected={(place) => {
+                      const lat = place.geometry?.location?.lat();
+                      const lng = place.geometry?.location?.lng();
+                      form.setValue(
+                        "dropoff",
+                        place.formatted_address || place.name
+                      );
+                      form.setValue("dropoffCoords", { lat, lng });
+                    }}
+                    options={{
+                      types: ["address"],
+                      componentRestrictions: { country: ["ng"] }, // Restrict to Nigeria
+                      fields: [
+                        "formatted_address",
+                        "name",
+                        "geometry.location",
+                      ],
+                    }}
                     placeholder="Dropoff Location"
                     className="w-full border border-blue-primary placeholder:text-blue-primary py-4 px-3 rounded-md"
+                    defaultValue={field.value}
+                    onBlur={field.onBlur}
+                    onChange={field.onChange}
                   />
                 </FormControl>
                 <FormMessage />
@@ -129,6 +235,7 @@ export const BookADeliveryForm = () => {
             name="date"
             render={({ field }) => (
               <FormItem>
+                {/* <FormLabel>Delivery Date</FormLabel> */}
                 <FormControl>
                   <input
                     type="date"
@@ -146,6 +253,7 @@ export const BookADeliveryForm = () => {
             name="time"
             render={({ field }) => (
               <FormItem>
+                {/* <FormLabel>Delivery Time</FormLabel> */}
                 <FormControl>
                   <input
                     type="time"
@@ -158,36 +266,65 @@ export const BookADeliveryForm = () => {
             )}
           />
 
+          {/* Priority Dropdown */}
           <FormField
             control={form.control}
             name="priority"
             render={({ field }) => (
               <FormItem>
+                <FormLabel>Priority</FormLabel> {/* Added label for clarity */}
                 <FormControl>
-                  <input
+                  <select
                     {...field}
-                    type="text"
-                    placeholder="Priority (e.g. low, medium, high)"
-                    className="w-full border border-blue-primary placeholder:text-blue-primary py-4 px-3 rounded-md"
-                  />
+                    className="w-full border border-blue-primary text-blue-primary py-4 px-3 rounded-md appearance-none bg-white pr-8" // Added appearance-none and pr for custom arrow if needed
+                  >
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                  </select>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          {/* Priority Dropdown */}
+          <FormField
+            control={form.control}
+            name="type"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Type</FormLabel> {/* Added label for clarity */}
+                <FormControl>
+                  <select
+                    {...field}
+                    className="w-full border border-blue-primary text-blue-primary py-4 px-3 rounded-md appearance-none bg-white pr-8" // Added appearance-none and pr for custom arrow if needed
+                  >
+                    <option value="regular">Regular</option>
+                    <option value="express">Express</option>
+                  </select>
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
 
+          {/* Vehicle Dropdown */}
           <FormField
             control={form.control}
             name="vehicle"
             render={({ field }) => (
               <FormItem>
+                <FormLabel>Vehicle Type</FormLabel>{" "}
+                {/* Added label for clarity */}
                 <FormControl>
-                  <input
+                  <select
                     {...field}
-                    type="text"
-                    placeholder="Vehicle Type"
-                    className="w-full border border-blue-primary placeholder:text-blue-primary py-4 px-3 rounded-md"
-                  />
+                    className="w-full border border-blue-primary text-blue-primary py-4 px-3 rounded-md appearance-none bg-white pr-8"
+                  >
+                    <option value="bike">Bike</option>
+                    <option value="car">Car</option>
+                    <option value="truck">Truck</option>
+                  </select>
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -200,6 +337,7 @@ export const BookADeliveryForm = () => {
               name="note"
               render={({ field }) => (
                 <FormItem>
+                  {/* <FormLabel>Note</FormLabel> */}
                   <FormControl>
                     <textarea
                       {...field}
@@ -224,9 +362,10 @@ export const BookADeliveryForm = () => {
           <div className="md:col-span-2 flex justify-center">
             <Button
               type="submit"
+              disabled={isPending}
               className="rounded-md py-4 px-6 w-full md:w-1/3 text-lg"
             >
-              Get Quote
+              {isPending ? "Getting Quote" : " Get Quote"}
             </Button>
           </div>
         </form>

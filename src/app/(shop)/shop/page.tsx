@@ -1,16 +1,72 @@
+"use client";
+
 import { Button } from "@/components/button";
 import { Header } from "@/components/shop/header";
 import Link from "next/link";
+import { useShopRegisterMutation } from "@/services/shops/mutation";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+
+const registerSchema = z
+  .object({
+    email: z.string().email("Invalid email address"),
+    password: z.string().min(6, "Password must be at least 6 characters"),
+    confirmPassword: z
+      .string()
+      .min(6, "Confirm password must be at least 6 characters"),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
 
 function ShopperAuth() {
+  const router = useRouter();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    reset,
+  } = useForm<z.infer<typeof registerSchema>>({
+    resolver: zodResolver(registerSchema),
+  });
+
+  const { mutate } = useShopRegisterMutation();
+
+  const onSubmit = (data: z.infer<typeof registerSchema>) => {
+    mutate(
+      {
+        email: data.email,
+        password: data.password,
+      },
+      {
+        onSuccess: (response) => {
+          console.log("Registration successful:", response);
+          toast.success("Registration successful! Verify email.");
+          router.push(
+            `/shop/verify-email?email=${encodeURIComponent(data.email)}`
+          ); // Navigate to OTP verification page
+          reset();
+        },
+        onError: (error: any) => {
+          console.error("Registration failed:", error);
+          toast.error(
+            error.message || "Registration failed. Please try again."
+          );
+        },
+      }
+    );
+  };
+
   return (
     <section className="min-h-screen flex flex-col">
       <Header />
 
-      {/* Scrollable container if needed */}
       <div className="flex-grow flex items-center justify-center px-4 overflow-y-auto">
         <div className="w-full max-w-sm mx-auto flex flex-col items-center gap-6 text-center py-10">
-          {/* Welcome Text */}
           <div>
             <h1 className="text-black font-bold text-3xl">Welcome</h1>
             <p className="font-medium text-gray-600">
@@ -18,33 +74,63 @@ function ShopperAuth() {
             </p>
           </div>
 
-          {/* Input Fields */}
-          <div className="w-full flex flex-col gap-4">
-            <input
-              type="email"
-              placeholder="Email"
-              className="w-full py-2 px-3 focus:outline-none border border-[#A5A4A0] rounded-[5px] placeholder:text-blue-primary placeholder:text-base"
-            />
-            <input
-              type="password"
-              placeholder="Password"
-              className="w-full py-2 px-3 focus:outline-none border border-[#A5A4A0] rounded-[5px] placeholder:text-blue-primary placeholder:text-base"
-            />
-            <input
-              type="password"
-              placeholder="Confirm Password"
-              className="w-full py-2 px-3 focus:outline-none border border-[#A5A4A0] rounded-[5px] placeholder:text-blue-primary placeholder:text-base"
-            />
-          </div>
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="w-full flex flex-col gap-4"
+          >
+            <div>
+              <input
+                type="email"
+                placeholder="Email"
+                {...register("email")}
+                className="w-full py-2 px-3 focus:outline-none border border-[#A5A4A0] rounded-[5px] placeholder:text-blue-primary placeholder:text-base"
+              />
+              {errors.email && (
+                <p className="text-red-500 text-sm mt-1 text-left">
+                  {errors.email.message}
+                </p>
+              )}
+            </div>
+            <div>
+              <input
+                type="password"
+                placeholder="Password"
+                {...register("password")}
+                className="w-full py-2 px-3 focus:outline-none border border-[#A5A4A0] rounded-[5px] placeholder:text-blue-primary placeholder:text-base"
+              />
+              {errors.password && (
+                <p className="text-red-500 text-sm mt-1 text-left">
+                  {errors.password.message}
+                </p>
+              )}
+            </div>
+            <div>
+              <input
+                type="password"
+                placeholder="Confirm Password"
+                {...register("confirmPassword")}
+                className="w-full py-2 px-3 focus:outline-none border border-[#A5A4A0] rounded-[5px] placeholder:text-blue-primary placeholder:text-base"
+              />
+              {errors.confirmPassword && (
+                <p className="text-red-500 text-sm mt-1 text-left">
+                  {errors.confirmPassword.message}
+                </p>
+              )}
+            </div>
 
-          {/* Submit Button */}
-          <div className="w-full">
-            <Button variant="auth" size="lg" className="rounded-[5px] w-full">
-              Sign up
-            </Button>
-          </div>
+            <div className="w-full">
+              <Button
+                type="submit"
+                variant="auth"
+                size="lg"
+                className="rounded-[5px] w-full"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Signing up..." : "Sign up"}
+              </Button>
+            </div>
+          </form>
 
-          {/* Login Redirect */}
           <Link href={"/shop/login"} className="text-sm text-gray-400">
             Already have an account?{" "}
             <span className="text-blue-primary underline cursor-pointer">

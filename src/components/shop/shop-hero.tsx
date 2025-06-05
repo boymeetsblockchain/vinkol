@@ -6,20 +6,8 @@ import { IoLogoApple } from "react-icons/io";
 import { Button } from "../button";
 import { AppStoreCard } from "../shared/appstore";
 import { RiderAuthModal } from "../modals/rider-auth-modal";
+import Link from "next/link";
 export const Hero = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isLogin, setIsLogin] = useState(false); // distinguish between login/register
-
-  const triggerRegisterModal = () => {
-    setIsLogin(false);
-    setIsModalOpen(true);
-  };
-
-  const triggerLoginModal = () => {
-    setIsLogin(true);
-    setIsModalOpen(true);
-  };
-
   return (
     <>
       <div
@@ -45,11 +33,11 @@ export const Hero = () => {
           </div>
           <div>
             <div className="mt-6 flex items-start sm:items-center gap-4">
-              <Button size="lg" onClick={triggerRegisterModal}>
-                Become a personal shopper
+              <Button size="lg">
+                <Link href={"/shop"}>Become a personal shopper</Link>
               </Button>
-              <Button size="lg" variant="secondary" onClick={triggerLoginModal}>
-                Login to Rider Forum
+              <Button size="lg" variant="secondary">
+                <Link href={"/shop/login"}>Login to Rider Forum</Link>
               </Button>
             </div>
           </div>
@@ -67,12 +55,6 @@ export const Hero = () => {
             />
           </div>
         </div>
-        {/* Auth Modal */}
-        <RiderAuthModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          islogin={isLogin}
-        />
       </div>
     </>
   );

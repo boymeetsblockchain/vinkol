@@ -1,15 +1,14 @@
-import axiosInstance from "@/config/rider";
 import {
+  registerShopSchema,
+  loginShopSchema,
+  verifyEmailSchema,
   forgotPasswordSchema,
-  loginRiderSchema,
-  registerRiderSchema,
   resendOtpSchema,
   resetPasswordSchema,
-  updateProfileSchema,
-  verifyEmailSchema,
-} from "@/types/rider";
-import * as z from "zod";
+} from "@/types/shop";
 
+import * as z from "zod";
+import axiosInstance from "@/config/store";
 /**
  * Handles common API errors by throwing a new Error with a more specific message.
  * This centralizes error handling logic, making the code DRY.
@@ -38,31 +37,31 @@ const handleApiError = (error: any, defaultMessage: string): never => {
 };
 
 /**
- * Registers a new rider.
- * @param {z.infer<typeof registerRiderSchema>} data - The registration data.
+ * Registers a new Shop.
+ * @param {z.infer<typeof registerShopSchema>} data - The registration data.
  * @returns {Promise<any>} The response data from the server.
  * @throws {Error} If the registration fails.
  */
-export const registerRider = async (
-  data: z.infer<typeof registerRiderSchema>
+export const registerShop = async (
+  data: z.infer<typeof registerShopSchema>
 ) => {
   try {
-    const response = await axiosInstance.post("/users/register-rider", data);
+    const response = await axiosInstance.post("/stores/register", data);
     return response.data;
   } catch (error: any) {
-    handleApiError(error, "Rider registration failed.");
+    handleApiError(error, "Shop registration failed.");
   }
 };
 
 /**
- * Logs in a rider.
- * @param {z.infer<typeof loginRiderSchema>} data - The login credentials.
+ * Logs in a Shop.
+ * @param {z.infer<typeof loginShopSchema>} data - The login credentials.
  * @returns {Promise<any>} The response data (e.g., auth token, user info).
  * @throws {Error} If the login fails.
  */
-export const loginRider = async (data: z.infer<typeof loginRiderSchema>) => {
+export const loginShop = async (data: z.infer<typeof loginShopSchema>) => {
   try {
-    const response = await axiosInstance.post("/users/login", data);
+    const response = await axiosInstance.post("/stores/login", data);
     return response.data;
   } catch (error: any) {
     handleApiError(error, "Login failed. Please check your credentials.");
@@ -70,14 +69,14 @@ export const loginRider = async (data: z.infer<typeof loginRiderSchema>) => {
 };
 
 /**
- * Verifies a rider's email using an OTP.
+ * Verifies a Shop's email using an OTP.
  * @param {z.infer<typeof verifyEmailSchema>} data - The email verification data (e.g., email and OTP).
  * @returns {Promise<any>} The response data from the server.
  * @throws {Error} If the email verification fails.
  */
 export const verifyEmail = async (data: z.infer<typeof verifyEmailSchema>) => {
   try {
-    const response = await axiosInstance.patch("/users/verify-email", data);
+    const response = await axiosInstance.patch("/stores/verify-email", data);
     return response.data;
   } catch (error: any) {
     handleApiError(error, "Email verification failed.");
@@ -85,14 +84,14 @@ export const verifyEmail = async (data: z.infer<typeof verifyEmailSchema>) => {
 };
 
 /**
- * Resends an OTP to the rider's email.
+ * Resends an OTP to the Shop's email.
  * @param {z.infer<typeof resendOtpSchema>} data - The data to request OTP resend (e.g., email).
  * @returns {Promise<any>} The response data from the server.
  * @throws {Error} If resending OTP fails.
  */
 export const resendOtp = async (data: z.infer<typeof resendOtpSchema>) => {
   try {
-    const response = await axiosInstance.patch("/users/resend-otp", data);
+    const response = await axiosInstance.patch("stores/resend-otp", data);
     return response.data;
   } catch (error: any) {
     handleApiError(error, "Failed to resend OTP.");
@@ -109,7 +108,7 @@ export const forgotPassword = async (
   data: z.infer<typeof forgotPasswordSchema>
 ) => {
   try {
-    const response = await axiosInstance.post("/users/forgot-password", data);
+    const response = await axiosInstance.post("/stores/forgot-password", data);
     return response.data;
   } catch (error: any) {
     handleApiError(error, "Failed to initiate password reset.");
@@ -117,7 +116,7 @@ export const forgotPassword = async (
 };
 
 /**
- * Resets the rider's password using a reset token.
+ * Resets the Shop's password using a reset token.
  * Assumes `resetPasswordSchema` includes `resetToken` and `password`.
  * The `resetToken` is used in the URL path, and `password` is sent in the body.
  *
@@ -131,77 +130,11 @@ export const resetPassword = async (
   try {
     const { resetToken, password } = data; // Destructure resetToken for URL and password for body
     const response = await axiosInstance.patch(
-      `/users/reset-password/${resetToken}`,
+      `/stores/reset-password/${resetToken}`,
       { password } // Send only the new password in the request body
     );
     return response.data;
   } catch (error: any) {
     handleApiError(error, "Failed to reset password.");
-  }
-};
-
-/**
- * Updates the rider's profile.
- * Uses PUT, implying a full replacement of the profile data.
- * @param {z.infer<typeof updateProfileSchema>} data - The updated profile data.
- * @returns {Promise<any>} The response data from the server.
- * @throws {Error} If the profile update fails.
- */
-export const updateProfile = async (
-  data: z.infer<typeof updateProfileSchema>
-) => {
-  try {
-    const response = await axiosInstance.put("/users/update-profile", data, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-    return response.data;
-  } catch (error: any) {
-    handleApiError(error, "Failed to update profile.");
-  }
-};
-
-export const submitKyc = async (data: any) => {
-  try {
-    const response = await axiosInstance.post("/kyc/submit-id", data, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-    return response.data;
-  } catch (error) {
-    handleApiError(error, "Failed to submit KYC.");
-  }
-};
-
-export const submitVehicle = async (data: any) => {
-  try {
-    const response = await axiosInstance.patch("/kyc/submit-vehicle", data, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-    return response.data;
-  } catch (error) {
-    handleApiError(error, "Failed to submit vehicle.");
-  }
-};
-
-export const getUserProfile = async () => {
-  try {
-    const response = await axiosInstance.get("/users/profile");
-    return response.data;
-  } catch (error) {
-    handleApiError(error, "Failed to Get User profile");
-  }
-};
-
-export const getKyc = async () => {
-  try {
-    const response = await axiosInstance.get("/kyc");
-    return response.data;
-  } catch (error) {
-    handleApiError(error, "Failed to Get User profile");
   }
 };
