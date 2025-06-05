@@ -37,7 +37,7 @@ export const Hero = () => {
                 <Link href={"/shop"}>Become a personal shopper</Link>
               </Button>
               <Button size="lg" variant="secondary">
-                <Link href={"/shop/login"}>Login to Rider Forum</Link>
+                <Link href={"/shop/login"}>Login to Shop</Link>
               </Button>
             </div>
           </div>

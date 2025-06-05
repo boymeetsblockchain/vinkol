@@ -15,14 +15,17 @@ import { deliverySchema } from "@/dto/delivery.form.schema";
 import { Button } from "../button";
 import Autocomplete from "react-google-autocomplete";
 import { useGetQuoteMutation } from "@/services/orders/mutation";
-import { toast } from "sonner";
+import { toast } from "sonner"; // Assuming 'sonner' for toasts
+import { useRouter } from "next/navigation";
 
+// Helper to get current time in HH:MM format
 const getCurrentTime = () => {
   const now = new Date();
   return now.toTimeString().slice(0, 5);
 };
 
 export const BookADeliveryForm = () => {
+  const router = useRouter();
   const form = useForm<z.infer<typeof deliverySchema>>({
     resolver: zodResolver(deliverySchema),
     defaultValues: {
@@ -40,45 +43,80 @@ export const BookADeliveryForm = () => {
     },
   });
 
-  const pickupCoords = form.watch("pickupCoords");
-  const dropoffCoords = form.watch("dropoffCoords");
-  const { mutate, isPending } = useGetQuoteMutation();
+  const { mutate, isPending } = useGetQuoteMutation(); // isPending indicates mutation loading state
+
   const onSubmit = (data: z.infer<typeof deliverySchema>) => {
     mutate(
       {
-        state: data.state, // Assuming 'state' is part of your deliverySchema
-        orderType: "Delivery",
+        state: data.state,
+        orderType: "Delivery", // Assuming fixed order type
         pickupLocation: data.pickupCoords
           ? {
               lat: String(data.pickupCoords.lat),
               lng: String(data.pickupCoords.lng),
             }
-          : { lat: "", lng: "" },
+          : { lat: "", lng: "" }, // Ensure coordinates are strings for payload
         dropoffLocation: data.dropoffCoords
           ? {
               lat: String(data.dropoffCoords.lat),
               lng: String(data.dropoffCoords.lng),
             }
-          : { lat: "", lng: "" },
-        deliveryType: data.type, // Assuming 'type' is part of your deliverySchema
+          : { lat: "", lng: "" }, // Ensure coordinates are strings for payload
+        deliveryType: data.type,
         vehicleRequest: data.vehicle,
       },
       {
         onSuccess: (responseData) => {
-          // Renamed 'data' to 'responseData' to avoid conflict
+          // Format date for display (e.g., "April 27, 2025")
           console.log(responseData);
-          toast.success("Yay😇😇😇😇. ");
-          // FIX: Stringify the responseData before storing it
-          localStorage.setItem("quote-data", JSON.stringify(responseData));
-          window.location.href = "quote";
+          const dateObj = new Date(data.date);
+          const formattedDate = dateObj.toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          });
+
+          // Format time for display (e.g., "6:00 PM")
+          const [hours, minutes] = data.time.split(":").map(Number);
+          const timeObj = new Date();
+          timeObj.setHours(hours, minutes, 0, 0);
+          const formattedTime = timeObj.toLocaleTimeString("en-US", {
+            hour: "numeric",
+            minute: "2-digit",
+            hour12: true,
+          });
+
+          // Create URLSearchParams to build the query string safely
+          const params = new URLSearchParams();
+          params.append("state", data.state);
+          params.append("pickupLocation", data.pickup); // Use the full address string
+          params.append("dropoffLocation", data.dropoff); // Use the full address string
+          params.append("date", formattedDate);
+          params.append("time", formattedTime);
+          params.append("deliveryType", data.type);
+          params.append("vehicleRequest", data.vehicle);
+          params.append("amount", String(responseData.data.price)); // <--- Access 'price' inside 'data'
+          params.append("note", data.note || "");
+
+          toast.success("Quote successfully retrieved!", {
+            description: `Amount: ₦${
+              responseData.data.price?.toLocaleString() || "N/A"
+            }`, // <--- Access 'price' for toast
+          });
+
+          // Navigate to the quote page with the generated query string
+          router.push(`/quote?${params.toString()}`);
         },
         onError: (error: any) => {
           console.error("Get Quote failed:", error);
-          toast.error(error.message || "Failed to get Quote.");
+          toast.error(
+            error.message || "Failed to get quote. Please try again."
+          );
         },
       }
     );
   };
+
   return (
     <section className="py-12 max-w-screen-xl mx-auto px-4">
       <div className="space-y-4 mb-6">
@@ -93,12 +131,13 @@ export const BookADeliveryForm = () => {
           onSubmit={form.handleSubmit(onSubmit)}
           className="grid grid-cols-1 md:grid-cols-2 gap-6"
         >
+          {/* Fullname Field */}
           <FormField
             control={form.control}
             name="fullname"
             render={({ field }) => (
               <FormItem>
-                {/* <FormLabel>Full Name</FormLabel> Add a label for better UX */}
+                <FormLabel>Full Name</FormLabel>
                 <FormControl>
                   <input
                     {...field}
@@ -112,12 +151,13 @@ export const BookADeliveryForm = () => {
             )}
           />
 
+          {/* Email Field */}
           <FormField
             control={form.control}
             name="email"
             render={({ field }) => (
               <FormItem>
-                {/* <FormLabel>Email</FormLabel> */}
+                <FormLabel>Email</FormLabel>
                 <FormControl>
                   <input
                     {...field}
@@ -131,16 +171,17 @@ export const BookADeliveryForm = () => {
             )}
           />
 
+          {/* State Field */}
           <FormField
             control={form.control}
             name="state"
             render={({ field }) => (
               <FormItem>
-                {/* <FormLabel>Email</FormLabel> */}
+                <FormLabel>State</FormLabel>
                 <FormControl>
                   <input
                     {...field}
-                    type="state"
+                    type="text" // Changed from 'state' to 'text' for standard input
                     placeholder="Select state"
                     className="w-full border border-blue-primary placeholder:text-blue-primary py-4 px-3 rounded-md"
                   />
@@ -156,10 +197,10 @@ export const BookADeliveryForm = () => {
             name="pickup"
             render={({ field }) => (
               <FormItem>
-                {/* <FormLabel>Pickup Location</FormLabel> */}
+                <FormLabel>Pickup Location</FormLabel>
                 <FormControl>
                   <Autocomplete
-                    apiKey={process.env.NEXT_PUBLIC_Maps_API_KEY} // Corrected API key env variable
+                    apiKey={process.env.NEXT_PUBLIC_Maps_API_KEY}
                     onPlaceSelected={(place) => {
                       const lat = place.geometry?.location?.lat();
                       const lng = place.geometry?.location?.lng();
@@ -182,7 +223,7 @@ export const BookADeliveryForm = () => {
                     className="w-full border border-blue-primary placeholder:text-blue-primary py-4 px-3 rounded-md"
                     defaultValue={field.value}
                     onBlur={field.onBlur}
-                    onChange={field.onChange}
+                    onChange={field.onChange} // Keep onChange for React Hook Form's internal tracking
                   />
                 </FormControl>
                 <FormMessage />
@@ -196,10 +237,10 @@ export const BookADeliveryForm = () => {
             name="dropoff"
             render={({ field }) => (
               <FormItem>
-                {/* <FormLabel>Dropoff Location</FormLabel> */}
+                <FormLabel>Dropoff Location</FormLabel>
                 <FormControl>
                   <Autocomplete
-                    apiKey={process.env.NEXT_PUBLIC_Maps_API_KEY} // Corrected API key env variable
+                    apiKey={process.env.NEXT_PUBLIC_Maps_API_KEY}
                     onPlaceSelected={(place) => {
                       const lat = place.geometry?.location?.lat();
                       const lng = place.geometry?.location?.lng();
@@ -222,7 +263,7 @@ export const BookADeliveryForm = () => {
                     className="w-full border border-blue-primary placeholder:text-blue-primary py-4 px-3 rounded-md"
                     defaultValue={field.value}
                     onBlur={field.onBlur}
-                    onChange={field.onChange}
+                    onChange={field.onChange} // Keep onChange for React Hook Form's internal tracking
                   />
                 </FormControl>
                 <FormMessage />
@@ -230,12 +271,13 @@ export const BookADeliveryForm = () => {
             )}
           />
 
+          {/* Date Field */}
           <FormField
             control={form.control}
             name="date"
             render={({ field }) => (
               <FormItem>
-                {/* <FormLabel>Delivery Date</FormLabel> */}
+                <FormLabel>Delivery Date</FormLabel>
                 <FormControl>
                   <input
                     type="date"
@@ -248,12 +290,13 @@ export const BookADeliveryForm = () => {
             )}
           />
 
+          {/* Time Field */}
           <FormField
             control={form.control}
             name="time"
             render={({ field }) => (
               <FormItem>
-                {/* <FormLabel>Delivery Time</FormLabel> */}
+                <FormLabel>Delivery Time</FormLabel>
                 <FormControl>
                   <input
                     type="time"
@@ -272,11 +315,11 @@ export const BookADeliveryForm = () => {
             name="priority"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Priority</FormLabel> {/* Added label for clarity */}
+                <FormLabel>Priority</FormLabel>
                 <FormControl>
                   <select
                     {...field}
-                    className="w-full border border-blue-primary text-blue-primary py-4 px-3 rounded-md appearance-none bg-white pr-8" // Added appearance-none and pr for custom arrow if needed
+                    className="w-full border border-blue-primary text-blue-primary py-4 px-3 rounded-md appearance-none bg-white pr-8"
                   >
                     <option value="low">Low</option>
                     <option value="medium">Medium</option>
@@ -287,17 +330,18 @@ export const BookADeliveryForm = () => {
               </FormItem>
             )}
           />
-          {/* Priority Dropdown */}
+
+          {/* Type Dropdown */}
           <FormField
             control={form.control}
             name="type"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Type</FormLabel> {/* Added label for clarity */}
+                <FormLabel>Delivery Type</FormLabel>
                 <FormControl>
                   <select
                     {...field}
-                    className="w-full border border-blue-primary text-blue-primary py-4 px-3 rounded-md appearance-none bg-white pr-8" // Added appearance-none and pr for custom arrow if needed
+                    className="w-full border border-blue-primary text-blue-primary py-4 px-3 rounded-md appearance-none bg-white pr-8"
                   >
                     <option value="regular">Regular</option>
                     <option value="express">Express</option>
@@ -314,8 +358,7 @@ export const BookADeliveryForm = () => {
             name="vehicle"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Vehicle Type</FormLabel>{" "}
-                {/* Added label for clarity */}
+                <FormLabel>Vehicle Type</FormLabel>
                 <FormControl>
                   <select
                     {...field}
@@ -331,13 +374,16 @@ export const BookADeliveryForm = () => {
             )}
           />
 
+          {/* Note Textarea */}
           <div className="md:col-span-2">
             <FormField
               control={form.control}
               name="note"
               render={({ field }) => (
                 <FormItem>
-                  {/* <FormLabel>Note</FormLabel> */}
+                  <FormLabel>
+                    Note (e.g., fragile, specific instructions)
+                  </FormLabel>
                   <FormControl>
                     <textarea
                       {...field}
@@ -362,10 +408,10 @@ export const BookADeliveryForm = () => {
           <div className="md:col-span-2 flex justify-center">
             <Button
               type="submit"
-              disabled={isPending}
+              disabled={isPending} // Disable button while quote is being fetched
               className="rounded-md py-4 px-6 w-full md:w-1/3 text-lg"
             >
-              {isPending ? "Getting Quote" : " Get Quote"}
+              {isPending ? "Getting Quote..." : "Get Quote"}
             </Button>
           </div>
         </form>

@@ -3,7 +3,7 @@ export const AboutVinkol = () => {
     <section className="flex flex-col-reverse lg:flex-row items-center gap-10 px-6 py-16 lg:py-20 lg:px-20 bg-white">
       {/* Text content */}
       <div className="lg:w-1/2 text-gray-800">
-        <h1 className="text-3xl lg:text-4xl font-bold mb-4">Our Mission</h1>
+        <h1 className="text-3xl lg:text-4xl font-bold mb-4">Vinkol </h1>
         <p className="text-xs md:text-sm leading-relaxed">
           Vinkol Material and Commercial Ventures Limited is a Nigerian-founded
           company, officially incorporated on June 17, 2012. Operating at the
