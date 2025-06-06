@@ -1,5 +1,9 @@
 import axiosInstance from "@/config/guest";
-import { createOrderSchema, getQuoteSchema } from "@/types/order";
+import {
+  createOrderSchema,
+  getQuoteSchema,
+  orderDataSchema,
+} from "@/types/order";
 import * as z from "zod";
 
 /**
@@ -40,6 +44,20 @@ export const getQuote = async (data: z.infer<typeof getQuoteSchema>) => {
 
 export const createGuestOrder = async (
   data: z.infer<typeof createOrderSchema>
+) => {
+  try {
+    const response = await axiosInstance.post(
+      "/orders/create-guest-order",
+      data
+    );
+    return response.data;
+  } catch (error) {
+    handleApiError(error, "Create Order Failed");
+  }
+};
+
+export const createGuestOrderWithPaystack = async (
+  data: z.infer<typeof orderDataSchema>
 ) => {
   try {
     const response = await axiosInstance.post(

@@ -2,7 +2,9 @@
 import { z } from "zod";
 
 export const deliverySchema = z.object({
-  fullname: z.string().min(2, "Full name must be at least 2 characters"),
+  firstname: z.string().min(2, "First name must be at least 2 characters"),
+  lastname: z.string().min(2, "Last name must be at least 2 characters"),
+  phonenumber: z.string().min(2, "Full name must be at least 2 characters"),
   email: z.string().email("Invalid email address"),
   pickup: z.string().min(1, "Pickup location is required"),
   pickupCoords: z
@@ -35,4 +37,5 @@ export const deliverySchema = z.object({
     }),
   }),
   state: z.string(),
+  orderType: z.enum(["Delivery", "Shopping"]),
 });

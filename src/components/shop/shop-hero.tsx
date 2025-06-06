@@ -8,6 +8,19 @@ import { AppStoreCard } from "../shared/appstore";
 import { RiderAuthModal } from "../modals/rider-auth-modal";
 import Link from "next/link";
 export const Hero = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLogin, setIsLogin] = useState(false); // distinguish between login/register
+
+  const triggerRegisterModal = () => {
+    setIsLogin(false);
+    setIsModalOpen(true);
+  };
+
+  const triggerLoginModal = () => {
+    setIsLogin(true);
+    setIsModalOpen(true);
+  };
+
   return (
     <>
       <div
@@ -24,20 +37,20 @@ export const Hero = () => {
               Earn On Vinkol
             </h1>
             <h1 className="font-bold text-3xl sm:text-5xl leading-tight">
-              Become a Rider
+              Become a Personal Shopper
             </h1>
             <p className="text-base sm:text-xl font-medium">
-              Connect instantly with verified riders to deliver your goods or
-              pick up purchases from any store.
+              Receive delivery and earn on every trip with Vinkol linking you
+              with users that need your service
             </p>
           </div>
           <div>
             <div className="mt-6 flex items-start sm:items-center gap-4">
-              <Button size="lg">
-                <Link href={"/shop"}>Become a personal shopper</Link>
+              <Button size="lg" onClick={triggerRegisterModal}>
+                Become a personal shopper
               </Button>
-              <Button size="lg" variant="secondary">
-                <Link href={"/shop/login"}>Login to Shop</Link>
+              <Button size="lg" variant="secondary" onClick={triggerLoginModal}>
+                Login to Shop Forum
               </Button>
             </div>
           </div>
@@ -56,6 +69,11 @@ export const Hero = () => {
           </div>
         </div>
       </div>
+      <RiderAuthModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        islogin={isLogin}
+      />
     </>
   );
 };

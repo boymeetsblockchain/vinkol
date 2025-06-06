@@ -29,7 +29,10 @@ export const BookADeliveryForm = () => {
   const form = useForm<z.infer<typeof deliverySchema>>({
     resolver: zodResolver(deliverySchema),
     defaultValues: {
-      fullname: "",
+      firstname: "",
+      lastname: "",
+      phonenumber: "",
+      orderType: "Delivery",
       dropoff: "",
       pickup: "",
       date: "",
@@ -88,14 +91,19 @@ export const BookADeliveryForm = () => {
 
           // Create URLSearchParams to build the query string safely
           const params = new URLSearchParams();
+          params.append("firstname", data.firstname);
+          params.append("lastname", data.lastname);
+          params.append("phonenumber", data.phonenumber);
+          params.append("email", data.email);
           params.append("state", data.state);
-          params.append("pickupLocation", data.pickup); // Use the full address string
-          params.append("dropoffLocation", data.dropoff); // Use the full address string
+          params.append("pickupLocation", data.pickup);
+          params.append("dropoffLocation", data.dropoff);
           params.append("date", formattedDate);
           params.append("time", formattedTime);
           params.append("deliveryType", data.type);
           params.append("vehicleRequest", data.vehicle);
-          params.append("amount", String(responseData.data.price)); // <--- Access 'price' inside 'data'
+          params.append("orderType", data.orderType); // Pass orderType to the quote page
+          params.append("amount", String(responseData.data.price || 0)); // Ensure 'price' is accessed correctly
           params.append("note", data.note || "");
 
           toast.success("Quote successfully retrieved!", {
@@ -134,15 +142,34 @@ export const BookADeliveryForm = () => {
           {/* Fullname Field */}
           <FormField
             control={form.control}
-            name="fullname"
+            name="firstname"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Full Name</FormLabel>
+                <FormLabel>First Name</FormLabel>
                 <FormControl>
                   <input
                     {...field}
                     type="text"
-                    placeholder="Fullname"
+                    placeholder="First Name"
+                    className="w-full border border-blue-primary placeholder:text-blue-primary py-4 px-3 rounded-md"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="lastname"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Last Name</FormLabel>
+                <FormControl>
+                  <input
+                    {...field}
+                    type="text"
+                    placeholder="Last Name"
                     className="w-full border border-blue-primary placeholder:text-blue-primary py-4 px-3 rounded-md"
                   />
                 </FormControl>
@@ -163,6 +190,26 @@ export const BookADeliveryForm = () => {
                     {...field}
                     type="email"
                     placeholder="Email"
+                    className="w-full border border-blue-primary placeholder:text-blue-primary py-4 px-3 rounded-md"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Email Field */}
+          <FormField
+            control={form.control}
+            name="phonenumber"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Phone Number</FormLabel>
+                <FormControl>
+                  <input
+                    {...field}
+                    type="number"
+                    placeholder="Phone Number"
                     className="w-full border border-blue-primary placeholder:text-blue-primary py-4 px-3 rounded-md"
                   />
                 </FormControl>
@@ -345,6 +392,27 @@ export const BookADeliveryForm = () => {
                   >
                     <option value="regular">Regular</option>
                     <option value="express">Express</option>
+                  </select>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Type Dropdown */}
+          <FormField
+            control={form.control}
+            name="type"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Order Type</FormLabel>
+                <FormControl>
+                  <select
+                    {...field}
+                    className="w-full border border-blue-primary text-blue-primary py-4 px-3 rounded-md appearance-none bg-white pr-8"
+                  >
+                    <option value="Delivery ">Delivery</option>
+                    <option value="shopping">Shopping </option>
                   </select>
                 </FormControl>
                 <FormMessage />

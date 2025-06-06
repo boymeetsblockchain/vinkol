@@ -1,7 +1,11 @@
 import { useMutation } from "@tanstack/react-query";
 import { createGuestOrder, getQuote } from "./api";
 import * as z from "zod";
-import { createOrderSchema, getQuoteSchema } from "@/types/order";
+import {
+  createOrderSchema,
+  getQuoteSchema,
+  orderDataSchema,
+} from "@/types/order";
 import { error } from "console";
 
 /**
@@ -33,7 +37,7 @@ export function useCreateGuestOrderMutation(
   options?: MutationOptions<any, Error>
 ) {
   const { mutate, data, error, isPending, isSuccess, isError } = useMutation({
-    mutationFn: async (payload: z.infer<typeof createOrderSchema>) => {
+    mutationFn: async (payload: z.infer<typeof orderDataSchema>) => {
       return await createGuestOrder(payload);
     },
     onSuccess: (responseData) => {
