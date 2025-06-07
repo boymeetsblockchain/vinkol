@@ -19,6 +19,7 @@ import {
   updateProfile,
   submitKyc,
   submitVehicle,
+  registerShopper,
 } from "./api"; // Assuming 'api' is the file containing all the API functions
 
 /**
@@ -46,6 +47,26 @@ export function useRiderRegisterMutation(
     },
     onError: (errorData: Error) => {
       console.error("Rider registration failed:", errorData.message);
+      options?.onError?.(errorData);
+    },
+  });
+
+  return { mutate, data, error, isPending, isSuccess, isError };
+}
+
+export function useShopperRegisterMutation(
+  options?: MutationOptions<any, Error>
+) {
+  const { mutate, data, error, isPending, isSuccess, isError } = useMutation({
+    mutationFn: async (payload: z.infer<typeof registerRiderSchema>) => {
+      return await registerShopper(payload);
+    },
+    onSuccess: (responseData) => {
+      console.log("Shopper registration successful:", responseData);
+      options?.onSuccess?.(responseData);
+    },
+    onError: (errorData: Error) => {
+      console.error("Shopper registration failed:", errorData.message);
       options?.onError?.(errorData);
     },
   });
@@ -90,7 +111,11 @@ export function useVerifyEmailMutation(options?: MutationOptions<any, Error>) {
       return await verifyEmail(payload);
     },
     onSuccess: (responseData) => {
-      console.log("Email verification successful:", responseData);
+      if (responseData.token) {
+        localStorage.setItem("riderAuthToken", responseData.token);
+      } else {
+        console.log("token not stored");
+      }
       options?.onSuccess?.(responseData);
     },
     onError: (errorData: Error) => {

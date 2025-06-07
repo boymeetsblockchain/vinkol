@@ -53,6 +53,22 @@ export const registerRider = async (
     handleApiError(error, "Rider registration failed.");
   }
 };
+/**
+ * Registers a new rider.
+ * @param {z.infer<typeof registerRiderSchema>} data - The registration data.
+ * @returns {Promise<any>} The response data from the server.
+ * @throws {Error} If the registration fails.
+ */
+export const registerShopper = async (
+  data: z.infer<typeof registerRiderSchema>
+) => {
+  try {
+    const response = await axiosInstance.post("/users/register-shopper", data);
+    return response.data;
+  } catch (error: any) {
+    handleApiError(error, "Shopper registration failed.");
+  }
+};
 
 /**
  * Logs in a rider.

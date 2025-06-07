@@ -7,6 +7,7 @@ import { Button } from "../button";
 import { AppStoreCard } from "../shared/appstore";
 import { RiderAuthModal } from "../modals/rider-auth-modal";
 import Link from "next/link";
+import { ShopperAuthModal } from "../modals/shopper-auth-modal.";
 export const Hero = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLogin, setIsLogin] = useState(false); // distinguish between login/register
@@ -69,7 +70,7 @@ export const Hero = () => {
           </div>
         </div>
       </div>
-      <RiderAuthModal
+      <ShopperAuthModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         islogin={isLogin}
