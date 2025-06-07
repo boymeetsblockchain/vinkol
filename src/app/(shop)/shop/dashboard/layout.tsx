@@ -2,7 +2,7 @@
 import { ReactNode, useState } from "react";
 import { Menu } from "lucide-react";
 import { RiderDashBoardSidebBar } from "@/components/rider/sidebar";
-import { Profile } from "@/components/rider/profile";
+import { Profile } from "@/components/shop/profile";
 import { ShopperDashBoardSidebBar } from "@/components/shop/sidebar";
 
 const Layout = ({ children }: { children: ReactNode }) => {

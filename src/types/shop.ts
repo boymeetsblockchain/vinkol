@@ -33,3 +33,9 @@ export const resetPasswordSchema = z.object({
     .min(6, { message: "Password must be at least 6 characters long" }),
   resetToken: z.string().min(1, { message: "Reset token is required" }),
 });
+
+export const updateStoreProfileSchema = z.object({
+  firstName: z.string().min(1, { message: "First name is required" }),
+  state: z.string().min(1, { message: "State is required" }),
+  avatar: z.instanceof(File, { message: "Avatar must be a file" }).optional(),
+});

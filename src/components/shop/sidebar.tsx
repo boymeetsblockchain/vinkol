@@ -19,32 +19,32 @@ const dashboardLinks = [
   {
     label: "Orders",
     icon: <Package size={18} />,
-    route: "/rider/dashboard/orders",
+    route: "/shop/dashboard/orders",
   },
   {
     label: "Order History",
     icon: <History size={18} />,
-    route: "/rider/dashboard/history",
+    route: "/shop/dashboard/history",
   },
   {
     label: "Products",
     icon: <ShoppingBasket size={18} />, // Changed to ShoppingBasket for products
-    route: "/rider/dashboard/products",
+    route: "/shop/dashboard/products",
   },
   {
     label: "Wallet",
     icon: <Wallet size={18} />,
-    route: "/rider/dashboard/wallet",
+    route: "/shop/dashboard/wallet",
   },
   {
     label: "Profile",
     icon: <User size={18} />, // Changed to User for profile
-    route: "/rider/dashboard/profile",
+    route: "/shop/dashboard/profile",
   },
   {
     label: "Settings",
     icon: <Settings size={18} />,
-    route: "/rider/dashboard/settings",
+    route: "/shop/dashboard/settings",
   },
 ];
 

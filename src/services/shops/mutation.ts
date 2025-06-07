@@ -60,7 +60,7 @@ export function useShopLoginMutation(options?: MutationOptions<any, Error>) {
     onSuccess: (responseData) => {
       console.log("Rider login successful:", responseData);
       if (responseData.token) {
-        localStorage.setItem("riderAuthToken", responseData.token);
+        localStorage.setItem("shopAuthToken", responseData.token);
       } else {
         console.log("token not stored");
       }

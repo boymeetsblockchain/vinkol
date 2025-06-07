@@ -5,6 +5,7 @@ import {
   forgotPasswordSchema,
   resendOtpSchema,
   resetPasswordSchema,
+  updateStoreProfileSchema,
 } from "@/types/shop";
 
 import * as z from "zod";
@@ -136,5 +137,47 @@ export const resetPassword = async (
     return response.data;
   } catch (error: any) {
     handleApiError(error, "Failed to reset password.");
+  }
+};
+
+export const updateStoreProfile = async (
+  data: z.infer<typeof updateStoreProfileSchema>
+) => {
+  try {
+    const response = await axiosInstance.put("//stores/update-profile", data, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    handleApiError(error, "Failed to upload profile.");
+  }
+};
+
+export const getSingleStore = async (id: string) => {
+  try {
+    const response = await axiosInstance.get(`/stores/${id}`);
+    return response.data;
+  } catch (error) {
+    handleApiError(error, "Failed to get single store");
+  }
+};
+
+export const getStoreProfile = async () => {
+  try {
+    const response = await axiosInstance.get(`/stores/profile`);
+    return response.data;
+  } catch (error) {
+    handleApiError(error, "Failed to get single store");
+  }
+};
+
+export const getAllStores = async () => {
+  try {
+    const response = await axiosInstance.get("/stores");
+    return response.data;
+  } catch (error) {
+    handleApiError(error, "Failed to get stores");
   }
 };
