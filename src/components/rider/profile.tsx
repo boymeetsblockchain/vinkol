@@ -11,6 +11,7 @@ export const Profile = () => {
         <div className="flex items-center gap-x-4 animate-pulse">
           <div className="hidden md:block">
             <div className="h-4 bg-gray-200 rounded w-24 mb-1"></div>{" "}
+            <div className="h-4 bg-gray-200 rounded w-24 mb-1"></div>{" "}
             {/* Skeleton for email */}
           </div>
           <div className="flex items-center gap-1">
@@ -28,7 +29,7 @@ export const Profile = () => {
   }
 
   // Destructure data for cleaner access
-  const { email, avatar } = data.data;
+  const { email, avatar, firstname } = data.data;
 
   return (
     <header>
@@ -36,6 +37,7 @@ export const Profile = () => {
         <div className="hidden md:block">
           {/* Consider adding a name if available in the API response */}
           {/* <h1 className="text-sm font-bold">{data.data.name}</h1> */}
+          <p className="text-sm">{firstname}</p>
           <p className="text-xs">{email}</p>
         </div>
         <div className="flex items-center gap-1">

@@ -40,7 +40,7 @@ function Profile() {
 
     updateProfile(
       {
-        firstName,
+        firstname: firstName,
         state: selectedState,
         avatar,
       },

@@ -35,7 +35,7 @@ export const resetPasswordSchema = z.object({
 });
 
 export const updateProfileSchema = z.object({
-  firstName: z.string().min(1, { message: "First name is required" }),
+  firstname: z.string().min(1, { message: "First name is required" }),
   state: z.string().min(1, { message: "State is required" }),
   avatar: z.instanceof(File, { message: "Avatar must be a file" }).optional(),
 });
