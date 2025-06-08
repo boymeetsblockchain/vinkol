@@ -19,8 +19,8 @@ export const Mission = () => {
         <img
           src="/assets/contact-about.jpg"
           alt="About Vinkol"
-          className="w-64 h-48 object-contain z-10 border-4 absolute right-[-40px] border-white
-           bg-black/60 abs rounded-3xl shadow-md"
+          className="md:block hidden w-64 h-48 object-contain z-10 border-4 absolute  right-[-40px] border-white
+           bg-black/60  rounded-3xl shadow-md"
         />
       </div>
       <div className="lg:w-1/2 text-gray-800 shrink-0">

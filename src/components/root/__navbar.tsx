@@ -7,6 +7,8 @@ import { GiHamburgerMenu } from "react-icons/gi";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { BiX } from "react-icons/bi";
+import { cn } from "@/lib/utils"; // Assuming you have this utility from your previous code
+
 const navbarArray = [
   {
     name: "Home",
@@ -29,6 +31,7 @@ const navbarArray = [
     path: "/become-a-personal-shopper",
   },
 ];
+
 export const Navbar: React.FC<{ shop?: boolean }> = ({ shop }) => {
   const [mobile, setMobile] = useState<boolean>(false);
   const pathname = usePathname();
@@ -40,56 +43,82 @@ export const Navbar: React.FC<{ shop?: boolean }> = ({ shop }) => {
     } else {
       router.push("/book-a-delivery");
     }
+    // No need to close mobile here as the button is not part of mobile nav links
   };
+
+  // Function to close mobile menu
+  const closeMobileMenu = () => {
+    setMobile(false);
+  };
+
   return (
-    <nav className="h-auto w-full bg-white   z-10 ">
-      <div className="flex justify-between items-center max-w-screen-2xl top-0 left-0 sticky  mx-auto py-2 px-4 md:px-10 w-full ">
+    // The `h-auto` and `w-full` are usually sufficient for a `nav` element.
+    // `z-10` is good for ensuring it stays above other content.
+    <nav className="relative w-full bg-white z-10">
+      {/* This div acts as the sticky header content */}
+      <div className="flex justify-between items-center max-w-screen-2xl sticky top-0 left-0 mx-auto py-2 px-4 md:px-10 w-full bg-white z-20 shadow-sm">
         {/* logo */}
-        <Link href={"/"}>
-          <img src="/logo.png" alt="" className="w-28 h-12" />
+        <Link href={"/"} onClick={closeMobileMenu}>
+          {" "}
+          {/* Close mobile on logo click too */}
+          <img src="/logo.png" alt="Company Logo" className="w-28 h-12" />
         </Link>
-        <div className=" hidden md:flex items-center space-x-4  ">
-          {navbarArray.map((data, index) => (
+
+        {/* Desktop Navigation */}
+        <div className="hidden md:flex items-center space-x-4">
+          {navbarArray.map((data) => (
             <Link
-              key={index}
+              key={data.path} // Use path as key
               href={`${data.path}`}
-              className={`${
-                pathname === data.path ? "text-blue-primary" : ""
-              } text-sm font-medium`}
+              className={cn(
+                "text-sm font-medium transition-colors hover:text-blue-primary", // Added hover effect
+                pathname === data.path ? "text-blue-primary" : "text-gray-700" // Explicit default text color
+              )}
             >
               {data.name}
             </Link>
           ))}
         </div>
+
+        {/* Desktop Button */}
         <div className="hidden md:block">
           <Button size="lg" onClick={navigate}>
             {shop ? "Register Store on Vinkol" : "Book a Delivery"}
           </Button>
         </div>
-        {/* mobile nav */}
+
+        {/* Mobile Hamburger/Close Icon */}
         <div onClick={() => setMobile(!mobile)} className="md:hidden block">
           {mobile ? (
-            <BiX className="cursor-pointer" size={20} />
+            <BiX className="cursor-pointer text-blue-primary" size={24} /> // Slightly larger icon, primary color
           ) : (
             <GiHamburgerMenu size={20} className="cursor-pointer" />
           )}
         </div>
       </div>
+
+      {/* Mobile Navigation Menu */}
       {mobile && (
-        <div className="md:hidden w-full mt-3 py-4 bg-white ">
-          <div className="flex items-start space-y-6  flex-col">
-            {navbarArray.map((data, index) => (
+        <div className="md:hidden absolute top-full left-0 w-full py-4 px-4 bg-white shadow-lg z-10">
+          {" "}
+          {/* Added shadow-lg for separation */}
+          <div className="flex flex-col items-start space-y-6">
+            {navbarArray.map((data) => (
               <Link
-                key={index}
+                key={data.path} // Use path as key
                 href={`${data.path}`}
-                className={`${
-                  pathname === data.path ? "text-blue-primary" : ""
-                } text-sm font-medium`}
+                onClick={closeMobileMenu} // <-- IMPORTANT: Close mobile menu on click
+                className={cn(
+                  "text-base font-medium transition-colors hover:text-blue-primary w-full", // Increased font size, added w-full
+                  pathname === data.path ? "text-blue-primary" : "text-gray-800"
+                )}
               >
                 {data.name}
               </Link>
             ))}
-            <div className="block md:hidden">
+            <div className="block md:hidden mt-6">
+              {" "}
+              {/* Added margin top for separation */}
               <Button size="lg" onClick={navigate}>
                 {shop ? "Register Store on Vinkol" : "Book a Delivery"}
               </Button>
