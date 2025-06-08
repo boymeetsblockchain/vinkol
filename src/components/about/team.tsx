@@ -2,17 +2,17 @@ const teamsArray = [
   {
     name: "Emmanuel Ediale",
     position: "CEO & COO",
-    img: "/assets/coo.png",
+    img: "/assets/coo.jpg",
   },
   {
     name: "Francis Ediale",
     position: "Executive Director",
-    img: "/assets/ed.png",
+    img: "/assets/ed.jpg",
   },
   {
     name: "Vincent Ediale",
     position: "Chairman",
-    img: "/assets/daddy.png",
+    img: "/assets/daddy.jpg",
   },
 ];
 

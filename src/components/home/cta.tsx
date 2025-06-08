@@ -5,7 +5,7 @@ import { GiLightningElectron } from "react-icons/gi";
 
 export const CTA = () => {
   return (
-    <section className="h-auto w-full bg-blue-primary pt-10 px-4  md:px-10 max-w-screen-2xl mx-auto">
+    <section className="h-auto w-full bg-blue-primary pt-10 px-4  md:px-10  mx-auto">
       <div className="grid grid-cols-1 md:grid-cols-3 w-full h-full gap-10 px-4 md:px-0">
         <div className="md:col-span-2">
           {/* call to action */}

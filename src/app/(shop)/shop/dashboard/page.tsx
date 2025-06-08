@@ -1,175 +1,89 @@
 "use client";
+import { ShopHeader } from "@/components/shop-page/header";
+import { CartModal } from "@/components/modals/cartmodal";
+import { useState } from "react";
 
-import { Button } from "@/components/button";
-
-const deliveries = [
+const productArray = [
   {
-    note: "Fragile product handle with care",
-    status: "Pending",
-    responseOptions: ["Decline", "Accept"],
-    customer: "Victor Osato",
-    timeAgo: "1 mins ago",
-    locationNote: "Outside Lagos",
-    pickUpLocation: "19, Fatisima Street, Mushin Lagos State",
-    dropOffLocation: "4, Fatisima Street, Surulere Benin State",
-    date: "April 27, 2025",
-    time: "6:00pm",
-    deliveryType: "Regular",
-    vehicleRequest: "Truck",
+    name: "Banana",
+    image: "/assets/banana.png",
     price: "₦23,000",
+    desc: "Organic Banana 1 bunch",
   },
   {
-    note: "Handle with care - electronics",
-    status: "Pending",
-    responseOptions: ["Decline", "Accept"],
-    customer: "Blessing Ighodalo",
-    timeAgo: "5 mins ago",
-    locationNote: "Inside Abuja",
-    pickUpLocation: "12, Unity Road, Garki, Abuja",
-    dropOffLocation: "21, Agbani Road, Enugu",
-    date: "April 28, 2025",
-    time: "3:00pm",
-    deliveryType: "Express",
-    vehicleRequest: "Van",
-    price: "₦18,500",
+    name: "Strawberry",
+    image: "/assets/strawberry.png",
+    price: "₦23,000",
+    desc: "Organic Strawberry 1 pack of 6pcs",
   },
   {
-    note: "Perishable goods - deliver fast",
-    status: "Pending",
-    responseOptions: ["Decline", "Accept"],
-    customer: "Chinedu Eze",
-    timeAgo: "10 mins ago",
-    locationNote: "Outside Port Harcourt",
-    pickUpLocation: "45, Elelenwo Street, PH",
-    dropOffLocation: "88, Ugbowo Road, Benin",
-    date: "April 29, 2025",
-    time: "9:00am",
-    deliveryType: "Regular",
-    vehicleRequest: "Bike",
-    price: "₦7,000",
+    name: "Cucumber",
+    image: "/assets/cucumber.png",
+    price: "₦23,000",
+    desc: "Organic Cucumber 3 pieces",
   },
-  {
-    note: "Glassware - extremely fragile",
-    status: "Pending",
-    responseOptions: ["Decline", "Accept"],
-    customer: "Aisha Bello",
-    timeAgo: "20 mins ago",
-    locationNote: "Inside Kano",
-    pickUpLocation: "16, Gidan Makama Road, Kano",
-    dropOffLocation: "34, Wuse II, Abuja",
-    date: "April 30, 2025",
-    time: "2:30pm",
-    deliveryType: "Regular",
-    vehicleRequest: "Truck",
+
+  ...Array(9).fill({
+    name: "Product",
+    image: "/assets/strawberry.png",
     price: "₦20,000",
-  },
-  {
-    note: "Heavy equipment - secure properly",
-    status: "Pending",
-    responseOptions: ["Decline", "Accept"],
-    customer: "Emeka Uche",
-    timeAgo: "25 mins ago",
-    locationNote: "Outside Owerri",
-    pickUpLocation: "5, Ikenegbu Layout, Owerri",
-    dropOffLocation: "22, Abak Road, Uyo",
-    date: "May 1, 2025",
-    time: "11:00am",
-    deliveryType: "Bulk",
-    vehicleRequest: "Trailer",
-    price: "₦50,000",
-  },
-  {
-    note: "Medical supplies - urgent delivery",
-    status: "Pending",
-    responseOptions: ["Decline", "Accept"],
-    customer: "Grace Adeyemi",
-    timeAgo: "30 mins ago",
-    locationNote: "Inside Ibadan",
-    pickUpLocation: "101, Ring Road, Ibadan",
-    dropOffLocation: "17, Marina, Lagos Island",
-    date: "May 2, 2025",
-    time: "8:00am",
-    deliveryType: "Express",
-    vehicleRequest: "Van",
-    price: "₦15,000",
-  },
+    desc: "Organic product description",
+  }),
 ];
-function Orders() {
+
+function ShopId() {
+  const [openCartModal, setOpenCartModal] = useState<boolean>(false);
   return (
-    <section className="py-6 px-4">
-      <div className="bg-blue-primary w-full rounded-md p-4 text-sm text-white mb-6 shadow-md">
-        You currently have{" "}
-        <span className="font-bold">{deliveries.length}</span> accepted orders{" "}
-        <span className="font-bold text-base underline cursor-pointer">
-          CLICK HERE TO SEE DETAILS
-        </span>
+    <section className="min-h-screen bg-white">
+      <ShopHeader isLogo={false} />
+
+      <div className="container mx-auto px-4 md:px-6 py-8">
+        {/* Category Title */}
+        <h1 className="text-2xl md:text-3xl mt-4 md:mt-0 font-bold text-gray-900 mb-6">
+          Fresh Produce
+        </h1>
+
+        {/* Product Grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-6">
+          {productArray.map((data, index) => (
+            <div
+              key={index}
+              className="bg-[#FAFAFA] rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200 flex flex-col"
+            >
+              {/* Product Image */}
+              <div className="p-4 flex justify-center items-center h-40 bg-white">
+                <img
+                  src={data.image}
+                  className="h-full w-full object-contain"
+                  alt={data.name}
+                />
+              </div>
+
+              {/* Product Info */}
+              <div className="p-4 flex flex-col flex-grow">
+                <h3 className="font-semibold text-gray-900 mb-1">
+                  {data.name}
+                </h3>
+                <p className="text-gray-600 text-sm mb-2 line-clamp-2">
+                  {data.desc}
+                </p>
+                <div className="mt-auto">
+                  <p className="font-bold text-gray-900 mb-3">{data.price}</p>
+                  <button
+                    onClick={() => setOpenCartModal(true)}
+                    className="w-full bg-blue-primary hover:bg-blue-700 text-white py-2 px-4 rounded-[4px] text-sm font-medium transition-colors duration-200"
+                  >
+                    + Add to cart
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
-
-      <div className="flex flex-col space-y-6">
-        {deliveries.map((data, index) => (
-          <div
-            key={index}
-            className="w-full bg-white rounded-xl shadow-md border p-4 space-y-2"
-          >
-            <div className="flex items-center justify-between">
-              <h1 className="text-lg font-semibold text-gray-800">
-                {data.customer}
-              </h1>
-              <p className="bg-blue-primary text-white text-xs px-3 py-1 rounded-full">
-                {data.timeAgo}
-              </p>
-            </div>
-
-            <p className="text-sm text-gray-500">
-              <span className="font-semibold text-gray-700">State:</span>{" "}
-              {data.locationNote}
-            </p>
-            <p className="text-sm text-gray-500">
-              <span className="font-semibold text-gray-700">
-                Pick-up Location:
-              </span>{" "}
-              {data.pickUpLocation}
-            </p>
-            <p className="text-sm text-gray-500">
-              <span className="font-semibold text-gray-700">
-                Drop-off Location:
-              </span>{" "}
-              {data.dropOffLocation}
-            </p>
-            <div className="flex gap-4 text-sm text-gray-600">
-              <p>
-                <span className="font-medium">Date:</span> {data.date}
-              </p>
-              <p>
-                <span className="font-medium">Time:</span> {data.time}
-              </p>
-            </div>
-
-            <div className="flex gap-4 text-sm text-gray-600">
-              <p>
-                <span className="font-medium">Delivery Type:</span>{" "}
-                {data.deliveryType}
-              </p>
-              <p>
-                <span className="font-medium">Vehicle Request:</span>{" "}
-                {data.vehicleRequest}
-              </p>
-            </div>
-
-            <p className="text-sm font-semibold text-gray-700">
-              Amount: <span className="text-blue-primary">{data.price}</span>
-            </p>
-            <p className="text-sm italic text-gray-600">Note: {data.note}</p>
-
-            <div className="flex justify-end gap-3 pt-4">
-              <Button variant="secondary">Decline</Button>
-              <Button>Accept</Button>
-            </div>
-          </div>
-        ))}
-      </div>
+      <CartModal isOpen={openCartModal} onClose={() => {}} />
     </section>
   );
 }
 
-export default Orders;
+export default ShopId;

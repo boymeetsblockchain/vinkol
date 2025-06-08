@@ -1,37 +1,34 @@
 "use client";
+import { ShopHeader } from "@/components/shop-page/header";
+import { ShopSideBar } from "@/components/shop-page/sidebar";
 import { ReactNode, useState } from "react";
 import { Menu } from "lucide-react";
-import { RiderDashBoardSidebBar } from "@/components/rider/sidebar";
-import { Profile } from "@/components/shop/profile";
-import { ShopperDashBoardSidebBar } from "@/components/shop/sidebar";
 
 const Layout = ({ children }: { children: ReactNode }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen  flex flex-col md:flex-row">
-      {/* Mobile Hamburger */}
+    <div className="flex flex-col md:flex-row h-screen overflow-hidden">
+      {/* Mobile hamburger */}
       <div className="md:hidden fixed top-4 left-4 z-50">
         <button onClick={() => setIsSidebarOpen(true)}>
           <Menu size={28} />
         </button>
       </div>
 
-      {/* Sidebar */}
-      <ShopperDashBoardSidebBar
+      {/* Sidebar - hidden on mobile unless opened */}
+      <ShopSideBar
         isOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}
       />
 
-      {/* Main Content */}
-      <div className="flex-1 w-full ">
-        {/* Top Bar with Profile */}
-        <div className="flex justify-end items-center px-4 pt-6 ">
-          <Profile />
-        </div>
+      {/* Main content area */}
+      <div className="flex-1 flex flex-col overflow-auto">
+        {/* Header would go here if you have one */}
+        {/* <ShopHeader /> */}
 
-        {/* Page Content */}
-        <div className="max-w-screen-2xl bg-white mx-auto">{children}</div>
+        {/* Scrollable content */}
+        <div className="flex-1 overflow-auto">{children}</div>
       </div>
     </div>
   );
