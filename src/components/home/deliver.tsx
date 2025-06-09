@@ -16,7 +16,7 @@ export const Deliver = () => {
               <p className="font-bold text-white text-base sm:text-lg">
                 Get in Touch with Us
               </p>
-              <div className="relative w-full">
+              <div className="relative mb-10 w-full">
                 <input
                   type="email"
                   placeholder="Enter your email"

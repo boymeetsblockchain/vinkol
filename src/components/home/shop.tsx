@@ -3,15 +3,17 @@ import { Button } from "../button";
 
 export const Shop = () => {
   return (
-    <section className="hidden md:block w-full bg-blue-primary h-[400px]">
-      <div className="max-w-screen-xl grid w-full mx-auto h-full p-10 gap-10 grid-cols-1 md:grid-cols-2">
-        <img
-          src="https://i.guim.co.uk/img/media/bb5e732bdd0ae3bafca2ca7182232a562a824dfa/0_331_6541_3924/master/6541.jpg?width=1200&height=900&quality=85&auto=format&fit=crop&s=2d7e945e63c81df2a9e3fdbf154c7958"
-          alt="A shopper browsing products in a supermarket"
-          className="h-3/4 object-cover w-full border-white border-2 rounded-3xl"
-        />
-        <div className="flex justify-center gap-y-6 flex-col">
-          <h1 className="font-bold text-4xl text-white leading-[100%]">
+    <section className="w-full bg-blue-primary h-auto md:h-[400px] py-8 md:py-0">
+      <div className="max-w-screen-xl grid w-full mx-auto h-full p-4 md:p-10 gap-8 md:gap-10 grid-cols-1 md:grid-cols-2">
+        <div className="flex justify-center items-center">
+          <img
+            src="https://i.guim.co.uk/img/media/bb5e732bdd0ae3bafca2ca7182232a562a824dfa/0_331_6541_3924/master/6541.jpg?width=1200&height=900&quality=85&auto=format&fit=crop&s=2d7e945e63c81df2a9e3fdbf154c7958"
+            alt="A shopper browsing products in a supermarket"
+            className="w-full max-h-60 md:max-h-80 object-cover border-white border-2 rounded-3xl"
+          />
+        </div>
+        <div className="flex justify-center gap-y-4 md:gap-y-6 flex-col">
+          <h1 className="font-bold text-2xl md:text-4xl text-white leading-tight md:leading-[100%]">
             Shop from the comfort of your home from supermarkets around you
           </h1>
           <div>
