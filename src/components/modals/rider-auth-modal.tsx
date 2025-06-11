@@ -9,6 +9,7 @@ import {
   useRiderLoginMutation,
 } from "@/services/rider/mutation"; // Assuming these are correctly defined
 import { toast } from "sonner"; // For user notifications
+import { TermsCheckbox } from "../shared/terms";
 
 interface RiderAuthModalProps {
   isOpen: boolean;
@@ -27,6 +28,7 @@ export const RiderAuthModal = ({ isOpen, onClose }: RiderAuthModalProps) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState(""); // For registration
+  const [isChecked, setIsChecked] = useState<boolean>(false);
 
   // Determine if the current mode is login based on state
   const isLogin = swithAuthType === "login";
@@ -55,6 +57,10 @@ export const RiderAuthModal = ({ isOpen, onClose }: RiderAuthModalProps) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault(); // Prevent default form submission behavior
 
+    if (!isChecked) {
+      toast.error("Please accept terms and conditions");
+      return;
+    }
     // Basic validation
     if (!email || !password) {
       toast.error("Please enter both email and password.");
@@ -189,6 +195,12 @@ export const RiderAuthModal = ({ isOpen, onClose }: RiderAuthModalProps) => {
             >
               {isPending ? "Processing..." : isLogin ? "Log In" : "Sign Up"}
             </Button>
+            {!isLogin && (
+              <TermsCheckbox
+                isChecked={isChecked}
+                onChange={() => setIsChecked(!isChecked)}
+              />
+            )}
           </form>
 
           {/* Switch between login and register */}

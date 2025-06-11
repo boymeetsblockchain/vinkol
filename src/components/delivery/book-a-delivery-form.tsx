@@ -17,7 +17,8 @@ import Autocomplete from "react-google-autocomplete";
 import { useGetQuoteMutation } from "@/services/orders/mutation";
 import { toast } from "sonner"; // Assuming 'sonner' for toasts
 import { useRouter } from "next/navigation";
-
+import { TermsCheckbox } from "../shared/terms";
+import { useState } from "react";
 // Helper to get current time in HH:MM format
 const getCurrentTime = () => {
   const now = new Date();
@@ -46,9 +47,14 @@ export const BookADeliveryForm = () => {
     },
   });
 
-  const { mutate, isPending } = useGetQuoteMutation(); // isPending indicates mutation loading state
+  const { mutate, isPending } = useGetQuoteMutation();
+  const [isChecked, setIsChecked] = useState<boolean>(false);
 
   const onSubmit = (data: z.infer<typeof deliverySchema>) => {
+    if (!isChecked) {
+      toast.error("Please accept terms and conditions");
+      return;
+    }
     mutate(
       {
         state: data.state,
@@ -465,6 +471,11 @@ export const BookADeliveryForm = () => {
               )}
             />
           </div>
+
+          <TermsCheckbox
+            isChecked={isChecked}
+            onChange={() => setIsChecked(!isChecked)}
+          />
 
           <div className="md:col-span-2">
             <p className="text-center my-2 text-red-600 text-sm font-medium">

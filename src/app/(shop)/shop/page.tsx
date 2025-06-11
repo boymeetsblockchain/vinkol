@@ -9,6 +9,8 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { TermsCheckbox } from "@/components/shared/terms";
+import { useState } from "react";
 
 const registerSchema = z
   .object({
@@ -25,6 +27,7 @@ const registerSchema = z
 
 function ShopperAuth() {
   const router = useRouter();
+  const [isChecked, setIsChecked] = useState<boolean>(false);
   const {
     register,
     handleSubmit,
@@ -37,6 +40,10 @@ function ShopperAuth() {
   const { mutate, isPending } = useShopRegisterMutation();
 
   const onSubmit = (data: z.infer<typeof registerSchema>) => {
+    if (!isChecked) {
+      toast.error("Please accept terms and conditions");
+      return;
+    }
     mutate(
       {
         email: data.email,
@@ -129,6 +136,10 @@ function ShopperAuth() {
                 {isPending ? "Signing up..." : "Sign up"}
               </Button>
             </div>
+            <TermsCheckbox
+              isChecked={isChecked}
+              onChange={() => setIsChecked(!isChecked)}
+            />
           </form>
 
           <Link href={"/shop/login"} className="text-sm text-gray-400">
