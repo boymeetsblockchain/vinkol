@@ -56,9 +56,9 @@ export const RiderAuthModal = ({ isOpen, onClose }: RiderAuthModalProps) => {
    */
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault(); // Prevent default form submission behavior
-
-    if (!isLoggingIn && !isChecked) {
-      toast.error("Please accept terms and conditions");
+    if (!isLogin && !isChecked) {
+      // <--- MODIFIED CONDITION HERE
+      toast.error("Please accept terms and conditions.");
       return;
     }
     // Basic validation
