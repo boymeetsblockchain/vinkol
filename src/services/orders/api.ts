@@ -84,3 +84,16 @@ export const getOrders = async (params: GetOrdersParams = {}) => {
     handleApiError(error, "Get Order failed");
   }
 };
+
+export const trackOrders = async (trackingId: string) => {
+  try {
+    const response = await axiosInstance.get(
+      `/orders/track-order/${trackingId}`
+    );
+    console.log(response.data);
+    return response.data;
+  } catch (error) {
+    handleApiError(error, "Tracking order failed");
+    throw error;
+  }
+};

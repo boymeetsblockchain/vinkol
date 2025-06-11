@@ -79,6 +79,7 @@ function SubmitVehicle() {
                       Otherwise, you might want to adjust them, e.g., "Car", "Motorcycle", "Bicycle". */}
                   <option value="car">Car</option>
                   <option value="truck">Truck</option>
+                  <option value="bike">Bike</option>
                 </select>
               </div>
               {/* ID Image Upload */}

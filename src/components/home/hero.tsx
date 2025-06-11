@@ -6,18 +6,15 @@ import { IoLogoApple } from "react-icons/io";
 import { Button } from "../button";
 import { AppStoreCard } from "../shared/appstore";
 import Link from "next/link";
-import { useGetOrders } from "@/services/orders/query";
+import { useGetOrders, useTrackOrders } from "@/services/orders/query";
 
 export const Hero = () => {
-  const [trackDelivery, setTrackDelivery] = useState(false);
-  const [trackingId, setTrackingId] = useState("");
-
-  // Call query only when trackingId is provided
-  const { data, isPending } = useGetOrders(trackingId ? { trackingId } : {});
-
+  const [trackDelivery, setTrackDelivery] = useState<boolean>(false);
+  const [trackingId, setTrackingId] = useState<string>("");
+  const { data, isPending } = useTrackOrders(trackingId);
   return (
     <div
-      className="relative text-white bg-cover md:h-[100vh] h-[600px]"
+      className="relative text-white bg-cover  md:h-[100vh] h-[600px]"
       style={{ backgroundImage: `url('/assets/hero.png')` }}
     >
       <div className="absolute bottom-10 left-4 md:left-20 px-4">
@@ -33,27 +30,25 @@ export const Hero = () => {
             up purchases from any store.
           </p>
         </div>
-
         {trackDelivery ? (
-          <div className="relative my-4 flex items-center justify-center w-full">
+          <div className="relative my-4 flex items-center justify-center w-full ">
             <input
               type="text"
               placeholder="Enter package number..."
-              value={trackingId}
-              onChange={(e) => setTrackingId(e.target.value)}
-              className="flex-grow py-3 px-6 pr-16 border border-gray-300 rounded-full text-gray-800 bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300 ease-in-out shadow-sm"
+              className="flex-grow py-3 px-6 pr-16 border border-gray-300 rounded-full text-gray-800 bg-white  placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300 ease-in-out shadow-sm"
             />
             <div className="absolute right-0 mr-1.5">
+              {" "}
               <Button
                 size="lg"
                 className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-6 rounded-full shadow-md transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
               >
-                {isPending ? "Tracking..." : "Track"}
+                Track
               </Button>
             </div>
           </div>
         ) : (
-          <div className="mt-6 flex items-start sm:items-center gap-4">
+          <div className="mt-6 flex  items-start sm:items-center gap-4">
             <Button size="lg">
               <Link href="/book-a-delivery">Book a Delivery</Link>
             </Button>
@@ -66,25 +61,7 @@ export const Hero = () => {
             </Button>
           </div>
         )}
-
-        {data && trackingId && (
-          <div className="mt-6 bg-white/90 p-4 rounded text-black max-w-md">
-            <h3 className="text-lg font-bold mb-2">Tracking Results</h3>
-            {data?.length > 0 ? (
-              <ul className="list-disc list-inside space-y-1">
-                {data.map((order: any) => (
-                  <li key={order.id}>
-                    ID: {order.id}, Status: {order.status}
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p>No order found for this tracking ID.</p>
-            )}
-          </div>
-        )}
-
-        <div className="mt-6 flex items-start sm:items-center gap-4">
+        <div className="mt-6 flex  items-start sm:items-center gap-4">
           <AppStoreCard
             platform="Google Play"
             icon={<FaGooglePlay color="black" size={24} />}
