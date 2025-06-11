@@ -57,7 +57,7 @@ export const ShopperAuthModal = ({
    */
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault(); // Prevent default form submission behavior
-    if (!isChecked) {
+    if (!isLoggingIn && !isChecked) {
       toast.error("Please accept terms and conditions");
       return;
     }
