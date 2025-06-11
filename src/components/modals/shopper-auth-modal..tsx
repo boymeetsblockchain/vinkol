@@ -9,6 +9,7 @@ import {
   useRiderLoginMutation,
 } from "@/services/rider/mutation"; // Assuming these are correctly defined
 import { toast } from "sonner"; // For user notifications
+import { useShopLoginMutation } from "@/services/shops/mutation";
 
 interface ShopperAuthModalProps {
   isOpen: boolean;
@@ -40,8 +41,7 @@ export const ShopperAuthModal = ({
   // Initialize mutations for registration and login
   const { mutate: riderRegister, isPending: isRegistering } =
     useShopperRegisterMutation();
-  const { mutate: riderLogin, isPending: isLoggingIn } =
-    useRiderLoginMutation();
+  const { mutate: riderLogin, isPending: isLoggingIn } = useShopLoginMutation();
 
   // Determine if any mutation is currently pending
   const isPending = isRegistering || isLoggingIn;
@@ -95,7 +95,7 @@ export const ShopperAuthModal = ({
             toast.success(
               "Registration successful! Please check your email for OTP."
             );
-            router.push(`/rider/auth/otp?email=${encodeURIComponent(email)}`); // Navigate to OTP verification page
+            router.push(`/shopper/auth/otp?email=${encodeURIComponent(email)}`); // Navigate to OTP verification page
             onClose(); // Close the modal on successful registration
           },
           onError: (error) => {

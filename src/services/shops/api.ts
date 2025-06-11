@@ -6,6 +6,8 @@ import {
   resendOtpSchema,
   resetPasswordSchema,
   updateStoreProfileSchema,
+  validateBankSchema,
+  createStoreBankSchema,
 } from "@/types/shop";
 
 import * as z from "zod";
@@ -144,7 +146,7 @@ export const updateStoreProfile = async (
   data: z.infer<typeof updateStoreProfileSchema>
 ) => {
   try {
-    const response = await axiosInstance.put("//stores/update-profile", data, {
+    const response = await axiosInstance.put("/stores/update-profile", data, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
@@ -179,5 +181,38 @@ export const getAllStores = async () => {
     return response.data;
   } catch (error) {
     handleApiError(error, "Failed to get stores");
+  }
+};
+
+// bank details
+
+export const getBankLists = async () => {
+  try {
+    const response = await axiosInstance.get("/banks/list");
+    return response.data;
+  } catch (error) {
+    handleApiError(error, "Failed to fetch Banks");
+  }
+};
+
+export const validateBank = async (
+  data: z.infer<typeof validateBankSchema>
+) => {
+  try {
+    const response = await axiosInstance.post("banks/validate", data);
+    return response.data;
+  } catch (error) {
+    handleApiError(error, "Failed to validate bank");
+  }
+};
+
+export const createStoreBank = async (
+  data: z.infer<typeof createStoreBankSchema>
+) => {
+  try {
+    const response = await axiosInstance.post("/banks/create-store-bank", data);
+    return response.data;
+  } catch (error) {
+    handleApiError(error, "Failed to create  store bank");
   }
 };

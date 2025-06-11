@@ -11,7 +11,7 @@ const axiosInstance = axios.create({
 });
 
 const getToken = () => {
-  return localStorage.getItem("riderAuthToken");
+  return localStorage.getItem("accessToken");
 };
 
 // Attach token to every request

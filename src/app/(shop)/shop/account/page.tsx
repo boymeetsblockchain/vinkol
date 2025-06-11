@@ -2,6 +2,7 @@
 import { Button } from "@/components/button";
 import { Header } from "@/components/shop/header";
 import { useRouter } from "next/navigation";
+import { useGetAllBanks } from "@/services/shops/query";
 
 function AccountDetails() {
   const router = useRouter();

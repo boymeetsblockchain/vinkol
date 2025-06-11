@@ -34,7 +34,7 @@ function ShopperAuth() {
     resolver: zodResolver(registerSchema),
   });
 
-  const { mutate } = useShopRegisterMutation();
+  const { mutate, isPending } = useShopRegisterMutation();
 
   const onSubmit = (data: z.infer<typeof registerSchema>) => {
     mutate(
@@ -124,9 +124,9 @@ function ShopperAuth() {
                 variant="auth"
                 size="lg"
                 className="rounded-[5px] w-full"
-                disabled={isSubmitting}
+                disabled={isPending}
               >
-                {isSubmitting ? "Signing up..." : "Sign up"}
+                {isPending ? "Signing up..." : "Sign up"}
               </Button>
             </div>
           </form>

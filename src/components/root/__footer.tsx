@@ -43,8 +43,10 @@ export const Footer = () => {
           <div>
             <p className="font-bold mb-4 text-lg">Legal</p>
             <ul className="space-y-2 text-sm text-gray-700">
-              <li>Privacy Policy</li>
-              <li>Terms of Service</li>
+              <Link href={"/privacy-policy"}>Privacy Policy</Link>
+              <Link href={"/terms-and-conditions"} className="block">
+                Terms of Service
+              </Link>
               <li>Security & Privacy</li>
             </ul>
           </div>

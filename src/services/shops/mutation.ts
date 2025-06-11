@@ -5,6 +5,9 @@ import {
   forgotPasswordSchema,
   resendOtpSchema,
   resetPasswordSchema,
+  updateStoreProfileSchema,
+  validateBankSchema,
+  createStoreBankSchema,
 } from "@/types/shop";
 
 import * as z from "zod";
@@ -14,7 +17,10 @@ import {
   registerShop,
   resendOtp,
   resetPassword,
+  updateStoreProfile,
+  validateBank,
   verifyEmail,
+  createStoreBank,
 } from "./api";
 import { useMutation } from "@tanstack/react-query";
 
@@ -60,7 +66,7 @@ export function useShopLoginMutation(options?: MutationOptions<any, Error>) {
     onSuccess: (responseData) => {
       console.log("Rider login successful:", responseData);
       if (responseData.token) {
-        localStorage.setItem("shopAuthToken", responseData.token);
+        localStorage.setItem("accessToken", responseData.token);
       } else {
         console.log("token not stored");
       }
@@ -87,6 +93,7 @@ export function useVerifyEmailMutation(options?: MutationOptions<any, Error>) {
     onSuccess: (responseData) => {
       console.log("Email verification successful:", responseData);
       options?.onSuccess?.(responseData);
+      localStorage.setItem("accessToken", responseData.token);
     },
     onError: (errorData: Error) => {
       console.error("Email verification failed:", errorData.message);
@@ -160,6 +167,60 @@ export function useResetPasswordMutation(
     },
     onError: (errorData: Error) => {
       console.error("Password reset failed:", errorData.message);
+      options?.onError?.(errorData);
+    },
+  });
+
+  return { mutate, data, error, isPending, isSuccess, isError };
+}
+
+export function useUpdateStoreProfile(options?: MutationOptions<any, Error>) {
+  const { mutate, data, error, isPending, isSuccess, isError } = useMutation({
+    mutationFn: async (payload: z.infer<typeof updateStoreProfileSchema>) => {
+      return await updateStoreProfile(payload);
+    },
+    onSuccess: (responseData) => {
+      console.log("Update Store Profile successful:", responseData);
+      options?.onSuccess?.(responseData);
+    },
+    onError: (errorData: Error) => {
+      console.error("Update Store Profile  failed:", errorData.message);
+      options?.onError?.(errorData);
+    },
+  });
+
+  return { mutate, data, error, isPending, isSuccess, isError };
+}
+
+export function useValidateBankDetials(options?: MutationOptions<any, Error>) {
+  const { mutate, data, error, isPending, isSuccess, isError } = useMutation({
+    mutationFn: async (payload: z.infer<typeof validateBankSchema>) => {
+      return await validateBank(payload);
+    },
+    onSuccess: (responseData) => {
+      console.log("Update Store Profile successful:", responseData);
+      options?.onSuccess?.(responseData);
+    },
+    onError: (errorData: Error) => {
+      console.error("Update Store Profile  failed:", errorData.message);
+      options?.onError?.(errorData);
+    },
+  });
+
+  return { mutate, data, error, isPending, isSuccess, isError };
+}
+
+export function useCreateStoreBank(options?: MutationOptions<any, Error>) {
+  const { mutate, data, error, isPending, isSuccess, isError } = useMutation({
+    mutationFn: async (payload: z.infer<typeof createStoreBankSchema>) => {
+      return await createStoreBank(payload);
+    },
+    onSuccess: (responseData) => {
+      console.log("Update Store Profile successful:", responseData);
+      options?.onSuccess?.(responseData);
+    },
+    onError: (errorData: Error) => {
+      console.error("Update Store Profile  failed:", errorData.message);
       options?.onError?.(errorData);
     },
   });

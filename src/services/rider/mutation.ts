@@ -86,7 +86,7 @@ export function useRiderLoginMutation(options?: MutationOptions<any, Error>) {
     onSuccess: (responseData) => {
       console.log("Rider login successful:", responseData);
       if (responseData.token) {
-        localStorage.setItem("riderAuthToken", responseData.token);
+        localStorage.setItem("accessToken", responseData.token);
       } else {
         console.log("token not stored");
       }
@@ -112,7 +112,7 @@ export function useVerifyEmailMutation(options?: MutationOptions<any, Error>) {
     },
     onSuccess: (responseData) => {
       if (responseData.token) {
-        localStorage.setItem("riderAuthToken", responseData.token);
+        localStorage.setItem("accessToken", responseData.token);
       } else {
         console.log("token not stored");
       }

@@ -1,5 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
-import { getAllStores, getSingleStore, getStoreProfile } from "./api";
+import {
+  getAllStores,
+  getBankLists,
+  getSingleStore,
+  getStoreProfile,
+} from "./api";
 
 export const useGetSingleStore = (id?: string) => {
   return useQuery({
@@ -20,5 +25,12 @@ export const useGetAllStores = () => {
   return useQuery({
     queryKey: ["stores"],
     queryFn: getAllStores,
+  });
+};
+
+export const useGetAllBanks = () => {
+  return useQuery({
+    queryKey: ["banks"],
+    queryFn: getBankLists,
   });
 };
