@@ -78,7 +78,7 @@ export const getOrders = async (params: GetOrdersParams = {}) => {
     Object.entries(params).forEach(([key, value]) => {
       if (value) query.append(key, value);
     });
-    const response = await axiosInstance.get(`/orders${query.toString()}`);
+    const response = await axiosInstance.get(`/orders?${query.toString()}`);
     return response.data;
   } catch (error) {
     handleApiError(error, "Get Order failed");
