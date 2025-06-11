@@ -1,6 +1,7 @@
 import axiosInstance from "@/config/guest";
 import {
   createOrderSchema,
+  GetOrdersParams,
   getQuoteSchema,
   orderDataSchema,
 } from "@/types/order";
@@ -67,5 +68,19 @@ export const createGuestOrderWithPaystack = async (
     return response.data;
   } catch (error) {
     handleApiError(error, "Create Order Failed");
+  }
+};
+
+export const getOrders = async (params: GetOrdersParams = {}) => {
+  try {
+    const query = new URLSearchParams();
+
+    Object.entries(params).forEach(([key, value]) => {
+      if (value) query.append(key, value);
+    });
+    const response = await axiosInstance.get(`/orders${query.toString()}`);
+    return response.data;
+  } catch (error) {
+    handleApiError(error, "Get Order failed");
   }
 };

@@ -6,6 +6,7 @@ import { IoLogoApple } from "react-icons/io";
 import { Button } from "../button";
 import { AppStoreCard } from "../shared/appstore";
 import Link from "next/link";
+import { useGetOrders } from "@/services/orders/query";
 
 export const Hero = () => {
   const [trackDelivery, setTrackDelivery] = useState<boolean>(false);

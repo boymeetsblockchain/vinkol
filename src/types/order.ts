@@ -64,3 +64,13 @@ export const orderDataSchema = z.object({
 
 // note to self you can infer like this
 export type OrderData = z.infer<typeof orderDataSchema>;
+
+export type GetOrdersParams = {
+  state?: string;
+  search?: string;
+  deliveryType?: string;
+  trackingId?: string;
+  orderType?: string;
+  vehicleRequest?: string;
+  status?: string;
+};

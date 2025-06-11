@@ -258,7 +258,7 @@ export const BookADeliveryForm = () => {
                       form.setValue("pickupCoords", { lat, lng });
                     }}
                     options={{
-                      types: ["address"],
+                      types: ["geocode", "establishment"],
                       componentRestrictions: { country: ["ng"] }, // Restrict to Nigeria
                       fields: [
                         "formatted_address",
@@ -298,7 +298,7 @@ export const BookADeliveryForm = () => {
                       form.setValue("dropoffCoords", { lat, lng });
                     }}
                     options={{
-                      types: ["address"],
+                      types: ["geocode", "establishment"],
                       componentRestrictions: { country: ["ng"] }, // Restrict to Nigeria
                       fields: [
                         "formatted_address",

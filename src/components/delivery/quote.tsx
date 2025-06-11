@@ -78,27 +78,34 @@ export const QuotePage = () => {
     }
 
     // Trigger the mutation to create the order in your backend
-    mutate({
-      paystackReference: transactionRef,
-      orderType:
-        orderType === "Delivery" || orderType === "Shopping"
-          ? orderType
-          : "Delivery",
-      state: state,
-      date: date,
-      time: time,
-      pickupLocation: pickupLocation,
-      dropoffLocation: dropoffLocation,
-      amount: Number(amount), // Convert amount to a number
-      deliveryType: deliveryType as "regular" | "express",
-      vehicleRequest: vehicleRequest as "truck" | "car" | "bike",
-      guest: {
-        email: email,
-        firstname: firstname,
-        lastname: lastname,
-        phone: phone,
+    mutate(
+      {
+        paystackReference: transactionRef,
+        orderType:
+          orderType === "Delivery" || orderType === "Shopping"
+            ? orderType
+            : "Delivery",
+        state: state,
+        date: date,
+        time: time,
+        pickupLocation: pickupLocation,
+        dropoffLocation: dropoffLocation,
+        amount: Number(amount), // Convert amount to a number
+        deliveryType: deliveryType as "regular" | "express",
+        vehicleRequest: vehicleRequest as "truck" | "car" | "bike",
+        guest: {
+          email: email,
+          firstname: firstname,
+          lastname: lastname,
+          phone: phone,
+        },
       },
-    });
+      {
+        onSuccess: () => {
+          window.location.href = "/";
+        },
+      }
+    );
   };
 
   // Handle payment window close
