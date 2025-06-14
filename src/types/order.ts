@@ -74,3 +74,8 @@ export type GetOrdersParams = {
   vehicleRequest?: string;
   status?: string;
 };
+
+export const changeOrderStatusSchema = z.object({
+  status: z.union([z.literal("Delivered"), z.literal("Picked")]),
+  orderOtp: z.string().optional(),
+});

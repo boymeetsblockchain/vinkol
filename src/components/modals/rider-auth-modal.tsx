@@ -33,7 +33,6 @@ export const RiderAuthModal = ({ isOpen, onClose }: RiderAuthModalProps) => {
   // Determine if the current mode is login based on state
   const isLogin = swithAuthType === "login";
 
-  // Initialize Next.js router
   const router = useRouter();
 
   // Initialize mutations for registration and login
@@ -50,10 +49,6 @@ export const RiderAuthModal = ({ isOpen, onClose }: RiderAuthModalProps) => {
     return null;
   }
 
-  /**
-   * Handles the form submission for both login and registration.
-   * It determines which mutation to call based on the current `swithAuthType`.
-   */
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault(); // Prevent default form submission behavior
     if (!isLogin && !isChecked) {

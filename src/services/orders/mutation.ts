@@ -1,12 +1,17 @@
 import { useMutation } from "@tanstack/react-query";
-import { createGuestOrder, getQuote } from "./api";
+import {
+  acceptOrder,
+  changeOrderStatus,
+  createGuestOrder,
+  getQuote,
+} from "./api";
 import * as z from "zod";
 import {
   createOrderSchema,
   getQuoteSchema,
   orderDataSchema,
+  changeOrderStatusSchema,
 } from "@/types/order";
-import { error } from "console";
 
 /**
  * Defines the common options structure for mutation hooks.
@@ -50,5 +55,43 @@ export function useCreateGuestOrderMutation(
     },
   });
 
+  return { mutate, data, error, isPending, isSuccess, isError };
+}
+
+export function useAcceptOrderMutation(options?: MutationOptions<any, Error>) {
+  const { mutate, data, error, isPending, isSuccess, isError } = useMutation({
+    mutationFn: async (id: string) => {
+      return await acceptOrder(id);
+    },
+    onSuccess: (responseData) => {
+      console.log("Accept Order successful:", responseData);
+      options?.onSuccess?.(responseData);
+    },
+    onError: (errorData: Error) => {
+      console.error("Accept Order failed:", errorData.message);
+      options?.onError?.(errorData);
+    },
+  });
+
+  return { mutate, data, error, isPending, isSuccess, isError };
+}
+
+export function useChangeOrderStatus(options?: MutationOptions<any, Error>) {
+  const { mutate, data, error, isPending, isSuccess, isError } = useMutation({
+    mutationFn: async (payload: {
+      id: string;
+      data: z.infer<typeof changeOrderStatusSchema>;
+    }): Promise<any> => {
+      return await changeOrderStatus(payload.id, payload.data);
+    },
+    onSuccess: (responseData) => {
+      console.log("Accept Order successful:", responseData);
+      options?.onSuccess?.(responseData);
+    },
+    onError: (errorData: Error) => {
+      console.error("Accept Order failed:", errorData.message);
+      options?.onError?.(errorData);
+    },
+  });
   return { mutate, data, error, isPending, isSuccess, isError };
 }

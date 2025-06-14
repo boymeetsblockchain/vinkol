@@ -1,6 +1,7 @@
+"use client";
+import { useUserProfile } from "@/services/rider/query";
 import { X, Package, History, Wallet, FileText, Settings } from "lucide-react";
 import Link from "next/link";
-
 interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
@@ -30,7 +31,16 @@ const dashboardLinks = [
   },
 ];
 
+const unverifiedDashboardLinks = [
+  {
+    label: "Documents",
+    icon: <FileText size={18} />,
+    route: "/rider/dashboard/documents",
+  },
+];
+
 export const RiderDashBoardSidebBar = ({ isOpen, onClose }: SidebarProps) => {
+  const { data, isLoading } = useUserProfile();
   return (
     <aside
       className={`fixed top-0 left-0 z-50  w-64 min-h-screen bg-[#FAFAFA] transform transition-transform duration-300 ease-in-out ${

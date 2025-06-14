@@ -1,5 +1,6 @@
 import axiosInstance from "@/config/guest";
 import {
+  changeOrderStatusSchema,
   createOrderSchema,
   GetOrdersParams,
   getQuoteSchema,
@@ -94,6 +95,42 @@ export const trackOrders = async (trackingId: string) => {
     return response.data;
   } catch (error) {
     handleApiError(error, "Tracking order failed");
+    throw error;
+  }
+};
+
+export const getSingleOrder = async (id: string) => {
+  try {
+    const response = await axiosInstance.get(`/orders/${id}`);
+    return response.data;
+  } catch (error) {
+    handleApiError(error, "Error  Getting single order failed");
+    throw error;
+  }
+};
+
+export const acceptOrder = async (id: string) => {
+  try {
+    const response = await axiosInstance.patch(`/orders/${id}/accept`);
+    return response.data;
+  } catch (error) {
+    handleApiError(error, " Error Accepting Orders");
+    throw error;
+  }
+};
+
+export const changeOrderStatus = async (
+  id: string,
+  data: z.infer<typeof changeOrderStatusSchema>
+) => {
+  try {
+    const response = await axiosInstance.patch(
+      `/orders/${id}/change-status`,
+      data
+    );
+    return response.data;
+  } catch (error) {
+    handleApiError(error, " Error Changing Order Status");
     throw error;
   }
 };

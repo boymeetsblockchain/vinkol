@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react"; // Import useEffect
 import { FaGooglePlay } from "react-icons/fa6";
 import { IoLogoApple } from "react-icons/io";
 
@@ -8,10 +8,42 @@ import { AppStoreCard } from "../shared/appstore";
 import Link from "next/link";
 import { useGetOrders, useTrackOrders } from "@/services/orders/query";
 
+import { TrackingModal } from "../modals/trackingmodal";
+import { toast } from "sonner";
+
 export const Hero = () => {
   const [trackDelivery, setTrackDelivery] = useState<boolean>(false);
   const [trackingId, setTrackingId] = useState<string>("");
-  const { data, isPending } = useTrackOrders(trackingId);
+  const [enabled, setEnabled] = useState<boolean>(false); // Corrected typo
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false); // New state for modal
+
+  const { data, isPending, isSuccess } = useTrackOrders(trackingId, {
+    enabled,
+  });
+
+  // Effect to open modal when data is successfully fetched
+  useEffect(() => {
+    if (isSuccess && data) {
+      setIsModalOpen(true);
+      setEnabled(false); // Reset enabled to false after successful fetch to prevent re-fetching on subsequent renders
+    }
+  }, [isSuccess, data]);
+
+  const fetchTrackingdata = () => {
+    if (!trackingId) {
+      toast.error("Please Input trackingId");
+      return;
+    }
+
+    setEnabled(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setTrackingId(""); // Clear tracking ID when modal is closed
+  };
+
+  console.log(data);
   return (
     <div
       className="relative text-white bg-cover  md:h-[100vh] h-[600px]"
@@ -35,12 +67,15 @@ export const Hero = () => {
             <input
               type="text"
               placeholder="Enter package number..."
+              value={trackingId}
+              onChange={(e) => setTrackingId(e.target.value)}
               className="flex-grow py-3 px-6 pr-16 border border-gray-300 rounded-full text-gray-800 bg-white  placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300 ease-in-out shadow-sm"
             />
             <div className="absolute right-0 mr-1.5">
               {" "}
               <Button
                 size="lg"
+                onClick={fetchTrackingdata}
                 className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-6 rounded-full shadow-md transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
               >
                 Track
@@ -74,6 +109,12 @@ export const Hero = () => {
           />
         </div>
       </div>
+      {/* Pass the data and control the modal's open state */}
+      <TrackingModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        data={data?.data}
+      />
     </div>
   );
 };
