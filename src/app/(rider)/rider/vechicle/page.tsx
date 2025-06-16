@@ -7,13 +7,12 @@ import { Button } from "@/components/button";
 import { useSubmitVechicle } from "@/services/rider/mutation";
 
 function SubmitVehicle() {
-  // Corrected spelling here
   const router = useRouter();
 
-  const [vehicleType, setVehicleType] = useState<string>(""); // Corrected spelling
+  const [vehicleType, setVehicleType] = useState<string>("");
   const [idImage, setIdImage] = useState<File | null>(null);
 
-  const { mutate: submitVehicle, isPending } = useSubmitVechicle(); // Corrected spelling
+  const { mutate: submitVehicle, isPending } = useSubmitVechicle();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,14 +25,13 @@ function SubmitVehicle() {
 
     console.log("Submitting Vehicle with formData:", formData.values());
     submitVehicle(formData, {
-      // Corrected spelling
       onSuccess: () => {
-        toast.success("Vehicle submitted successfully!"); // Corrected spelling
-        router.push("/become-a-rider"); // Corrected spelling for navigation
+        toast.success("Vehicle submitted successfully!");
+        router.push("/rider/verify-phonenumber");
       },
       onError: (error: any) => {
-        console.error("Vehicle submission failed:", error); // Corrected spelling
-        toast.error(error.message || "Failed to submit Vehicle."); // Corrected spelling
+        console.error("Vehicle submission failed:", error);
+        toast.error(error.message || "Failed to submit Vehicle.");
       },
     });
   };
@@ -66,17 +64,14 @@ function SubmitVehicle() {
                   Select Vehicle Type {/* Corrected spelling */}
                 </label>
                 <select
-                  id="vehicleType" // Corrected spelling
+                  id="vehicleType"
                   className="w-full py-2 px-4 border border-gray-300 rounded-md text-gray-700 focus:outline-none"
-                  value={vehicleType} // Corrected spelling
-                  onChange={(e) => setVehicleType(e.target.value)} // Corrected spelling
+                  value={vehicleType}
+                  onChange={(e) => setVehicleType(e.target.value)}
                   disabled={isPending}
                   required
                 >
                   <option value="">Select Vehicle Type</option>{" "}
-                  {/* Corrected spelling */}
-                  {/* These options seem to be for ID types. If they are truly vehicle types, ensure they are relevant. 
-                      Otherwise, you might want to adjust them, e.g., "Car", "Motorcycle", "Bicycle". */}
                   <option value="car">Car</option>
                   <option value="truck">Truck</option>
                   <option value="bike">Bike</option>
@@ -85,7 +80,7 @@ function SubmitVehicle() {
               {/* ID Image Upload */}
               <div className="flex flex-col gap-2">
                 <label htmlFor="idImage" className="text-sm text-gray-700">
-                  Upload ID Image
+                  Upload Vehicle Image
                 </label>
                 <input
                   id="idImage"
@@ -131,4 +126,4 @@ function SubmitVehicle() {
   );
 }
 
-export default SubmitVehicle; // Corrected spelling
+export default SubmitVehicle;

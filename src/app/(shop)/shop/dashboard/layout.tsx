@@ -3,6 +3,7 @@ import { ShopHeader } from "@/components/shop-page/header";
 import { ShopSideBar } from "@/components/shop-page/sidebar";
 import { ReactNode, useState } from "react";
 import { Menu } from "lucide-react";
+import { ShopperDashBoardSidebBar } from "@/components/shop/sidebar";
 
 const Layout = ({ children }: { children: ReactNode }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -17,7 +18,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
       </div>
 
       {/* Sidebar - hidden on mobile unless opened */}
-      <ShopSideBar
+      <ShopperDashBoardSidebBar
         isOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}
       />

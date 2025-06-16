@@ -9,13 +9,14 @@ import {
 const infoArray = [
   {
     name: "Office",
-    desc: "123 Avenue Road, FinLand",
+    desc: "No 1 Sea Shopping Complex, Oko Afo along badagry express way, Lagos",
     icon: MapPin,
     iconcolor: "#0E74D8",
   },
   {
     name: "Phone",
-    desc: "+234 901 234 5678",
+    desc: "+2349039106561",
+    subdesc: "+2348033670745",
     icon: Phone,
     iconcolor: "#F8BD00",
   },
@@ -67,7 +68,7 @@ export const Socials = () => {
         {infoArray.map((item, index) => (
           <div
             key={index}
-            className="flex flex-col p-4 bg-white rounded-lg shadow-lg borderboder-[#DFDEDA] h-[80px] transform transition duration-300 hover:scale-105 hover:shadow-xl"
+            className="flex flex-col p-4 bg-white rounded-lg shadow-lg borderboder-[#DFDEDA] h-[100px] transform transition duration-300 hover:scale-105 hover:shadow-xl"
           >
             <div className="flex gap-x-3 items-">
               <div
@@ -81,6 +82,9 @@ export const Socials = () => {
               </h3>
             </div>
             <p className="text-gray-600  text-xs text-left ml-8">{item.desc}</p>
+            <p className="text-gray-600  text-xs text-left ml-8">
+              {item.subdesc}
+            </p>
           </div>
         ))}
       </div>

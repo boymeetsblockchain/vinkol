@@ -2,86 +2,171 @@
 import { ShopHeader } from "@/components/shop-page/header";
 import { CartModal } from "@/components/modals/cartmodal";
 import { useState } from "react";
+import { useGetStoreOrders } from "@/services/orders/query";
+import { useGetSingleProductQuery } from "@/services/products/query";
+import { Button } from "@/components/button";
 
-const productArray = [
-  {
-    name: "Banana",
-    image: "/assets/banana.png",
-    price: "₦23,000",
-    desc: "Organic Banana 1 bunch",
-  },
-  {
-    name: "Strawberry",
-    image: "/assets/strawberry.png",
-    price: "₦23,000",
-    desc: "Organic Strawberry 1 pack of 6pcs",
-  },
-  {
-    name: "Cucumber",
-    image: "/assets/cucumber.png",
-    price: "₦23,000",
-    desc: "Organic Cucumber 3 pieces",
-  },
+interface Guest {
+  email: string;
+  firstname: string;
+  lastname: string;
+  phone: string;
+  role: string;
+  _id: string;
+}
 
-  ...Array(9).fill({
-    name: "Product",
-    image: "/assets/strawberry.png",
-    price: "₦20,000",
-    desc: "Organic product description",
-  }),
-];
+interface OrderProduct {
+  product: string; // This is the product ID
+  quantity: number;
+  _id: string; // The _id for this specific order item entry
+}
+
+interface Order {
+  _id: string;
+  guest: Guest;
+  dropoffLocation: string;
+  state: string;
+  status: string;
+  deliveryType: string;
+  orderType: string;
+  amount: number;
+  paystackReference: string;
+  paymentStatus: string;
+  products: OrderProduct[];
+  store: string; // Store ID
+  createdAt: string;
+  trackingId: string;
+}
+
+interface OrderItemCardProps {
+  productId: string;
+  quantity: number;
+}
+
+const OrderItemCard: React.FC<OrderItemCardProps> = ({
+  productId,
+  quantity,
+}) => {
+  const { data: product, isLoading: isLoadingProduct } =
+    useGetSingleProductQuery(productId);
+
+  if (isLoadingProduct) {
+    return <li className="text-gray-500">Loading product details...</li>;
+  }
+
+  if (!product) {
+    return (
+      <li className="text-red-500">
+        Product details not found for ID: {productId}.
+      </li>
+    );
+  }
+
+  return (
+    <li className="flex items-center space-x-4 border-b pb-2 mb-2 last:border-b-0 last:pb-0 last:mb-0">
+      {product.image?.imageUrl && (
+        <img
+          src={product.image.imageUrl}
+          alt={product.title}
+          className="w-16 h-16 object-cover rounded-md flex-shrink-0"
+        />
+      )}
+      <div className="flex-grow">
+        <p className="font-semibold text-base">{product.title}</p>
+        <p className="text-gray-700 text-sm">{product.description}</p>
+        <p className="text-gray-600 text-sm">
+          ₦{product.price.toLocaleString()} x {quantity}
+        </p>
+      </div>
+      <Button className="">Available for Pickup</Button>
+    </li>
+  );
+};
 
 function ShopId() {
   const [openCartModal, setOpenCartModal] = useState<boolean>(false);
+  const { data, isLoading } = useGetStoreOrders();
+
+  const orders: Order[] | undefined = data?.data; // Still assuming data?.data is the array of orders
+
+  if (isLoading) {
+    return (
+      <section className="min-h-screen bg-white flex flex-col items-center justify-center">
+        <p>Loading orders...</p>
+      </section>
+    );
+  }
+
   return (
     <section className="min-h-screen bg-white">
-      <ShopHeader isLogo={false} />
+      <ShopHeader isLogo={true} />
 
       <div className="container mx-auto px-4 md:px-6 py-8">
-        {/* Category Title */}
-        <h1 className="text-2xl md:text-3xl mt-4 md:mt-0 font-bold text-gray-900 mb-6">
-          Fresh Produce
-        </h1>
+        <h1 className="text-3xl font-bold mb-6">Orders</h1>
+        {orders && orders.length > 0 ? (
+          <div className="space-y-6">
+            {orders.map((order) => (
+              <div
+                key={order._id}
+                className="border rounded-lg p-6 shadow-sm bg-gray-50"
+              >
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                  <p>
+                    <strong className="font-semibold">Order ID:</strong>{" "}
+                    {order.trackingId}
+                  </p>
+                  <p>
+                    <strong className="font-semibold">Status:</strong>{" "}
+                    {order.status}
+                  </p>
+                  <p>
+                    <strong className="font-semibold">Amount:</strong> ₦
+                    {order.amount.toLocaleString()}
+                  </p>
+                  <p>
+                    <strong className="font-semibold">Payment Status:</strong>{" "}
+                    {order.paymentStatus}
+                  </p>
+                  <p>
+                    <strong className="font-semibold">Customer:</strong>{" "}
+                    {order.guest.firstname} {order.guest.lastname} (
+                    {order.guest.email})
+                  </p>
+                  <p>
+                    <strong className="font-semibold">
+                      Delivery Location:
+                    </strong>{" "}
+                    {order.dropoffLocation}, {order.state}
+                  </p>
+                  <p>
+                    <strong className="font-semibold">Order Date:</strong>{" "}
+                    {new Date(order.createdAt).toLocaleDateString()}
+                  </p>
+                </div>
 
-        {/* Product Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-6">
-          {productArray.map((data, index) => (
-            <div
-              key={index}
-              className="bg-[#FAFAFA] rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200 flex flex-col"
-            >
-              {/* Product Image */}
-              <div className="p-4 flex justify-center items-center h-40 bg-white">
-                <img
-                  src={data.image}
-                  className="h-full w-full object-contain"
-                  alt={data.name}
-                />
-              </div>
-
-              {/* Product Info */}
-              <div className="p-4 flex flex-col flex-grow">
-                <h3 className="font-semibold text-gray-900 mb-1">
-                  {data.name}
-                </h3>
-                <p className="text-gray-600 text-sm mb-2 line-clamp-2">
-                  {data.desc}
-                </p>
-                <div className="mt-auto">
-                  <p className="font-bold text-gray-900 mb-3">{data.price}</p>
-                  <button
-                    onClick={() => setOpenCartModal(true)}
-                    className="w-full bg-blue-primary hover:bg-blue-700 text-white py-2 px-4 rounded-[4px] text-sm font-medium transition-colors duration-200"
-                  >
-                    + Add to cart
-                  </button>
+                <div className="mt-4">
+                  <h3 className="font-semibold text-md mb-2">Products:</h3>
+                  <ul className="list-none p-0 m-0">
+                    {order.products.map((item) => (
+                      <OrderItemCard
+                        key={item._id}
+                        productId={item.product}
+                        quantity={item.quantity}
+                      />
+                    ))}
+                  </ul>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-gray-500">No orders found.</p>
+        )}
       </div>
-      <CartModal isOpen={openCartModal} onClose={() => {}} />
+      <CartModal
+        isOpen={openCartModal}
+        onClose={() => setOpenCartModal(false)}
+      />
     </section>
   );
 }

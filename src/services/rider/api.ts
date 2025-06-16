@@ -5,8 +5,10 @@ import {
   registerRiderSchema,
   resendOtpSchema,
   resetPasswordSchema,
+  sendSmsOtpSchema,
   updateProfileSchema,
   verifyEmailSchema,
+  verifyPhoneSchema,
 } from "@/types/rider";
 import * as z from "zod";
 
@@ -219,5 +221,23 @@ export const getKyc = async () => {
     return response.data;
   } catch (error) {
     handleApiError(error, "Failed to Get User profile");
+  }
+};
+
+export const sendSmsOtp = async (data: z.infer<typeof sendSmsOtpSchema>) => {
+  try {
+    const response = await axiosInstance.post("/users/sms-otp", data);
+    return response.data;
+  } catch (error) {
+    handleApiError(error, "Failed to send Sms Otp");
+  }
+};
+
+export const verifySmsOtp = async (data: z.infer<typeof verifyPhoneSchema>) => {
+  try {
+    const response = await axiosInstance.patch("/users/verify-phone", data);
+    return response.data;
+  } catch (error) {
+    handleApiError(error, "Failed to send Sms Otp");
   }
 };

@@ -6,8 +6,10 @@ import {
   registerRiderSchema,
   resendOtpSchema,
   resetPasswordSchema,
+  sendSmsOtpSchema,
   updateProfileSchema,
   verifyEmailSchema,
+  verifyPhoneSchema,
 } from "@/types/rider";
 import {
   registerRider,
@@ -20,6 +22,8 @@ import {
   submitKyc,
   submitVehicle,
   registerShopper,
+  sendSmsOtp,
+  verifySmsOtp,
 } from "./api"; // Assuming 'api' is the file containing all the API functions
 
 /**
@@ -256,6 +260,39 @@ export function useSubmitVechicle(options?: MutationOptions<any, Error>) {
     },
     onError: (errorData: Error) => {
       console.error("vehicle submission failed:", errorData.message);
+      options?.onError?.(errorData);
+    },
+  });
+
+  return { mutate, data, error, isPending, isSuccess, isError };
+}
+
+export function useSendSmsOtp(options?: MutationOptions<any, Error>) {
+  const { mutate, data, error, isPending, isSuccess, isError } = useMutation({
+    mutationFn: async (payload: z.infer<typeof sendSmsOtpSchema>) => {
+      return await sendSmsOtp(payload);
+    },
+    onSuccess: (responseData) => {
+      options?.onSuccess?.(responseData);
+    },
+    onError: (errorData: Error) => {
+      console.error("Send otp failed:", errorData.message);
+      options?.onError?.(errorData);
+    },
+  });
+
+  return { mutate, data, error, isPending, isSuccess, isError };
+}
+
+export function useVerifyPhoneNumber(options?: MutationOptions<any, Error>) {
+  const { mutate, data, error, isPending, isSuccess, isError } = useMutation({
+    mutationFn: async (payload: z.infer<typeof verifyPhoneSchema>) => {
+      return await verifySmsOtp(payload);
+    },
+    onSuccess: (responseData) => {
+      options?.onSuccess?.(responseData);
+    },
+    onError: (errorData: Error) => {
       options?.onError?.(errorData);
     },
   });

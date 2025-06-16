@@ -90,11 +90,12 @@ export const RiderAuthModal = ({ isOpen, onClose }: RiderAuthModalProps) => {
         { email, password },
         {
           onSuccess: () => {
+            localStorage.setItem("ride-email", email);
             toast.success(
               "Registration successful! Please check your email for OTP."
             );
             router.push(`/rider/auth/otp?email=${encodeURIComponent(email)}`); // Navigate to OTP verification page
-            onClose(); // Close the modal on successful registration
+            onClose();
           },
           onError: (error) => {
             console.error("Registration failed:", error);

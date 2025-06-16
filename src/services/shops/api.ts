@@ -175,12 +175,18 @@ export const getStoreProfile = async () => {
   }
 };
 
-export const getAllStores = async () => {
+interface GetAllStoresParams {
+  search?: string;
+  state?: string;
+}
+
+export const getAllStores = async (params?: GetAllStoresParams) => {
   try {
-    const response = await axiosInstance.get("/stores");
+    const response = await axiosInstance.get("/stores", { params });
     return response.data;
   } catch (error) {
     handleApiError(error, "Failed to get stores");
+    throw error;
   }
 };
 

@@ -49,3 +49,13 @@ export const submitVechicleSchema = z.object({
   vehicleType: z.string().min(1, { message: "ID type is required" }),
   image: z.instanceof(File, { message: "Image must be a file" }),
 });
+export const sendSmsOtpSchema = z.object({
+  email: z.string().email({ message: "Invalid email address" }),
+  phone: z.string().min(1, { message: "Phone number is required" }),
+});
+
+export const verifyPhoneSchema = z.object({
+  email: z.string().email({ message: "Invalid email address" }),
+  phone: z.string().min(1, { message: "Phone number is required" }),
+  otp: z.string().min(1, { message: "Otp is required" }),
+});

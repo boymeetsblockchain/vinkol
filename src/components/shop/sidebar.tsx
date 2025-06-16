@@ -19,7 +19,7 @@ const dashboardLinks = [
   {
     label: "Orders",
     icon: <Package size={18} />,
-    route: "/shop/dashboard/orders",
+    route: "/shop/dashboard/",
   },
   {
     label: "Order History",
@@ -28,23 +28,19 @@ const dashboardLinks = [
   },
   {
     label: "Products",
-    icon: <ShoppingBasket size={18} />, // Changed to ShoppingBasket for products
+    icon: <ShoppingBasket size={18} />,
     route: "/shop/dashboard/products",
+  },
+
+  {
+    label: "Profile",
+    icon: <User size={18} />,
+    route: "/shop/dashboard/store-profile",
   },
   {
     label: "Wallet",
     icon: <Wallet size={18} />,
     route: "/shop/dashboard/wallet",
-  },
-  {
-    label: "Profile",
-    icon: <User size={18} />, // Changed to User for profile
-    route: "/shop/dashboard/profile",
-  },
-  {
-    label: "Settings",
-    icon: <Settings size={18} />,
-    route: "/shop/dashboard/settings",
   },
 ];
 

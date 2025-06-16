@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 function CompleteAuthPage() {
   const router = useRouter();
   const handleClick = () => {
-    router.push("/become-a-rider");
+    router.push("/rider/verify-phonenumber");
   };
   return (
     <section className="max-w-screen-2xl min-h-screen w-full px-4 md:px-20 py-10 mx-auto">
