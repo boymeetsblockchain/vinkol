@@ -56,7 +56,8 @@ export const ShopHero = () => {
   ];
 
   const handleSearch = () => {
-    // router.push(`/shops?state=${selectedState}`);
+    console.log(`/shops/search?state=${selectedState}`);
+    router.push(`/shops/search?state=${selectedState}`);
   };
 
   return (

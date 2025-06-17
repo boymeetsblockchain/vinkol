@@ -2,9 +2,11 @@ import { Clock, Mail, MapPin, Phone } from "lucide-react";
 import {
   FaFacebook,
   FaInstagram,
+  FaLinkedin,
   FaWhatsapp,
   FaYoutube,
 } from "react-icons/fa6";
+import { RiTwitterXLine } from "react-icons/ri";
 
 const infoArray = [
   {
@@ -93,26 +95,52 @@ export const Socials = () => {
         <div className="flex gap-x-5 my-4  items-center">
           {" "}
           {/* Increased gap-x for better spacing */}
-          <FaFacebook
-            color="#0E74D8"
-            size={20}
-            className="cursor-pointer hover:opacity-75 transition-opacity duration-200"
-          />
-          <FaWhatsapp
-            color="#0E74D8"
-            size={20}
-            className="cursor-pointer hover:opacity-75 transition-opacity duration-200"
-          />
-          <FaInstagram
-            color="#0E74D8"
-            size={20}
-            className="cursor-pointer hover:opacity-75 transition-opacity duration-200"
-          />
-          <FaYoutube
-            color="#0E74D8"
-            size={20}
-            className="cursor-pointer hover:opacity-75 transition-opacity duration-200"
-          />
+          <a
+            href="https://www.linkedin.com/in/vinkol-materials-and-commercial-ventures-ltd-8224441b6?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app"
+            target="_blank"
+          >
+            {" "}
+            <FaLinkedin
+              color="#0E74D8"
+              size={20}
+              className="cursor-pointer hover:opacity-75 transition-opacity duration-200"
+            />
+          </a>
+          <a
+            href="https://www.instagram.com/vinkollogistics?igsh=cHFveTlnY2Fuc3Mw&utm_source=qr"
+            target="_blank"
+          >
+            <a href="https://www.instagram.com/vinkollogistics?igsh=cHFveTlnY2Fuc3Mw&utm_source=qr">
+              {" "}
+              <FaInstagram
+                color="#0E74D8"
+                size={20}
+                className="cursor-pointer hover:opacity-75 transition-opacity duration-200"
+              />
+            </a>
+          </a>
+          <a
+            href="https://youtube.com/@vinkollogistics?si=XaJO73rzoDq8Z1Sk"
+            target="_blank"
+          >
+            {" "}
+            <FaYoutube
+              color="#0E74D8"
+              size={20}
+              className="cursor-pointer hover:opacity-75 transition-opacity duration-200"
+            />
+          </a>
+          <a
+            href="https://x.com/vinkolltd?s=21&t=fwDDLMrWPBCeOetcu1W7Gw"
+            target="_blank"
+          >
+            {" "}
+            <RiTwitterXLine
+              color="#0E74D8"
+              size={20}
+              className="cursor-pointer hover:opacity-75 transition-opacity duration-200"
+            />
+          </a>
         </div>
       </div>
     </section>

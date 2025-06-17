@@ -35,7 +35,7 @@ export const Footer = () => {
             <p className="font-bold mb-4 text-lg">Quick Links</p>
             <ul className="space-y-2 text-sm text-gray-700">
               <Link href={"/about"}>About Us</Link>
-              <li>Services</li>
+              <li>Security & Privacy</li>
             </ul>
           </div>
 
@@ -47,7 +47,6 @@ export const Footer = () => {
               <Link href={"/terms-and-conditions"} className="block">
                 Terms of Service
               </Link>
-              <li>Security & Privacy</li>
             </ul>
           </div>
         </div>
