@@ -1,3 +1,4 @@
+"use client";
 import { ChevronDown } from "lucide-react";
 import { useUserProfile } from "@/services/rider/query";
 

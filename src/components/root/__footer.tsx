@@ -26,7 +26,6 @@ export const Footer = () => {
             <ul className="space-y-2 text-sm text-gray-700">
               <li>Help Center</li>
               <li>Product Support</li>
-              <li>Security & Privacy</li>
             </ul>
           </div>
 

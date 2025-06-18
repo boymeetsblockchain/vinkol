@@ -2,6 +2,9 @@
 import { ShopHeader } from "@/components/shop-page/header";
 import { CartModal } from "@/components/modals/cartmodal";
 import { useState } from "react";
+import { useParams } from "next/navigation";
+import { useGetSingleStore } from "@/services/shops/query";
+import { useGetAllProductsQuery } from "@/services/products/query";
 
 const productArray = [
   {
@@ -33,6 +36,12 @@ const productArray = [
 
 function ShopId() {
   const [openCartModal, setOpenCartModal] = useState<boolean>(false);
+  const params = useParams();
+  const id = params.id;
+  const { data } = useGetSingleStore(id as string);
+  const { data: products } = useGetAllProductsQuery(params);
+
+  console.log(id);
   return (
     <section className="min-h-screen bg-white">
       <ShopHeader isLogo={false} />

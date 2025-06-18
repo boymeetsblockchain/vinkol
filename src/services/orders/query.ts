@@ -1,6 +1,12 @@
 import { GetOrdersParams } from "@/types/order";
 import { useQuery } from "@tanstack/react-query";
-import { getOrders, getSingleOrder, getStoreOrders, trackOrders } from "./api";
+import {
+  getOrders,
+  getRiderOrders,
+  getSingleOrder,
+  getStoreOrders,
+  trackOrders,
+} from "./api";
 
 export const useGetOrders = (params: GetOrdersParams = {}) => {
   return useQuery({
@@ -35,5 +41,12 @@ export const useGetSingleOrder = (id: string) => {
     queryKey: ["order", id],
     queryFn: () => getSingleOrder(id),
     staleTime: 1000 * 60 * 5,
+  });
+};
+
+export const useGetRiderOrders = () => {
+  return useQuery({
+    queryKey: ["rider-orders"],
+    queryFn: () => getRiderOrders(),
   });
 };

@@ -32,13 +32,24 @@ interface ApiResponse {
   };
 }
 
+interface ProductQueryParams {
+  category?: string;
+  store?: string;
+  search?: string;
+  price?: string; // e.g., "gte:2000"
+  pageNo?: number;
+  pageSize?: number;
+}
+
 export function useGetAllProductsQuery(
-  options?: QueryOptions<Product[], Error>
+  options?: QueryOptions<Product[], Error>,
+  params?: ProductQueryParams
 ) {
   return useQuery<ApiResponse, Error>({
-    queryKey: ["products"],
+    queryKey: ["products", params],
+
     queryFn: async () => {
-      const data = await getAllProducts();
+      const data = await getAllProducts(params);
       return data;
     },
     onSuccess: (data: Product[]) => {

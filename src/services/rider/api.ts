@@ -1,5 +1,6 @@
 import axiosInstance from "@/config/rider";
 import {
+  contactFormSchema,
   forgotPasswordSchema,
   loginRiderSchema,
   registerRiderSchema,
@@ -239,5 +240,25 @@ export const verifySmsOtp = async (data: z.infer<typeof verifyPhoneSchema>) => {
     return response.data;
   } catch (error) {
     handleApiError(error, "Failed to send Sms Otp");
+  }
+};
+
+export const getWallet = async () => {
+  try {
+    const response = await axiosInstance.get(`/users/wallet-balance`);
+    return response.data;
+  } catch (error) {
+    handleApiError(error, "Failed to get wallet balance");
+  }
+};
+
+export const contactMessage = async (
+  data: z.infer<typeof contactFormSchema>
+) => {
+  try {
+    const response = await axiosInstance.post("others/contact", data);
+    return response;
+  } catch (error) {
+    handleApiError(error, "failed to send message");
   }
 };

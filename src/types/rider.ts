@@ -59,3 +59,22 @@ export const verifyPhoneSchema = z.object({
   phone: z.string().min(1, { message: "Phone number is required" }),
   otp: z.string().min(1, { message: "Otp is required" }),
 });
+
+export const contactFormSchema = z.object({
+  name: z
+    .string({
+      required_error: "Name is required",
+    })
+    .min(1, "Name cannot be empty"),
+  email: z
+    .string({
+      required_error: "Email is required",
+    })
+    .email("Invalid email address"),
+  message: z
+    .string({
+      required_error: "Message is required",
+    })
+    .min(10, "Message must be at least 10 characters long")
+    .max(5000, "Message cannot exceed 500 characters"),
+});

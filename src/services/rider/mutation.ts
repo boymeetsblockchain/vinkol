@@ -10,6 +10,7 @@ import {
   updateProfileSchema,
   verifyEmailSchema,
   verifyPhoneSchema,
+  contactFormSchema,
 } from "@/types/rider";
 import {
   registerRider,
@@ -24,7 +25,9 @@ import {
   registerShopper,
   sendSmsOtp,
   verifySmsOtp,
+  contactMessage,
 } from "./api"; // Assuming 'api' is the file containing all the API functions
+import { toast } from "sonner";
 
 /**
  * Defines the common options structure for mutation hooks.
@@ -293,6 +296,30 @@ export function useVerifyPhoneNumber(options?: MutationOptions<any, Error>) {
       options?.onSuccess?.(responseData);
     },
     onError: (errorData: Error) => {
+      options?.onError?.(errorData);
+    },
+  });
+
+  return { mutate, data, error, isPending, isSuccess, isError };
+}
+
+export function useSendContactMessageMutation(
+  options?: MutationOptions<any, Error>
+) {
+  const { mutate, data, error, isPending, isSuccess, isError } = useMutation({
+    mutationFn: async (data: z.infer<typeof contactFormSchema>) => {
+      // The payload for delete is typically just the ID
+      return await contactMessage(data);
+    },
+    onSuccess: (responseData) => {
+      console.log("Message ", responseData);
+      options?.onSuccess?.(responseData);
+      toast.success(
+        responseData?.data?.message || "Message sent successfully!"
+      );
+    },
+    onError: (errorData: Error) => {
+      toast.error("Message sent  failed");
       options?.onError?.(errorData);
     },
   });

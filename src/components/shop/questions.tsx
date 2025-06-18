@@ -4,19 +4,19 @@ import { useState } from "react";
 
 const faqs = [
   {
-    question: "Fast Delivery",
+    question: "Do I need a bike to become a personal shopper?",
     answer:
-      "Vinkol ensures swift, efficient deliveries, minimizing waiting time and helping customers meet urgent needs. Our reliable riders are committed to timely service, ensuring your packages and goods arrive quickly and securely at their destination.",
+      "No, you don’t need a bike. Any suitable means of transportation is permitted i.e. scooters, bicycles, public buses, train, etc. You only need a reliable means of transportation to get the customer’s groceries delivered within the specified time frame of shopping. Vinkol assigns delivery partners to handle logistics while you focus on shopping and order fulfillment.",
   },
   {
-    question: "Refund of up to ₦50,000",
+    question: "How do I get paid?",
     answer:
-      "Vinkol protects your goods with a refund of up to ₦50,000 for damage, theft, or loss due to rider negligence. Claims are thoroughly investigated within 72 hours, ensuring fair resolution and accountability for our customers’ peace of mind.",
+      "You get paid daily or weekly via bank transfer based on completed and verified tasks. Your earnings include service fees, bonuses, and tips where applicable.",
   },
   {
-    question: "Personal Shopper",
+    question: "Can I choose which tasks to accept?",
     answer:
-      "Vinkol’s personal shopper service helps customers purchase and deliver goods with ease. Our trained shoppers handle orders as instructed, saving time and offering convenience, whether it’s groceries, gifts, or daily essentials delivered right to your door.",
+      "Yes, you have the flexibility to accept or decline tasks. However, consistent performance improves your rating and access to more high-paying tasks.",
   },
 ];
 

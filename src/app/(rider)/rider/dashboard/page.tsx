@@ -1,8 +1,11 @@
 "use client";
 
+import { useState } from "react"; // Import useState
 import { Button } from "@/components/button";
 import { useGetOrders } from "@/services/orders/query";
-import { formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow, isValid } from "date-fns"; // Import isValid
+import { useAcceptOrderMutation } from "@/services/orders/mutation";
+import { toast } from "sonner"; // Import toast for notifications
 
 // Define an interface for your order data for better type safety
 interface OrderData {
@@ -16,14 +19,13 @@ interface OrderData {
     _id: string;
   };
   user?: {
-    // Added for orders with registered users
     _id: string;
     email: string;
   };
   pickupLocation: string;
   dropoffLocation: string;
   state: string;
-  status: "Pending" | "Delivered" | "Picked" | string;
+  status: "Pending" | "Delivered" | "Picked" | "Accepted" | string; // Added "Accepted"
   date?: string;
   time?: string;
   deliveryType: string;
@@ -32,8 +34,8 @@ interface OrderData {
   amount: number;
   paystackReference: string;
   paymentStatus: string;
-  products: any[]; // Adjust if you have a specific product type
-  createdAt: string; // The creation date from the API
+  products: any[];
+  createdAt: string; // Assuming createdAt is always a string and present
   trackingId: string;
   rider?: {
     _id: string;
@@ -49,16 +51,40 @@ interface OrderData {
 }
 
 function Orders() {
-  const { data, isPending } = useGetOrders();
+  const { data, isPending, refetch } = useGetOrders();
+  const { mutate: acceptOrderMutate } = useAcceptOrderMutation(); // Use mutateAsync for await
 
-  // Filter for accepted orders based on your definition of "accepted"
-  // For this example, let's assume 'Delivered' or 'Picked' status means accepted.
-  // You might have a specific 'accepted' status from your backend.
+  // State to track which order is currently being accepted
+  const [acceptingOrderId, setAcceptingOrderId] = useState<string | null>(null);
+
+  // Filter accepted orders for the counter display
   const acceptedOrders =
     data?.data?.filter(
       (order: OrderData) =>
-        order.status === "Delivered" || order.status === "Picked"
+        order.status === "Delivered" ||
+        order.status === "Picked" ||
+        order.status === "Accepted" // Include "Accepted" status in the count
     ) || [];
+
+  // Function to handle accepting an order
+  const handleAcceptOrder = async (orderId: string) => {
+    setAcceptingOrderId(orderId); // Set the ID of the order being accepted
+    try {
+      // await the mutation call
+      await acceptOrderMutate(orderId);
+      toast.success("Order accepted successfully!");
+      refetch(); // Re-fetch orders to update the UI
+    } catch (error: any) {
+      console.error("Failed to accept order:", error);
+      toast.error(
+        `Failed to accept order: ${
+          error.response?.data?.message || error.message || "Unknown error"
+        }`
+      );
+    } finally {
+      setAcceptingOrderId(null); // Reset the accepting state regardless of success or failure
+    }
+  };
 
   return (
     <section className="py-6 px-4">
@@ -76,10 +102,14 @@ function Orders() {
           <p className="text-center text-gray-600">Loading orders...</p>
         ) : (
           data?.data?.map((order: OrderData) => {
-            // Calculate time ago
-            const timeAgo = formatDistanceToNow(new Date(order.createdAt), {
-              addSuffix: true,
-            });
+            // Check if the current order's ID matches the one being accepted
+            const isThisOrderBeingAccepted = acceptingOrderId === order._id;
+
+            // Date parsing with validation
+            const orderDate = new Date(order.createdAt);
+            const timeAgo = isValid(orderDate)
+              ? formatDistanceToNow(orderDate, { addSuffix: true })
+              : "N/A"; // Fallback if date is invalid
 
             return (
               <div
@@ -92,10 +122,27 @@ function Orders() {
                       ? `${order.guest.firstname} ${order.guest.lastname}`
                       : order.user?.email || "N/A Customer"}
                   </h1>
-                  <p className="bg-blue-primary text-white text-xs px-3 py-1 rounded-full">
-                    {timeAgo}
+                  <p
+                    className={`text-white text-xs px-3 py-1 rounded-full ${
+                      order.status === "Pending"
+                        ? "bg-gray-500" // Example color for Pending
+                        : order.status === "Accepted"
+                        ? "bg-blue-primary" // Example color for Accepted
+                        : order.status === "Picked"
+                        ? "bg-yellow-500" // Example color for Picked
+                        : "bg-green-500" // Example color for Delivered
+                    }`}
+                  >
+                    {order.status}
                   </p>
                 </div>
+
+                <p className="text-sm text-gray-500">
+                  <span className="font-semibold text-gray-700">
+                    Order Placed:
+                  </span>{" "}
+                  {timeAgo}
+                </p>
 
                 <p className="text-sm text-gray-500">
                   <span className="font-semibold text-gray-700">State:</span>{" "}
@@ -117,15 +164,23 @@ function Orders() {
                   <p>
                     <span className="font-medium">Date:</span>{" "}
                     {order.date ||
-                      new Date(order.createdAt).toLocaleDateString()}
+                      (isValid(orderDate)
+                        ? orderDate.toLocaleDateString("en-US", {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                          })
+                        : "N/A")}
                   </p>
                   <p>
                     <span className="font-medium">Time:</span>{" "}
                     {order.time ||
-                      new Date(order.createdAt).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
+                      (isValid(orderDate)
+                        ? orderDate.toLocaleTimeString("en-US", {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })
+                        : "N/A")}
                   </p>
                 </div>
 
@@ -143,21 +198,34 @@ function Orders() {
                 <p className="text-sm font-semibold text-gray-700">
                   Amount:{" "}
                   <span className="text-blue-primary">
-                    ₦{order.amount.toLocaleString()}
+                    ₦
+                    {order.amount.toLocaleString("en-NG", {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
                   </span>
                 </p>
-                {/* Assuming 'note' is not directly in your API data,
-                    you might need to add it to your backend or remove this line. */}
-                {/* <p className="text-sm italic text-gray-600">Note: {order.note}</p> */}
 
                 <div className="flex justify-end gap-3 pt-4">
                   {order.status === "Pending" && (
                     <>
-                      <Button variant="secondary">Decline</Button>
-                      <Button>Accept</Button>
+                      <Button
+                        variant="secondary"
+                        disabled={isThisOrderBeingAccepted}
+                      >
+                        Decline
+                      </Button>
+                      <Button
+                        onClick={() => handleAcceptOrder(order._id)}
+                        disabled={isThisOrderBeingAccepted} // Disable only this button
+                      >
+                        {isThisOrderBeingAccepted ? "Accepting..." : "Accept"}
+                      </Button>
                     </>
                   )}
-                  {/* You can add more status-based buttons here */}
+                  {order.status === "Accepted" && (
+                    <Button disabled>Order Accepted</Button> // Button for accepted orders
+                  )}
                   {order.status === "Picked" && (
                     <Button disabled>Picked Up</Button>
                   )}

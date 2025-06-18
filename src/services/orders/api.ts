@@ -143,3 +143,13 @@ export const changeOrderStatus = async (
     throw error;
   }
 };
+
+export const getRiderOrders = async () => {
+  try {
+    const response = await axiosInstance.get("/orders/rider-orders");
+    return response.data;
+  } catch (error) {
+    handleApiError(error, " Error Getting Order Status");
+    throw error;
+  }
+};

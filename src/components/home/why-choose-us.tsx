@@ -5,21 +5,21 @@ const whyChooseUs = [
     title: "Fast Delivery",
     img: "/assets/bike.svg",
     description:
-      "No delays, no excuses. Just tap, track, and receive. Whether it's a forgotten charger or a full grocery haul, we get it there fast—so your plans never slow down.",
+      "Vinkol ensures swift, efficient deliveries, minimizing waiting time and helping customers meet urgent needs. Our reliable riders are committed to timely service, ensuring your packages and goods arrive quickly and securely at their destination.",
     linkText: "Learn more",
   },
   {
     title: "Refund up to ₦50,000",
     img: "/assets/transfer.svg",
     description:
-      "If something goes wrong with your delivery, you’re covered—up to ₦50,000 in refunds for lost or damaged items. No endless forms, no runarounds. Just fair protection for every ride.",
+      "Vinkol protects your goods with a refund of up to ₦50,000 for damage, theft, or loss due to rider negligence. Claims are thoroughly investigated within 72 hours, ensuring fair resolution and accountability for our customers’ peace of mind.",
     linkText: "Learn more",
   },
   {
     title: "Personal Shopper",
     img: "/assets/transfer.svg",
     description:
-      "Whether you're a student, freelancer, or just passing by the store—Vinkol lets any verified user pick up and deliver items for others. No bike required. Just reliability.",
+      "Vinkol’s personal shopper service helps customers purchase and deliver goods with ease. Our trained shoppers handle orders as instructed, saving time and offering convenience, whether it’s groceries, gifts, or daily essentials delivered right to your door.",
     linkText: "Learn more",
   },
 ];
@@ -45,7 +45,7 @@ export const WhyChooseUs = () => {
             <div>
               <p className="font-medium teext-sm">{data.description}</p>
             </div>
-            <div>
+            {/* <div>
               {index == 1 ? (
                 <Button size="lg" className="text-white">
                   <span className="h-4 w-4 rounded-full bg-white mr-4"></span>{" "}
@@ -57,7 +57,7 @@ export const WhyChooseUs = () => {
                   {data.linkText}
                 </Button>
               )}
-            </div>
+            </div> */}
           </div>
         ))}
       </div>

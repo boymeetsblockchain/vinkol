@@ -76,20 +76,28 @@ export function useAcceptOrderMutation(options?: MutationOptions<any, Error>) {
   return { mutate, data, error, isPending, isSuccess, isError };
 }
 
+interface ChangeOrderStatusPayload {
+  status: "Delivered" | "Picked";
+  orderOtp?: string;
+}
+
 export function useChangeOrderStatus(options?: MutationOptions<any, Error>) {
-  const { mutate, data, error, isPending, isSuccess, isError } = useMutation({
-    mutationFn: async (payload: {
-      id: string;
-      data: z.infer<typeof changeOrderStatusSchema>;
-    }): Promise<any> => {
-      return await changeOrderStatus(payload.id, payload.data);
+  const { mutate, data, error, isPending, isSuccess, isError } = useMutation<
+    any,
+    Error,
+    { id: string; data: ChangeOrderStatusPayload }
+  >({
+    mutationFn: async (mutationPayload): Promise<any> => {
+      // Here, mutationPayload.id is the order ID, and mutationPayload.data is the actual body
+      // that contains 'status' and 'orderOtp'.
+      return await changeOrderStatus(mutationPayload.id, mutationPayload.data);
     },
     onSuccess: (responseData) => {
-      console.log("Accept Order successful:", responseData);
+      console.log("Change Order Status successful:", responseData);
       options?.onSuccess?.(responseData);
     },
     onError: (errorData: Error) => {
-      console.error("Accept Order failed:", errorData.message);
+      console.error("Change Order Status failed:", errorData.message);
       options?.onError?.(errorData);
     },
   });
