@@ -62,7 +62,7 @@ export const Socials = () => {
           Don’t hesitate to contact us
         </h2>
         <p className="text-lg text-gray-600">
-          Contact us for any issue. We reply under 20 hours.
+          Contact us for any issue. We reply under 5 Minutes.
         </p>
       </div>
 
