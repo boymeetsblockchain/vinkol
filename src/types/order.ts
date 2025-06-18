@@ -47,7 +47,7 @@ export const orderDataSchema = z.object({
   time: z.string().min(1, "Time is required"),
   pickupLocation: z.string().min(1, "Pickup location is required"),
   dropoffLocation: z.string().min(1, "Dropoff location is required"),
-  amount: z.number().positive("Amount must be a positive number"), // Use .positive() for amounts
+  deliveryFee: z.number().positive("Amount must be a positive number"), // Use .positive() for amounts
   deliveryType: z.enum(["regular", "express"], {
     errorMap: () => ({ message: "Invalid delivery type" }),
   }),

@@ -43,6 +43,7 @@ export function useCreateGuestOrderMutation(
 ) {
   const { mutate, data, error, isPending, isSuccess, isError } = useMutation({
     mutationFn: async (payload: z.infer<typeof orderDataSchema>) => {
+      console.log(payload);
       return await createGuestOrder(payload);
     },
     onSuccess: (responseData) => {

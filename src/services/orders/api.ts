@@ -45,7 +45,7 @@ export const getQuote = async (data: z.infer<typeof getQuoteSchema>) => {
 };
 
 export const createGuestOrder = async (
-  data: z.infer<typeof createOrderSchema>
+  data: z.infer<typeof orderDataSchema>
 ) => {
   try {
     const response = await axiosInstance.post(

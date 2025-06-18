@@ -1,44 +1,65 @@
 import { useState } from "react";
 
-type PackageData = {
-  number: string;
-  pickuplocation: string;
-  dropOffLocation: string;
-  status: "on route" | "with rider" | "delivered";
+// Define the structure of the user object within your order data
+interface OrderUser {
+  _id: string;
+  email: string;
+  name: string; // Assuming the user object also has a name
+  // ... other user properties
+}
+
+// Define the structure of the main order/package data
+interface OrderData {
+  trackingId: string;
+  user: OrderUser; // 'user' is an object
+  pickupLocation: string;
+  dropoffLocation: string;
+  status: "Pending" | "On Route" | "Delivered" | string; // Adjust as per your actual statuses
+  vehicleRequest?: string; // Optional if not always present
+  // Assuming rider details might be directly nested or need another lookup
+  // If rider is an object:
+  rider?: {
+    name: string;
+    number: string;
+    // ...
+  };
+  // Or if they are top-level properties on the order:
   riderName?: string;
   riderNumber?: string;
-  vechicle?: string;
-};
+  // ... other order properties like createdAt, updatedAt, etc.
+}
 
 interface TrackingModalProps {
   isOpen: boolean;
   onClose: () => void;
-  data: any; // Or your specific order data type
+  data: OrderData | null | undefined; // It can be null/undefined initially
 }
-
 export const TrackingModal = ({
   isOpen,
   onClose,
-  data,
+  data, // data is now OrderData | null | undefined
 }: TrackingModalProps) => {
-  if (!isOpen) {
+  if (!isOpen || !data) {
+    // Ensure data exists before trying to destructure
     return null;
   }
 
-  // Destructure data for easier access, providing fallbacks for potentially missing data
   const {
     trackingId = "N/A",
-    user = "N/A",
+    user, // user is now an object, not just "N/A"
     pickupLocation = "N/A",
     dropoffLocation = "N/A",
     status = "N/A",
     vehicleRequest = "N/A",
-    // Assuming rider details are not directly in the initial fetch,
-    // you might need to fetch them separately or they'll be undefined.
-    // For now, using placeholders.
+    // If rider details are directly on the order:
     riderName = "N/A",
     riderNumber = "N/A",
+    // If rider is a nested object:
+    // rider,
   } = data;
+
+  // Access specific properties of the 'user' object
+  const userName = user?.name || user?.email || "N/A"; // Prioritize name, then email
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80">
@@ -51,7 +72,8 @@ export const TrackingModal = ({
             package number: <span className="text-black">{trackingId}</span>{" "}
           </p>
           <p className="text-gray-400 capitalize">
-            Owner <span className="text-black">{user}</span>{" "}
+            Owner <span className="text-black">{userName}</span>{" "}
+            {/* MODIFIED HERE */}
           </p>
         </div>
         <div className="grid grid-cols-2 gap-10">

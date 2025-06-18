@@ -90,7 +90,7 @@ export const QuotePage = () => {
         time: time,
         pickupLocation: pickupLocation,
         dropoffLocation: dropoffLocation,
-        amount: Number(amount), // Convert amount to a number
+        deliveryFee: Number(amount), // Convert amount to a number
         deliveryType: deliveryType as "regular" | "express",
         vehicleRequest: vehicleRequest as "truck" | "car" | "bike",
         guest: {
