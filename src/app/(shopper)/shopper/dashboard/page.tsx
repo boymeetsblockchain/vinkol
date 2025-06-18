@@ -57,6 +57,8 @@ function Orders() {
   // State to track which order is currently being accepted
   const [acceptingOrderId, setAcceptingOrderId] = useState<string | null>(null);
 
+  console.log(data);
+
   // Filter accepted orders for the counter display
   const acceptedOrders =
     data?.data?.filter(
@@ -136,14 +138,12 @@ function Orders() {
                     {order.status}
                   </p>
                 </div>
-
                 <p className="text-sm text-gray-500">
                   <span className="font-semibold text-gray-700">
                     Order Placed:
                   </span>{" "}
                   {timeAgo}
                 </p>
-
                 <p className="text-sm text-gray-500">
                   <span className="font-semibold text-gray-700">State:</span>{" "}
                   {order.state}
@@ -183,7 +183,6 @@ function Orders() {
                         : "N/A")}
                   </p>
                 </div>
-
                 <div className="flex gap-4 text-sm text-gray-600">
                   <p>
                     <span className="font-medium">Delivery Type:</span>{" "}
@@ -195,17 +194,23 @@ function Orders() {
                   </p>
                 </div>
 
-                <p className="text-sm font-semibold text-gray-700">
-                  Amount:{" "}
-                  <span className="text-blue-primary">
-                    ₦
-                    {order.amount.toLocaleString("en-NG", {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}
-                  </span>
-                </p>
-
+                {order && typeof order.amount === "number" ? (
+                  <p className="text-sm font-semibold text-gray-700">
+                    Amount:{" "}
+                    <span className="text-blue-primary">
+                      ₦
+                      {order.amount.toLocaleString("en-NG", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
+                    </span>
+                  </p>
+                ) : (
+                  <p className="text-sm font-semibold text-gray-700">
+                    Amount: <span className="text-blue-primary">₦0.00</span>{" "}
+                    {/* Fallback for missing/invalid amount */}
+                  </p>
+                )}
                 <div className="flex justify-end gap-3 pt-4">
                   {order.status === "Pending" && (
                     <>
