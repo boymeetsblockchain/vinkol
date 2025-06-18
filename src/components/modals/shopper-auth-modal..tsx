@@ -41,7 +41,8 @@ export const ShopperAuthModal = ({
   // Initialize mutations for registration and login
   const { mutate: riderRegister, isPending: isRegistering } =
     useShopperRegisterMutation();
-  const { mutate: riderLogin, isPending: isLoggingIn } = useShopLoginMutation();
+  const { mutate: riderLogin, isPending: isLoggingIn } =
+    useRiderLoginMutation();
 
   // Determine if any mutation is currently pending
   const isPending = isRegistering || isLoggingIn;
