@@ -16,9 +16,12 @@ export const Shop = () => {
           <h1 className="font-bold text-2xl md:text-4xl text-white leading-tight md:leading-[100%]">
             Shop from the comfort of your home from supermarkets around you
           </h1>
-          <div>
+          <div className="flex flex-col md:flex-row gap-4">
             <Button variant="secondary" size="md">
               <Link href={"/explore-shop"}>Explore supermarket</Link>
+            </Button>
+            <Button variant="secondary" size="md">
+              <Link href={"/shop"}>Register Store on Vinkol</Link>
             </Button>
           </div>
         </div>

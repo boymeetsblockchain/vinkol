@@ -1,9 +1,13 @@
+"use client";
 import { IoMdMail } from "react-icons/io";
 import { RiTwitterXLine } from "react-icons/ri";
 import { FaInstagram } from "react-icons/fa6";
 import { FaLinkedin } from "react-icons/fa";
 import Link from "next/link";
+import { useState } from "react";
 export const Footer = () => {
+  const [helpCenter, setHelpCenter] = useState(false);
+
   return (
     <footer className="bg-white w-full text-black  py-10">
       <div className="max-w-screen-2xl mx-auto px-6 border-b pb-8 flex items-center justify-center md:px-10">
@@ -24,7 +28,23 @@ export const Footer = () => {
           <div>
             <p className="font-bold mb-4 text-lg">Support</p>
             <ul className="space-y-2 text-sm text-gray-700">
-              <li>Help Center</li>
+              <li
+                className="cursor-pointer"
+                onClick={() => setHelpCenter(!helpCenter)}
+              >
+                Help Center
+              </li>
+              {helpCenter && (
+                <ul>
+                  {["info@vinkol.ng", "support@vinkol.ng", "hr@vinkol.ng"].map(
+                    (email, index) => (
+                      <li key={index}>
+                        <a href={`mailto:${email}`}>{email}</a>
+                      </li>
+                    )
+                  )}
+                </ul>
+              )}
               <li>Product Support</li>
             </ul>
           </div>

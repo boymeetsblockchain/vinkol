@@ -457,7 +457,6 @@ export const BookADeliveryForm = () => {
                     className="w-full border border-blue-primary text-blue-primary py-4 px-3 rounded-md appearance-none bg-white pr-8"
                   >
                     <option value="Delivery ">Delivery</option>
-                    <option value="shopping">Shopping </option>
                   </select>
                 </FormControl>
                 <FormMessage />
@@ -512,6 +511,7 @@ export const BookADeliveryForm = () => {
           </div>
 
           <TermsCheckbox
+            isBooking={true}
             isChecked={isChecked}
             onChange={() => setIsChecked(!isChecked)}
           />

@@ -262,3 +262,12 @@ export const contactMessage = async (
     handleApiError(error, "failed to send message");
   }
 };
+
+export const subscribe = async (email: string) => {
+  try {
+    const response = await axiosInstance.post("others/subscribe", { email });
+    return response;
+  } catch (error) {
+    handleApiError(error, "failed to send message");
+  }
+};

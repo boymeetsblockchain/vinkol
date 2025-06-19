@@ -29,8 +29,10 @@ export const Mission = () => {
           At Vinkol Logistics, our mission is to deliver world-class logistics
           solutions that connect people, businesses, and markets with speed,
           precision, and purpose. We are driven by a commitment to service
-          excellence, technological innovation, and social
-          responsibility—ensuring every delivery adds value and builds trus
+          excellence, technological innovation, and social responsibility,
+          ensuring every delivery adds value and builds trust. We achieve this
+          by: Ensuring Speed and Reliability Leveraging Advanced Technology
+          Offering Cost-Effective Solutions Championing Client-Centric Service
         </p>
         <div>
           <p className="text-xs mb-2 md:text-sm leading-relaxed">

@@ -2,10 +2,15 @@ import Link from "next/link";
 
 type TermsCheckboxProps = {
   isChecked: boolean;
+  isBooking?: boolean;
   onChange: (checked: boolean) => void;
 };
 
-export const TermsCheckbox = ({ isChecked, onChange }: TermsCheckboxProps) => {
+export const TermsCheckbox = ({
+  isChecked,
+  onChange,
+  isBooking,
+}: TermsCheckboxProps) => {
   return (
     <label className="flex items-start gap-2 text-sm text-gray-700 cursor-pointer">
       <input
@@ -16,7 +21,14 @@ export const TermsCheckbox = ({ isChecked, onChange }: TermsCheckboxProps) => {
       />
       <span>
         I agree to the{" "}
-        <Link href="/terms-and-conditions" className="text-blue-600 underline">
+        <Link
+          href={
+            isBooking
+              ? "/terms-and-conditions-customer"
+              : "/terms-and-conditions"
+          }
+          className="text-blue-600 underline"
+        >
           Terms & Conditions
         </Link>{" "}
         and{" "}

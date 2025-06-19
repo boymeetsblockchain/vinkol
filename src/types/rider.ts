@@ -1,5 +1,7 @@
 import * as z from "zod";
 
+const MAX_FILE_SIZE = 12 * 1024 * 1024; // 12 MB in bytes
+
 export const registerRiderSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
   password: z
@@ -37,17 +39,38 @@ export const resetPasswordSchema = z.object({
 export const updateProfileSchema = z.object({
   firstname: z.string().min(1, { message: "First name is required" }),
   state: z.string().min(1, { message: "State is required" }),
-  avatar: z.instanceof(File, { message: "Avatar must be a file" }).optional(),
+  avatar: z
+    .instanceof(File, { message: "Avatar must be a file" })
+    .optional()
+    .refine((file) => !file || file.size <= MAX_FILE_SIZE, {
+      message: `Avatar must be a maximum of ${
+        MAX_FILE_SIZE / (1024 * 1024)
+      }MB.`, // Dynamic message
+    }),
 });
 
 export const submitKycSchema = z.object({
   idType: z.string().min(1, { message: "ID type is required" }),
-  image: z.instanceof(File, { message: "Image must be a file" }),
+  image: z
+    .instanceof(File, { message: "Avatar must be a file" })
+    .optional()
+    .refine((file) => !file || file.size <= MAX_FILE_SIZE, {
+      message: `Avatar must be a maximum of ${
+        MAX_FILE_SIZE / (1024 * 1024)
+      }MB.`, // Dynamic message
+    }),
 });
 
 export const submitVechicleSchema = z.object({
   vehicleType: z.string().min(1, { message: "ID type is required" }),
-  image: z.instanceof(File, { message: "Image must be a file" }),
+  image: z
+    .instanceof(File, { message: "Avatar must be a file" })
+    .optional()
+    .refine((file) => !file || file.size <= MAX_FILE_SIZE, {
+      message: `Avatar must be a maximum of ${
+        MAX_FILE_SIZE / (1024 * 1024)
+      }MB.`, // Dynamic message
+    }),
 });
 export const sendSmsOtpSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),

@@ -1,8 +1,21 @@
+"use client";
+import { useSubscribe } from "@/services/rider/mutation";
+import { useState } from "react";
 import { GoArrowUpRight } from "react-icons/go";
 
 export const Deliver = () => {
+  const [email, setEmail] = useState("");
+  const { mutate, isPending, isSuccess, isError, error } = useSubscribe(); // Destructure more states for feedback
+
+  const handleSubmit = (e: any) => {
+    e.preventDefault();
+    if (email) {
+      mutate(email);
+    }
+  };
+
   return (
-    <section className="w-full  relative">
+    <section className="w-full relative">
       {/* Black section */}
       <div className="bg-black w-full py-16 md:py-0">
         <div className="flex flex-col md:flex-row justify-between items-center max-w-6xl mx-auto px-4 h-auto md:h-[80vh]">
@@ -16,16 +29,41 @@ export const Deliver = () => {
               <p className="font-bold text-white text-base sm:text-lg">
                 Get in Touch with Us
               </p>
-              <div className="relative mb-10 w-full">
+              <form onSubmit={handleSubmit} className="relative mb-10 w-full">
+                {" "}
+                {/* Wrap in form and add onSubmit */}
                 <input
                   type="email"
                   placeholder="Enter your email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
                   className="border-2 border-white w-full rounded-full py-3 px-5 pr-12 bg-transparent text-white placeholder:text-white placeholder:font-bold"
+                  disabled={isPending} // Disable input while pending
                 />
-                <div className="h-8 w-8 rounded-full flex items-center justify-center bg-blue-primary absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer">
-                  <GoArrowUpRight color="white" />
-                </div>
-              </div>
+                <button
+                  type="submit" // Make it a submit button for the form
+                  className="h-8 w-8 rounded-full flex items-center justify-center bg-blue-primary absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer"
+                  disabled={isPending} // Disable button while pending
+                >
+                  {isPending ? (
+                    <div className="spinner-border animate-spin inline-block w-4 h-4 border-2 rounded-full text-white"></div> // Basic loading spinner
+                  ) : (
+                    <GoArrowUpRight color="white" />
+                  )}
+                </button>
+              </form>
+
+              {/* Provide user feedback */}
+              {isPending && <p className="text-blue-300">Subscribing...</p>}
+              {isSuccess && (
+                <p className="text-green-400">Successfully subscribed!</p>
+              )}
+              {isError && (
+                <p className="text-red-400">
+                  Error: {error?.message || "Something went wrong."}
+                </p>
+              )}
             </div>
           </div>
 

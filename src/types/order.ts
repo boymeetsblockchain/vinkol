@@ -39,7 +39,7 @@ export const createOrderSchema = z.object({
 
 export const orderDataSchema = z.object({
   paystackReference: z.string().min(1, "Paystack reference is required"),
-  orderType: z.enum(["Delivery", "Shopping"], {
+  orderType: z.enum(["Delivery"], {
     errorMap: () => ({ message: "Invalid order type" }),
   }),
   state: z.string().min(1, "State is required"),
