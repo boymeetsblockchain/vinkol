@@ -40,6 +40,8 @@ export const updateStoreProfileSchema = z.object({
   address: z.string().min(1, { message: "Address is required" }),
   lga: z.string().min(1, { message: "LGA is required" }),
   state: z.string().min(1, { message: "State is required" }),
+  lat: z.union([z.string(), z.number()]).transform(String),
+  lng: z.union([z.string(), z.number()]).transform(String),
   phone: z
     .string()
     .min(10, { message: "Phone number is too short" })

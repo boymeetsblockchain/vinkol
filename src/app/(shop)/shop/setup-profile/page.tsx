@@ -5,6 +5,7 @@ import { Button } from "@/components/button";
 import { Header } from "@/components/shop/header";
 import { useRouter } from "next/navigation";
 import { useUpdateStoreProfile } from "@/services/shops/mutation";
+import Autocomplete from "react-google-autocomplete";
 
 function SetUpProfile() {
   const router = useRouter();
@@ -18,14 +19,19 @@ function SetUpProfile() {
   const [state, setState] = useState("");
   const [phone, setPhone] = useState("");
   const [avatar, setAvatar] = useState<File | null>(null);
+  const [lat, setLat] = useState("");
+  const [lng, setLng] = useState("");
 
   const handleSubmit = () => {
+    console.log(lat, lng);
     mutate(
       {
         name,
         bio,
         address,
         lga,
+        lat,
+        lng,
         state,
         phone,
         avatar: avatar || undefined,
@@ -55,7 +61,11 @@ function SetUpProfile() {
             {/* Profile Image Upload */}
             <div className="flex justify-center flex-col items-center gap-2">
               <img
-                src={avatar ? URL.createObjectURL(avatar) : ""}
+                src={
+                  avatar
+                    ? URL.createObjectURL(avatar)
+                    : "/assets/placeholder.png"
+                } // Added a fallback placeholder image
                 alt="Store Profile"
                 className="h-36 w-36 rounded-md object-cover"
               />
@@ -83,13 +93,50 @@ function SetUpProfile() {
                 onChange={(e) => setBio(e.target.value)}
                 className="w-full py-2 px-3 focus:outline-none border border-[#A5A4A0] rounded-[5px] placeholder:text-blue-primary placeholder:text-base"
               ></textarea>
-              <input
-                type="text"
-                placeholder="Shop Address"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
+
+              {/* Google Autocomplete for Address */}
+              <Autocomplete
+                apiKey={process.env.NEXT_PUBLIC_Maps_API_KEY} // Make sure you have this env variable set
+                onPlaceSelected={(place) => {
+                  // Set the full address
+                  setAddress(place.formatted_address || "");
+
+                  // Extract Lat and Lng
+                  if (place.geometry?.location) {
+                    setLat(place.geometry.location.lat().toString());
+                    setLng(place.geometry.location.lng().toString());
+                  }
+
+                  // Optional: Extract city/state/LGA from address components
+                  let foundLga = "";
+                  let foundState = "";
+
+                  for (const component of place.address_components) {
+                    if (
+                      component.types.includes("administrative_area_level_2")
+                    ) {
+                      // This is often the county or LGA
+                      foundLga = component.long_name;
+                    }
+                    if (
+                      component.types.includes("administrative_area_level_1")
+                    ) {
+                      // This is the state
+                      foundState = component.long_name;
+                    }
+                  }
+                  setLga(foundLga);
+                  setState(foundState);
+                }}
+                options={{
+                  types: ["address"], // Restrict to addresses
+                  componentRestrictions: { country: "ng" }, // Restrict to Nigeria
+                }}
+                defaultValue={address} // Set default value to reflect current address state
                 className="w-full py-2 px-3 focus:outline-none border border-[#A5A4A0] rounded-[5px] placeholder:text-blue-primary placeholder:text-base"
+                placeholder="Shop Address"
               />
+
               <div className="grid grid-cols-2 gap-10">
                 <input
                   type="text"
