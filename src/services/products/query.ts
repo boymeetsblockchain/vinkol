@@ -1,15 +1,36 @@
 import { useQuery } from "@tanstack/react-query";
 import { getAllProducts, getSingleProduct } from "./api";
 
-interface Product {
-  image: any;
+type StoreImage = {
+  imageUrl: string;
+  cloudinaryId: string;
+};
+
+type ProductImage = {
+  imageUrl: string;
+  cloudinaryId: string;
+};
+
+type Store = {
+  _id: string;
+  email: string;
+  role: "STORE";
+  address: string;
+  name: string;
+  phone: string;
+  avatar: StoreImage;
+};
+
+type Product = {
   _id: string;
   title: string;
   price: number;
+  description?: string;
+  store: Store;
+  image: ProductImage;
   category: string;
-  imageUrl: string;
-  description: string;
-}
+  slug: string;
+};
 
 interface QueryOptions<TData = unknown, TError = Error> {
   onSuccess?: (data: TData) => void;

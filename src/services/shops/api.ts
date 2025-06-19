@@ -222,3 +222,12 @@ export const createStoreBank = async (
     handleApiError(error, "Failed to create  store bank");
   }
 };
+
+export const getWallet = async () => {
+  try {
+    const response = await axiosInstance.get(`/stores/wallet-balance`);
+    return response.data;
+  } catch (error) {
+    handleApiError(error, "Failed to get wallet balance");
+  }
+};

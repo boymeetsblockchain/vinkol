@@ -81,10 +81,7 @@ export const QuotePage = () => {
     mutate(
       {
         paystackReference: transactionRef,
-        orderType:
-          orderType === "Delivery" || orderType === "Shopping"
-            ? orderType
-            : "Delivery",
+        orderType: "Delivery",
         state: state,
         date: date,
         time: time,

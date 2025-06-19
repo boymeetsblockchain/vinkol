@@ -1,66 +1,106 @@
+// components/shop-page/sidebar.tsx
+
+"use client";
 import { X } from "lucide-react";
 
-interface SidebarProps {
+// (Keep your Store type definition here)
+type Store = {
+  _id: string;
+  name: string;
+  address: string;
+  bio: string;
+  avatar: { imageUrl: string };
+};
+
+interface ShopSideBarProps {
   isOpen: boolean;
   onClose: () => void;
+  store?: Store;
+  categories: string[];
+  selectedCategory?: string;
+  onSelectCategory: (category?: string) => void; // Allow un-selecting
 }
 
-const categories = [
-  "Fresh Produce",
-  "Meat, Fish & Protein",
-  "Dairy Products",
-  "Bakery & Snacks",
-  "Dry Foods & Staples",
-  "Breakfast & Beverages",
-  "Baby & Kids",
-  "Personal Care",
-  "Household & Cleaning",
-  "Home Essentials",
-];
+export const ShopSideBar = ({
+  isOpen,
+  onClose,
+  store,
+  categories,
+  selectedCategory,
+  onSelectCategory,
+}: ShopSideBarProps) => {
+  const handleCategoryClick = (category: string) => {
+    // If the clicked category is already selected, un-select it to show all products
+    if (selectedCategory === category) {
+      onSelectCategory(undefined);
+    } else {
+      onSelectCategory(category);
+    }
+  };
 
-export const ShopSideBar = ({ isOpen, onClose }: SidebarProps) => {
   return (
-    <aside
-      className={`fixed top-0 left-0 z-50 h-full w-64 bg-[#FAFAFA] transform transition-transform duration-300 ease-in-out ${
-        isOpen ? "translate-x-0" : "-translate-x-full"
-      } md:translate-x-0 md:static md:w-1/5 md:block px-4`}
-    >
-      {/* Close button (mobile only) */}
-      <div className="flex justify-between items-center p-4 md:hidden">
-        <img src="/logo.png" alt="Vinkol Logo" className="w-28 h-12" />
-        <button onClick={onClose}>
-          <X size={24} />
-        </button>
-      </div>
+    <>
+      {/* Overlay for mobile */}
+      {isOpen && (
+        <div
+          className="md:hidden fixed inset-0 bg-black bg-opacity-50 z-40"
+          onClick={onClose}
+        ></div>
+      )}
 
-      {/* Desktop logo */}
-      <div className="hidden md:flex justify-center p-4">
-        <img src="/logo.png" alt="Vinkol Logo" className="w-28 h-12" />
-      </div>
-
-      <div className="flex items-center justify-center w-full flex-col">
-        <img
-          src="/assets/shop2.png"
-          className="h-24 w-3/4 rounded-[5px] cursor-pointer object-contain hover:opacity-90 transition"
-          alt={`Supermarket `}
-        />
-        <p className="text-sm md:text-base font-medium text-center">
-          Bokku Supermarket
-        </p>
-        <p className="text-xs text-center ">
-          Prestigous supermarket around Nigeria making shopping easy
-        </p>
-      </div>
-      <div className="mt-6 px-4 space-y-4">
-        {categories.map((category, index) => (
-          <button
-            key={index}
-            className="w-full text-left  font-bold  text-sm md:text-base text-gray-700 "
-          >
-            {category}
+      {/* Sidebar */}
+      <aside
+        className={`fixed top-0 left-0 w-64 bg-white h-full p-6 transform ${
+          isOpen ? "translate-x-0" : "-translate-x-full"
+        } md:relative md:translate-x-0 md:flex-shrink-0 transition-transform duration-300 ease-in-out z-50 md:z-auto border-r border-gray-200`}
+      >
+        <div className="flex justify-between items-center md:hidden mb-6">
+          <h2 className="text-lg font-bold">Store Info</h2>
+          <button onClick={onClose}>
+            <X size={24} />
           </button>
-        ))}
-      </div>
-    </aside>
+        </div>
+
+        {store && (
+          <div className="flex flex-col items-center text-center mb-8">
+            <img
+              src={
+                store.avatar && store.avatar.imageUrl
+                  ? store.avatar.imageUrl
+                  : "/default-avatar.png"
+              }
+              alt={`${store.name} logo`}
+              className="w-24 h-24 rounded-full object-cover border-2 border-gray-200 mb-4"
+            />
+            <h1 className="text-xl font-bold text-gray-900">{store.name}</h1>
+            <p className="text-sm text-gray-600 mt-1">{store.address}</p>
+            <p className="text-sm text-gray-500 mt-2">{store.bio}</p>
+          </div>
+        )}
+
+        {/* Categories */}
+        <div>
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">
+            Categories
+          </h3>
+          <ul className="space-y-2">
+            {categories.map((category) => (
+              <li key={category}>
+                <button
+                  onClick={() => handleCategoryClick(category)}
+                  className={`w-full text-left p-2 rounded-md transition-colors ${
+                    selectedCategory === category
+                      ? "bg-blue-primary text-white font-semibold"
+                      : "text-gray-700 hover:bg-gray-100"
+                  }`}
+                >
+                  {category}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </aside>
+    </>
   );
 };

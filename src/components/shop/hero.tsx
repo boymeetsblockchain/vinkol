@@ -3,14 +3,19 @@ import { MapPin } from "lucide-react";
 import { Button } from "../button";
 import { useRouter } from "next/navigation";
 import { useGetAllStores } from "@/services/shops/query";
-import { useState } from "react"; // Import useState
+import { useState } from "react";
+import Autocomplete from "react-google-autocomplete";
 
 export const ShopHero = () => {
-  const [selectedState, setSelectedState] = useState<string>(""); // State to hold the selected state value
+  const [selectedState, setSelectedState] = useState<string>("");
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
-  // Pass the selectedState to useGetAllStores.
-  // The hook will re-fetch stores whenever selectedState changes.
-  const { data, isLoading } = useGetAllStores({ state: selectedState });
+  // The hook will re-fetch stores whenever selectedState or searchQuery changes.
+  const { data, isLoading } = useGetAllStores({
+    state: selectedState,
+    search: searchQuery,
+  });
+
   const router = useRouter();
 
   console.log("Filtered stores data:", data);
@@ -56,8 +61,12 @@ export const ShopHero = () => {
   ];
 
   const handleSearch = () => {
-    console.log(`/shops/search?state=${selectedState}`);
-    router.push(`/shops/search?state=${selectedState}`);
+    // You might want to pass both the state and the search query in the URL
+    router.push(
+      `/shops/search?state=${selectedState}&q=${encodeURIComponent(
+        searchQuery
+      )}`
+    );
   };
 
   return (
@@ -75,11 +84,24 @@ export const ShopHero = () => {
 
           <div className="flex flex-col md:flex-row items-center space-y-3 md:space-y-0 md:space-x-3">
             <div className="relative w-full max-w-md">
-              <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input
-                type="text"
-                className="w-full pl-12 pr-4 py-3 rounded-full border border-gray-300 placeholder:text-gray-400 text-base"
+              <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 z-10" />
+              <Autocomplete
+                apiKey={process.env.NEXT_PUBLIC_Maps_API_KEY}
+                onPlaceSelected={(place) => {
+                  console.log(place);
+                  setSearchQuery(place.formatted_address || place.name || "");
+                }}
+                options={{
+                  types: ["geocode", "establishment"],
+                  componentRestrictions: { country: "ng" },
+                  fields: ["formatted_address", "name", "geometry.location"],
+                }}
+                value={searchQuery}
+                onChange={(e) =>
+                  setSearchQuery((e.target as HTMLInputElement).value)
+                }
                 placeholder="Enter delivery address"
+                className="w-full pl-12 pr-4 py-3 rounded-full border border-gray-300 placeholder:text-gray-400 text-base"
               />
             </div>
 
@@ -100,7 +122,7 @@ export const ShopHero = () => {
             <Button
               className="rounded-full px-6 py-3 w-full md:w-auto"
               onClick={handleSearch}
-              disabled={isLoading}
+              disabled={isLoading || (!selectedState && !searchQuery)}
             >
               Search
             </Button>

@@ -4,6 +4,7 @@ import {
   getBankLists,
   getSingleStore,
   getStoreProfile,
+  getWallet,
 } from "./api";
 
 export const useGetSingleStore = (id?: string) => {
@@ -36,5 +37,12 @@ export const useGetAllBanks = () => {
   return useQuery({
     queryKey: ["banks"],
     queryFn: getBankLists,
+  });
+};
+
+export const useGetWallet = () => {
+  return useQuery({
+    queryKey: ["wallet"],
+    queryFn: getWallet,
   });
 };

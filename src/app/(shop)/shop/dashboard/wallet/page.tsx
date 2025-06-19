@@ -3,7 +3,7 @@
 import { WithdrawalModal } from "@/components/modals/withdraw";
 import { Button } from "@/components/button";
 import { useState } from "react";
-import { useGetWallet } from "@/services/rider/query";
+import { useGetWallet } from "@/services/shops/query";
 
 interface WalletData {
   balance: number;
