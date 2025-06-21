@@ -1,21 +1,67 @@
 "use client";
 
+interface CartItem {
+  id: string;
+  title: string;
+  imageUrl: string;
+  price: number;
+  description: string;
+  quantity: number;
+}
+
 interface ContactModalProps {
   isOpen: boolean;
   onClose: () => void;
+  cartItems: CartItem[];
+  subtotal: number;
+  total: number;
 }
 
-export const ContactModal = ({ isOpen, onClose }: ContactModalProps) => {
+export const ContactModal = ({
+  isOpen,
+  onClose,
+  cartItems,
+  subtotal,
+  total,
+}: ContactModalProps) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80">
-      <div className="bg-white rounded-xl w-[90%] max-w-screen-sm p-6 space-y-6 shadow-lg flex flex-col h-[80vh] max-h-[600px]">
-        <div className="space-y-6 flex-grow overflow-y-auto">
-          <h1 className="text-2xl font-bold text-center text-gray-900">
-            Contact Details
-          </h1>
+    <div
+      className={`fixed inset-0 z-50 flex items-center justify-center bg-black/80 transition-opacity duration-300 ${
+        isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+      }`}
+    >
+      <div className="bg-white rounded-xl w-[90%] max-w-md p-6 space-y-4">
+        <h2 className="text-xl font-bold">Contact Information</h2>
 
+        {/* Display order summary */}
+        <div className="border-t pt-4">
+          <h3 className="font-semibold mb-2">Your Order:</h3>
+          <ul className="space-y-2 max-h-40 overflow-y-auto">
+            {cartItems.map((item) => (
+              <li key={item.id} className="flex justify-between">
+                <span>
+                  {item.title} × {item.quantity}
+                </span>
+                <span>{formatPrice(item.price * item.quantity)}</span>
+              </li>
+            ))}
+          </ul>
+          <div className="border-t mt-4 pt-4">
+            <div className="flex justify-between font-medium">
+              <span>Subtotal:</span>
+              <span>{formatPrice(subtotal)}</span>
+            </div>
+            <div className="flex justify-between font-bold text-lg mt-2">
+              <span>Total:</span>
+              <span>{formatPrice(total)}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Contact form would go here */}
+        <form className="space-y-4">
           <div className="space-y-4">
             <div>
               <label
@@ -77,33 +123,23 @@ export const ContactModal = ({ isOpen, onClose }: ContactModalProps) => {
               </div>
             </div>
           </div>
-        </div>
+        </form>
 
-        {/* Order Summary - sticks to bottom */}
-        <div className="mt-auto">
-          <div className="space-y-3 border-t border-gray-200 pt-4">
-            <div className="flex justify-between items-center">
-              <p className="text-gray-600">Subtotal</p>
-              <p className="font-medium">₦260,000</p>
-            </div>
-            <div className="flex justify-between items-center">
-              <p className="text-gray-600">Delivery fee</p>
-              <p className="font-medium">₦60,000</p>
-            </div>
-            <div className="flex justify-between items-center pt-3 border-t border-gray-200">
-              <p className="font-bold text-gray-900">Total</p>
-              <p className="font-bold text-blue-primary text-lg">₦320,000</p>
-            </div>
-          </div>
-
-          <button
-            className="w-full bg-blue-primary hover:bg-blue-700 text-white py-3 px-4 rounded-md text-base font-medium transition-colors duration-200 mt-6"
-            onClick={onClose}
-          >
-            Proceed to Payment
-          </button>
-        </div>
+        <button
+          onClick={onClose}
+          className="w-full bg-blue-primary text-white py-2 rounded-md"
+        >
+          Close
+        </button>
       </div>
     </div>
   );
+};
+
+// Helper function (same as in CartModal)
+const formatPrice = (price: number) => {
+  return new Intl.NumberFormat("en-NG", {
+    style: "currency",
+    currency: "NGN",
+  }).format(price);
 };

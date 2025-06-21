@@ -1,9 +1,7 @@
 // components/shop-page/sidebar.tsx
-
 "use client";
 import { X } from "lucide-react";
 
-// (Keep your Store type definition here)
 type Store = {
   _id: string;
   name: string;
@@ -12,13 +10,18 @@ type Store = {
   avatar: { imageUrl: string };
 };
 
+type Category = {
+  name: string;
+  value: string;
+};
+
 interface ShopSideBarProps {
   isOpen: boolean;
   onClose: () => void;
   store?: Store;
-  categories: string[];
+  categories: Category[];
   selectedCategory?: string;
-  onSelectCategory: (category?: string) => void; // Allow un-selecting
+  onSelectCategory: (category?: string) => void;
 }
 
 export const ShopSideBar = ({
@@ -30,12 +33,15 @@ export const ShopSideBar = ({
   onSelectCategory,
 }: ShopSideBarProps) => {
   const handleCategoryClick = (category: string) => {
-    // If the clicked category is already selected, un-select it to show all products
     if (selectedCategory === category) {
       onSelectCategory(undefined);
     } else {
       onSelectCategory(category);
     }
+  };
+
+  const handleAllProductsClick = () => {
+    onSelectCategory(undefined); // This will clear the category filter
   };
 
   return (
@@ -65,7 +71,7 @@ export const ShopSideBar = ({
           <div className="flex flex-col items-center text-center mb-8">
             <img
               src={
-                store.avatar && store.avatar.imageUrl
+                store.avatar?.imageUrl
                   ? store.avatar.imageUrl
                   : "/default-avatar.png"
               }
@@ -83,18 +89,30 @@ export const ShopSideBar = ({
           <h3 className="text-lg font-semibold text-gray-800 mb-4">
             Categories
           </h3>
-          <ul className="space-y-2">
+          <ul className="space-y-0.5">
+            <li>
+              <button
+                onClick={handleAllProductsClick}
+                className={`w-full text-left p-2 rounded-md transition-colors uppercase ${
+                  !selectedCategory
+                    ? "bg-blue-primary text-white font-semibold"
+                    : "text-gray-700 hover:bg-gray-100"
+                }`}
+              >
+                All Products
+              </button>
+            </li>
             {categories.map((category) => (
-              <li key={category}>
+              <li key={category.value}>
                 <button
-                  onClick={() => handleCategoryClick(category)}
-                  className={`w-full text-left p-2 rounded-md transition-colors ${
-                    selectedCategory === category
+                  onClick={() => handleCategoryClick(category.value)}
+                  className={`w-full text-left p-2 rounded-md transition-colors uppercase ${
+                    selectedCategory === category.value
                       ? "bg-blue-primary text-white font-semibold"
                       : "text-gray-700 hover:bg-gray-100"
                   }`}
                 >
-                  {category}
+                  {category.name}
                 </button>
               </li>
             ))}

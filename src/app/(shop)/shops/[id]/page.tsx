@@ -3,40 +3,62 @@
 "use client";
 import { ShopHeader } from "@/components/shop-page/header";
 import { CartModal } from "@/components/modals/cartmodal";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { useGetSingleStore } from "@/services/shops/query";
 import { useGetAllProductsQuery } from "@/services/products/query";
 import { ShopSideBar } from "@/components/shop-page/sidebar";
 import { Menu, ShoppingCart } from "lucide-react";
+import { getCartFromStorage, saveCartToStorage } from "@/config/storage";
+import { ContactModal } from "@/components/modals/contactmodal";
 
-// A static list of categories. In a real app, this might come from an API
 const productCategories = [
-  "Fresh Produce",
-  "Bakery",
-  "Dairy",
-  "Meat",
-  "Pantry",
-  "Snacks",
-  "Beverages",
+  { name: "fresh Produce", value: "fresh-produce" },
+  { name: "dairy Products", value: "dairy-products" },
+  { name: "bakery And Snacks", value: "bakery-and-snacks" },
+  { name: "dry Food And Staples", value: "dry-food-and-staples" },
+  { name: "breakfast And Beverages", value: "breakfast-and-beverages" },
+  { name: "baby And Kids", value: "baby-and-kids" },
+  { name: "personal Care", value: "personal-care" },
+  { name: "household And Cleaning", value: "household-and-cleaning" },
+  { name: "home Essentials", value: "home-essentials" },
 ];
 
+type CartItem = {
+  id: string;
+  title: string;
+  imageUrl: string;
+  price: number;
+  description: string;
+  quantity: number;
+};
 function ShopIdPage() {
   const [openCartModal, setOpenCartModal] = useState<boolean>(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const [openContactModal, setOpenContactModal] = useState(false);
+
   const [selectedCategory, setSelectedCategory] = useState<
     string | undefined
   >();
+
+  const handleCloseContactModal = () => {
+    setOpenContactModal(false);
+  };
+
+  const [cartItems, setCartItems] = useState<CartItem[]>(() =>
+    getCartFromStorage()
+  );
+
+  useEffect(() => {
+    saveCartToStorage(cartItems);
+  }, [cartItems]);
 
   const params = useParams();
   const id = params.id as string;
 
   // Fetch the store details
   const { data: store, isLoading: isStoreLoading } = useGetSingleStore(id);
-
-  // **THE FIX IS HERE**
-  // Fetch products based on the store ID and the selected category.
-  // The query will automatically re-run when `selectedCategory` changes.
   const { data: productsData, isLoading: areProductsLoading } =
     useGetAllProductsQuery(undefined, {
       store: id,
@@ -44,13 +66,64 @@ function ShopIdPage() {
     });
 
   const products = productsData?.data.fetchedData || [];
-  console.log(productsData?.data.fetchedData || []);
 
-  console.log();
+  const handleAddToCart = (product: any) => {
+    setCartItems((prevItems) => {
+      // Check if product already exists in cart
+      const existingItem = prevItems.find((item) => item.id === product._id);
+
+      if (existingItem) {
+        // Increase quantity if exists
+        return prevItems.map((item) =>
+          item.id === product._id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        );
+      } else {
+        // Add new item to cart
+        return [
+          ...prevItems,
+          {
+            id: product._id,
+            title: product.title,
+            imageUrl: product.image?.imageUrl || "/assets/placeholder.png",
+            price: product.price,
+            description: product.description || "No description",
+            quantity: 1,
+          },
+        ];
+      }
+    });
+  };
+
+  const handleRemoveFromCart = (productId: string) => {
+    setCartItems((prevItems) =>
+      prevItems.filter((item) => item.id !== productId)
+    );
+  };
+
+  const handleUpdateQuantity = (productId: string, newQuantity: number) => {
+    if (newQuantity < 1) {
+      handleRemoveFromCart(productId);
+      return;
+    }
+
+    setCartItems((prevItems) =>
+      prevItems.map((item) =>
+        item.id === productId ? { ...item, quantity: newQuantity } : item
+      )
+    );
+  };
+
+  const subtotal = cartItems.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  );
+  const deliveryFee = 5000;
+  const total = subtotal + deliveryFee;
 
   const handleSelectCategory = (category?: string) => {
     setSelectedCategory(category);
-    // Close sidebar on mobile after selection
     if (isSidebarOpen) {
       setIsSidebarOpen(false);
     }
@@ -66,10 +139,18 @@ function ShopIdPage() {
 
   return (
     <section className="min-h-screen bg-white flex flex-col">
-      {/* <ShopHeader isLogo={false} /> */}
-
+      <button
+        onClick={() => setOpenCartModal(true)}
+        className="fixed top-4 right-4 z-50 p-2 bg-white rounded-full shadow-lg"
+      >
+        <ShoppingCart size={24} />
+        {cartItems.length > 0 && (
+          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+            {cartItems.reduce((sum, item) => sum + item.quantity, 0)}
+          </span>
+        )}
+      </button>
       <div className="flex flex-1 overflow-hidden">
-        {/* Mobile hamburger menu button */}
         <button
           onClick={() => setIsSidebarOpen(true)}
           className="md:hidden fixed top-5 left-4 z-30 p-2 bg-white rounded-full shadow"
@@ -77,7 +158,6 @@ function ShopIdPage() {
           <Menu size={24} />
         </button>
 
-        {/* Sidebar */}
         <ShopSideBar
           isOpen={isSidebarOpen}
           onClose={() => setIsSidebarOpen(false)}
@@ -87,17 +167,14 @@ function ShopIdPage() {
           onSelectCategory={handleSelectCategory}
         />
 
-        {/* Main Content */}
         <main className="flex-1 overflow-y-auto">
           <div className="container mx-auto px-4 md:px-6 py-8">
             <div className="flex justify-between items-center mb-6">
               <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
                 {selectedCategory || "All Products"}
               </h1>
-              <span className="text-gray-500">{products.length} items</span>
             </div>
 
-            {/* Product Grid */}
             {areProductsLoading ? (
               <div className="text-center py-10">Loading products...</div>
             ) : (
@@ -105,35 +182,36 @@ function ShopIdPage() {
                 {products.map((product) => (
                   <div
                     key={product._id}
-                    className="bg-[#FAFAFA] rounded-lg ..."
+                    className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 flex flex-col overflow-hidden border border-gray-100"
                   >
-                    {/* ... (Your existing product card JSX) ... */}
-                    <div className="p-4 flex justify-center items-center h-48 bg-white">
+                    <div className="p-4 flex justify-center items-center h-48 bg-gray-50">
                       <img
                         src={
                           product.image?.imageUrl || "/assets/placeholder.png"
                         }
-                        className="h-full w-full object-contain"
+                        className="h-full w-auto max-w-full object-contain"
                         alt={product.description}
                       />
                     </div>
-                    <div className="p-4 flex flex-col flex-grow">
-                      <h3 className="font-semibold text-gray-900 mb-1">
+                    <div className="p-5 flex flex-col flex-grow">
+                      <h3 className="font-semibold text-gray-900 mb-1 text-lg truncate">
                         {product.title}
                       </h3>
-                      <p className="text-gray-600 text-sm mb-2 line-clamp-2">
-                        {product.description}
+                      <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+                        {product.description
+                          ? product.description
+                          : "No Product description"}
                       </p>
-                      <div className="mt-auto">
-                        <p className="font-bold text-gray-900 mb-3">
+                      <div className="flex items-center justify-between mt-auto">
+                        <span className="font-bold text-blue-primary text-base">
                           {new Intl.NumberFormat("en-NG", {
                             style: "currency",
                             currency: "NGN",
                           }).format(product.price)}
-                        </p>
+                        </span>
                         <button
-                          onClick={() => setOpenCartModal(true)}
-                          className="w-full bg-blue-primary hover:bg-blue-700 text-white py-2 px-4 ..."
+                          onClick={() => handleAddToCart(product)}
+                          className="flex items-center gap-2 bg-blue-primary hover:bg-blue-700 transition-colors duration-200 text-white font-medium py-2 px-4 rounded-lg shadow-sm"
                         >
                           <ShoppingCart size={16} /> Add to cart
                         </button>
@@ -157,7 +235,23 @@ function ShopIdPage() {
       </div>
       <CartModal
         isOpen={openCartModal}
-        onClose={() => setOpenCartModal(false)}
+        onClose={() => {
+          setOpenCartModal(false);
+          setOpenContactModal(true); // Open contact modal immediately after closing cart modal
+        }}
+        cartItems={cartItems}
+        onRemoveItem={handleRemoveFromCart}
+        onUpdateQuantity={handleUpdateQuantity}
+        subtotal={subtotal}
+        deliveryFee={deliveryFee}
+        total={total}
+      />
+      <ContactModal
+        isOpen={openContactModal}
+        onClose={handleCloseContactModal}
+        cartItems={cartItems}
+        subtotal={subtotal}
+        total={total}
       />
     </section>
   );
