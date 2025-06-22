@@ -37,7 +37,7 @@ const handleApiError = (error: any, defaultMessage: string): never => {
 
 export const getQuote = async (data: z.infer<typeof getQuoteSchema>) => {
   try {
-    const response = await axiosInstance.post("/orders/get-quote", data);
+    const response = await axiosInstance.post("/orders/", data);
     return response.data;
   } catch (error) {
     handleApiError(error, "Get Qoute Failed");

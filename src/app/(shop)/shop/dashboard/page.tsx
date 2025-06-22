@@ -87,7 +87,7 @@ function ShopId() {
   const [openCartModal, setOpenCartModal] = useState<boolean>(false);
   const { data, isLoading } = useGetStoreOrders();
 
-  const orders: Order[] | undefined = data?.data; // Still assuming data?.data is the array of orders
+  const orders: Order[] | undefined = data?.data;
 
   if (isLoading) {
     return (
@@ -99,7 +99,7 @@ function ShopId() {
 
   return (
     <section className="min-h-screen bg-white">
-      <ShopHeader isLogo={true} />
+      {/* <ShopHeader isLogo={true} /> */}
 
       <div className="container mx-auto px-4 md:px-6 py-8">
         <h1 className="text-3xl font-bold mb-6">Orders</h1>
@@ -166,6 +166,16 @@ function ShopId() {
       <CartModal
         isOpen={openCartModal}
         onClose={() => setOpenCartModal(false)}
+        cartItems={[]}
+        onRemoveItem={function (id: string): void {
+          throw new Error("Function not implemented.");
+        }}
+        onUpdateQuantity={function (id: string, quantity: number): void {
+          throw new Error("Function not implemented.");
+        }}
+        subtotal={0}
+        deliveryFee={0}
+        total={0}
       />
     </section>
   );
