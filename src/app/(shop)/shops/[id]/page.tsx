@@ -22,6 +22,7 @@ const productCategories = [
   { name: "personal Care", value: "personal-care" },
   { name: "household And Cleaning", value: "household-and-cleaning" },
   { name: "home Essentials", value: "home-essentials" },
+  { name: "Others", value: "Others" },
 ];
 
 type CartItem = {

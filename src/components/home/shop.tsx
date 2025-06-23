@@ -18,7 +18,9 @@ export const Shop = () => {
           </h1>
           <div className="flex flex-col md:flex-row gap-4">
             <Button variant="secondary" size="md">
-              <Link href={"/explore-shop"}>Explore supermarket</Link>
+              <Link href={"/explore-shop"}>
+                Explore supermarkets and stores
+              </Link>
             </Button>
             <Button variant="secondary" size="md">
               <Link href={"/shop"}>Register Store on Vinkol</Link>

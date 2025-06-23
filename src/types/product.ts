@@ -10,6 +10,7 @@ export const productCategories = [
   "personal-care",
   "household-and-cleaning",
   "home-essentials",
+  "others",
 ] as const;
 
 const MAX_FILE_SIZE = 12 * 1024 * 1024; // 12 MB in bytes
