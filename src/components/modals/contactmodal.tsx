@@ -1,5 +1,7 @@
 "use client";
 
+import { useGetQuoteMutation } from "@/services/orders/mutation";
+
 interface CartItem {
   id: string;
   title: string;
@@ -25,6 +27,10 @@ export const ContactModal = ({
   total,
 }: ContactModalProps) => {
   if (!isOpen) return null;
+
+  console.log(cartItems);
+
+  const { mutate, isPending } = useGetQuoteMutation();
 
   return (
     <div

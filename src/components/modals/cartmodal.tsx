@@ -3,7 +3,6 @@
 
 import { useState } from "react";
 import { FaTrash, FaTimes } from "react-icons/fa"; // Added FaTimes for close icon
-import { ContactModal } from "./contactmodal";
 
 interface CartItem {
   id: string;
@@ -44,7 +43,8 @@ export const CartModal = ({
   };
 
   const handleProceed = () => {
-    setOpenContactModal(true);
+    // setOpenContactModal(true);
+
     setTimeout(() => {
       onClose();
     }, 3000);
@@ -185,14 +185,6 @@ export const CartModal = ({
           </div>
         </div>
       </div>
-
-      <ContactModal
-        isOpen={openContactModal}
-        onClose={handleCloseContactModal}
-        cartItems={cartItems}
-        subtotal={subtotal}
-        total={total}
-      />
     </>
   );
 };
