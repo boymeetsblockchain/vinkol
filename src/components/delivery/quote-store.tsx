@@ -115,7 +115,7 @@ export const QuotePage = () => {
           email,
           phone,
         },
-        amount: calculatedTotalAmount + calculatedDeliveryFee,
+        amount: calculatedTotalAmount,
         store: store,
         products: formattedProducts,
         deliveryFee: calculatedDeliveryFee,
