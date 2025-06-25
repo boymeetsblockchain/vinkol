@@ -17,7 +17,7 @@ interface CartItem {
 
 interface CartModalProps {
   isOpen: boolean;
-  shopId: string;
+  shopId?: string;
   onClose: () => void;
   cartItems: CartItem[];
   onRemoveItem: (id: string) => void;
