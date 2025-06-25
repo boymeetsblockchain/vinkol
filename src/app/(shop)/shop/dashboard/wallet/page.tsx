@@ -93,7 +93,11 @@ function Orders() {
       */}
 
       {/* Modal */}
-      <WithdrawalModal isOpen={openModal} onClose={handleCloseModal} />
+      <WithdrawalModal
+        isOpen={openModal}
+        onClose={handleCloseModal}
+        isStore={true}
+      />
     </section>
   );
 }

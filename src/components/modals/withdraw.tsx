@@ -2,14 +2,27 @@
 
 import { Button } from "../button";
 import { useRouter } from "next/navigation";
+import { useWithDraw } from "@/services/rider/mutation";
+import { useWithDraw as useShopWithdraw } from "@/services/shops/mutation";
 
 interface RiderAuthModalProps {
   isOpen: boolean;
   onClose: () => void;
+  isStore?: boolean;
 }
 
-export const WithdrawalModal = ({ isOpen, onClose }: RiderAuthModalProps) => {
+import { useState } from "react";
+
+export const WithdrawalModal = ({
+  isOpen,
+  onClose,
+  isStore,
+}: RiderAuthModalProps) => {
   const router = useRouter();
+  const { mutate, isPending } = useWithDraw();
+  const { mutate: shopWithdraw } = useShopWithdraw();
+
+  const [amount, setAmount] = useState("");
 
   if (!isOpen) return null;
 
@@ -23,22 +36,9 @@ export const WithdrawalModal = ({ isOpen, onClose }: RiderAuthModalProps) => {
         <div className="space-y-3">
           <input
             type="text"
-            placeholder="Select Bank"
-            className="w-full py-2 px-3 border border-[#A5A4A0] rounded-md placeholder:text-blue-primary focus:outline-none"
-          />
-          <input
-            type="text"
-            placeholder="Account Number"
-            className="w-full py-2 px-3 border border-[#A5A4A0] rounded-md placeholder:text-blue-primary focus:outline-none"
-          />
-          <input
-            type="text"
-            placeholder="Account Name"
-            className="w-full py-2 px-3 border border-[#A5A4A0] rounded-md placeholder:text-blue-primary focus:outline-none"
-          />
-          <input
-            type="text"
             placeholder="Amount"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
             className="w-full py-2 px-3 border border-[#A5A4A0] rounded-md placeholder:text-blue-primary focus:outline-none"
           />
         </div>
@@ -49,10 +49,16 @@ export const WithdrawalModal = ({ isOpen, onClose }: RiderAuthModalProps) => {
           </Button>
           <Button
             onClick={() => {
-              onClose();
+              if (isStore) {
+                shopWithdraw(amount);
+                onClose();
+              } else {
+                mutate(amount);
+                onClose();
+              }
             }}
           >
-            Withdraw
+            {isPending ? "Withdrawing" : "Withdraw"}
           </Button>
         </div>
       </div>
