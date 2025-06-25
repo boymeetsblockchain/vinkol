@@ -21,8 +21,10 @@ import {
   validateBank,
   verifyEmail,
   createStoreBank,
+  withdraw,
 } from "./api";
 import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 /**
  * Defines the common options structure for mutation hooks.
@@ -221,6 +223,25 @@ export function useCreateStoreBank(options?: MutationOptions<any, Error>) {
     },
     onError: (errorData: Error) => {
       console.error("Update Store Profile  failed:", errorData.message);
+      options?.onError?.(errorData);
+    },
+  });
+
+  return { mutate, data, error, isPending, isSuccess, isError };
+}
+export function useWithDraw(options?: MutationOptions<any, Error>) {
+  const { mutate, data, error, isPending, isSuccess, isError } = useMutation({
+    mutationFn: async (amount: string) => {
+      // The payload for delete is typically just the ID
+      return await withdraw(amount);
+    },
+    onSuccess: (responseData) => {
+      console.log("Message ", responseData);
+      options?.onSuccess?.(responseData);
+      toast.success(responseData?.data?.message || "WithDrawal successful");
+    },
+    onError: (errorData: Error) => {
+      toast.error("WithDrawal failed");
       options?.onError?.(errorData);
     },
   });

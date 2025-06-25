@@ -271,3 +271,21 @@ export const subscribe = async (email: string) => {
     handleApiError(error, "failed to send message");
   }
 };
+
+export const withdraw = async (amount: string) => {
+  try {
+    const response = await axiosInstance.post("/users/withdraw", { amount });
+    return response;
+  } catch (error) {
+    handleApiError(error, "failed to withdraw");
+  }
+};
+
+export const getWithdrawalHistory = async () => {
+  try {
+    const response = await axiosInstance.get("/users/withdrawal-history");
+    return response.data;
+  } catch (error) {
+    handleApiError(error, "Failed to get WithDrawal history");
+  }
+};

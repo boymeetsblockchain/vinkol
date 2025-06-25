@@ -5,6 +5,7 @@ import {
   getSingleStore,
   getStoreProfile,
   getWallet,
+  getWithdrawalHistory,
 } from "./api";
 
 export const useGetSingleStore = (id?: string) => {
@@ -42,7 +43,14 @@ export const useGetAllBanks = () => {
 
 export const useGetWallet = () => {
   return useQuery({
-    queryKey: ["wallet"],
+    queryKey: ["shopwallet"],
     queryFn: getWallet,
+  });
+};
+
+export const useGetWithdrawalHistory = () => {
+  return useQuery({
+    queryKey: ["shopwithdrawalhistory"],
+    queryFn: getWithdrawalHistory,
   });
 };

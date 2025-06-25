@@ -2,7 +2,9 @@
 "use client";
 
 import { useState } from "react";
-import { FaTrash, FaTimes } from "react-icons/fa"; // Added FaTimes for close icon
+import { FaTrash, FaTimes } from "react-icons/fa";
+import { useRouter } from "next/navigation";
+import { Router } from "lucide-react";
 
 interface CartItem {
   id: string;
@@ -15,6 +17,7 @@ interface CartItem {
 
 interface CartModalProps {
   isOpen: boolean;
+  shopId: string;
   onClose: () => void;
   cartItems: CartItem[];
   onRemoveItem: (id: string) => void;
@@ -33,6 +36,7 @@ export const CartModal = ({
   subtotal,
   deliveryFee,
   total,
+  shopId,
 }: CartModalProps) => {
   const [openContactModal, setOpenContactModal] = useState<boolean>(false);
 
@@ -42,14 +46,11 @@ export const CartModal = ({
     setOpenContactModal(false);
   };
 
+  console.log(shopId);
+  const router = useRouter();
   const handleProceed = () => {
-    // setOpenContactModal(true);
-
-    setTimeout(() => {
-      onClose();
-    }, 3000);
+    router.push(`/shops/checkout/${shopId}`);
   };
-
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("en-NG", {
       style: "currency",

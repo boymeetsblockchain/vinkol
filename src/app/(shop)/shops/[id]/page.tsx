@@ -37,15 +37,15 @@ function ShopIdPage() {
   const [openCartModal, setOpenCartModal] = useState<boolean>(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  const [openContactModal, setOpenContactModal] = useState(false);
+  // const [openContactModal, setOpenContactModal] = useState(false);
 
   const [selectedCategory, setSelectedCategory] = useState<
     string | undefined
   >();
 
-  const handleCloseContactModal = () => {
-    setOpenContactModal(false);
-  };
+  // const handleCloseContactModal = () => {
+  //   setOpenContactModal(false);
+  // };
 
   const [cartItems, setCartItems] = useState<CartItem[]>(() =>
     getCartFromStorage()
@@ -238,20 +238,13 @@ function ShopIdPage() {
         isOpen={openCartModal}
         onClose={() => {
           setOpenCartModal(false);
-          setOpenContactModal(true); // Open contact modal immediately after closing cart modal
         }}
+        shopId={id as string}
         cartItems={cartItems}
         onRemoveItem={handleRemoveFromCart}
         onUpdateQuantity={handleUpdateQuantity}
         subtotal={subtotal}
         deliveryFee={deliveryFee}
-        total={total}
-      />
-      <ContactModal
-        isOpen={openContactModal}
-        onClose={handleCloseContactModal}
-        cartItems={cartItems}
-        subtotal={subtotal}
         total={total}
       />
     </section>

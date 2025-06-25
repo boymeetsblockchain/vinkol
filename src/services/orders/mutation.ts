@@ -3,7 +3,9 @@ import {
   acceptOrder,
   changeOrderStatus,
   createGuestOrder,
+  createStoreOrder,
   getQuote,
+  getShoppingDeliveryFee,
 } from "./api";
 import * as z from "zod";
 import {
@@ -11,6 +13,8 @@ import {
   getQuoteSchema,
   orderDataSchema,
   changeOrderStatusSchema,
+  getShoppingDeliveryFeeSchema,
+  createStoreOrderSchema,
 } from "@/types/order";
 
 /**
@@ -102,5 +106,43 @@ export function useChangeOrderStatus(options?: MutationOptions<any, Error>) {
       options?.onError?.(errorData);
     },
   });
+  return { mutate, data, error, isPending, isSuccess, isError };
+}
+
+export function useGetShoppingDeliveryFee(
+  options?: MutationOptions<any, Error>
+) {
+  const { mutate, data, error, isPending, isSuccess, isError } = useMutation({
+    mutationFn: async (data: z.infer<typeof getShoppingDeliveryFeeSchema>) => {
+      return await getShoppingDeliveryFee(data);
+    },
+    onSuccess: (responseData) => {
+      console.log("Accept Order successful:", responseData);
+      options?.onSuccess?.(responseData);
+    },
+    onError: (errorData: Error) => {
+      console.error("Accept Order failed:", errorData.message);
+      options?.onError?.(errorData);
+    },
+  });
+
+  return { mutate, data, error, isPending, isSuccess, isError };
+}
+
+export function useCreateOrderFromStore(options?: MutationOptions<any, Error>) {
+  const { mutate, data, error, isPending, isSuccess, isError } = useMutation({
+    mutationFn: async (data: z.infer<typeof createStoreOrderSchema>) => {
+      return await createStoreOrder(data);
+    },
+    onSuccess: (responseData) => {
+      console.log("create Order successful:", responseData);
+      options?.onSuccess?.(responseData);
+    },
+    onError: (errorData: Error) => {
+      console.error("create Order failed:", errorData.message);
+      options?.onError?.(errorData);
+    },
+  });
+
   return { mutate, data, error, isPending, isSuccess, isError };
 }

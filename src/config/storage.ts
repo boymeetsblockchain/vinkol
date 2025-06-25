@@ -19,3 +19,9 @@ export const saveCartToStorage = (cart: CartItem[]) => {
     localStorage.setItem("cart", JSON.stringify(cart));
   }
 };
+
+export const clearCart = () => {
+  if (typeof window !== "undefined") {
+    localStorage.removeItem("cart");
+  }
+};

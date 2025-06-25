@@ -2,8 +2,10 @@ import axiosInstance from "@/config/guest";
 import {
   changeOrderStatusSchema,
   createOrderSchema,
+  createStoreOrderSchema,
   GetOrdersParams,
   getQuoteSchema,
+  getShoppingDeliveryFeeSchema,
   orderDataSchema,
 } from "@/types/order";
 import * as z from "zod";
@@ -150,6 +152,33 @@ export const getRiderOrders = async () => {
     return response.data;
   } catch (error) {
     handleApiError(error, " Error Getting Order Status");
+    throw error;
+  }
+};
+
+export const getShoppingDeliveryFee = async (
+  data: z.infer<typeof getShoppingDeliveryFeeSchema>
+) => {
+  try {
+    const response = await axiosInstance.post(
+      "orders/shopping-delivery-fee",
+      data
+    );
+    return response.data;
+  } catch (error) {
+    handleApiError(error, " Error Getting Delivery Fee");
+    throw error;
+  }
+};
+
+export const createStoreOrder = async (
+  data: z.infer<typeof createStoreOrderSchema>
+) => {
+  try {
+    const response = await axiosInstance.post("orders/guest-store-order", data);
+    return response.data;
+  } catch (error) {
+    handleApiError(error, " Error Creating Order from Store");
     throw error;
   }
 };

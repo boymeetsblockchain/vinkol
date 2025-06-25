@@ -79,3 +79,35 @@ export const changeOrderStatusSchema = z.object({
   status: z.union([z.literal("Delivered"), z.literal("Picked")]),
   orderOtp: z.string().optional(),
 });
+
+export const getShoppingDeliveryFeeSchema = z.object({
+  store: z.string(),
+  deliveryType: z.string(),
+  dropoffLocation: z.object({
+    lat: z.union([z.string(), z.number()]).transform(String),
+    lng: z.union([z.string(), z.number()]).transform(String),
+  }),
+});
+
+export const createStoreOrderSchema = z.object({
+  paystackReference: z.string(),
+  orderType: z.enum(["Shopping", "Other"]),
+  state: z.string(),
+  store: z.string().length(24),
+  products: z.array(
+    z.object({
+      product: z.string().length(24),
+      quantity: z.number().int().min(1),
+    })
+  ),
+  amount: z.number().positive(),
+  deliveryFee: z.number().nonnegative(),
+  dropoffLocation: z.string(),
+  deliveryType: z.enum(["regular", "express", "scheduled"]).optional(),
+  guest: z.object({
+    email: z.string().email(),
+    firstname: z.string(),
+    lastname: z.string(),
+    phone: z.string(),
+  }),
+});

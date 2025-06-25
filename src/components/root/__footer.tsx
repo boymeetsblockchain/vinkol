@@ -45,7 +45,7 @@ export const Footer = () => {
                   )}
                 </ul>
               )}
-              <li>Product Support</li>
+              <Link href={"/product-support"}>Product Support</Link>
             </ul>
           </div>
 
