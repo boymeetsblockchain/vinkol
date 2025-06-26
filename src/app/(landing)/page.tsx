@@ -5,6 +5,7 @@ import { HowitWorks } from "@/components/home/how-it-works";
 import { Shop } from "@/components/home/shop";
 import { Trust } from "@/components/home/trust-signal";
 import { WhyChooseUs } from "@/components/home/why-choose-us";
+import Youtube from "@/components/home/youtube";
 
 export default function Home() {
   return (
@@ -12,6 +13,7 @@ export default function Home() {
       <Hero />
       <Shop />
       <HowitWorks />
+      <Youtube />
       <Trust />
       <WhyChooseUs />
       <CTA />

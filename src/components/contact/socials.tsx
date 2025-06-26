@@ -31,6 +31,7 @@ const infoArray = [
   {
     name: "Email",
     desc: "info@vinkol.com",
+    subdesc: "info@vinkolventures.onmicrosoft.com",
     icon: Mail,
     iconcolor: "#60D669",
   },
@@ -66,11 +67,11 @@ export const Socials = () => {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {infoArray.map((item, index) => (
           <div
             key={index}
-            className="flex flex-col p-4 bg-white rounded-lg shadow-lg borderboder-[#DFDEDA] h-[100px] transform transition duration-300 hover:scale-105 hover:shadow-xl"
+            className="flex flex-col py-4 px-2  bg-white rounded-lg shadow-lg borderboder-[#DFDEDA] h-[100px] transform transition duration-300 hover:scale-105 hover:shadow-xl"
           >
             <div className="flex gap-x-3 items-">
               <div
@@ -84,7 +85,7 @@ export const Socials = () => {
               </h3>
             </div>
             <p className="text-gray-600  text-xs text-left ml-8">{item.desc}</p>
-            <p className="text-gray-600  text-xs text-left ml-8">
+            <p className="text-gray-600  text-xs text-left ml-8 ">
               {item.subdesc}
             </p>
           </div>

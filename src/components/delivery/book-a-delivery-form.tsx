@@ -401,28 +401,6 @@ export const BookADeliveryForm = () => {
             )}
           />
 
-          {/* Priority Dropdown */}
-          <FormField
-            control={form.control}
-            name="priority"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Priority</FormLabel>
-                <FormControl>
-                  <select
-                    {...field}
-                    className="w-full border border-blue-primary text-blue-primary py-4 px-3 rounded-md appearance-none bg-white pr-8"
-                  >
-                    <option value="low">Low</option>
-                    <option value="medium">Medium</option>
-                    <option value="high">High</option>
-                  </select>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
           {/* Type Dropdown */}
           <FormField
             control={form.control}
