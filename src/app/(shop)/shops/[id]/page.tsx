@@ -118,12 +118,10 @@ function ShopIdPage() {
     );
   };
 
-  const subtotal = cartItems.reduce(
+  const total = cartItems.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0
   );
-  const deliveryFee = 5000;
-  const total = subtotal + deliveryFee;
 
   const handleSelectCategory = (category?: string) => {
     setSelectedCategory(category);
@@ -245,8 +243,6 @@ function ShopIdPage() {
         cartItems={cartItems}
         onRemoveItem={handleRemoveFromCart}
         onUpdateQuantity={handleUpdateQuantity}
-        subtotal={subtotal}
-        deliveryFee={deliveryFee}
         total={total}
       />
     </section>

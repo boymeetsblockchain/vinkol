@@ -22,8 +22,6 @@ interface CartModalProps {
   cartItems: CartItem[];
   onRemoveItem: (id: string) => void;
   onUpdateQuantity: (id: string, quantity: number) => void;
-  subtotal: number;
-  deliveryFee: number;
   total: number;
 }
 
@@ -33,8 +31,6 @@ export const CartModal = ({
   cartItems,
   onRemoveItem,
   onUpdateQuantity,
-  subtotal,
-  deliveryFee,
   total,
   shopId,
 }: CartModalProps) => {
@@ -159,14 +155,10 @@ export const CartModal = ({
 
                 {/* Order Summary */}
                 <div className="space-y-3 border-t border-gray-200 pt-4">
-                  <div className="flex justify-between items-center">
-                    <p className="text-gray-600">Subtotal</p>
-                    <p className="font-medium">{formatPrice(subtotal)}</p>
-                  </div>
-                  <div className="flex justify-between items-center">
+                  {/* <div className="flex justify-between items-center">
                     <p className="text-gray-600">Delivery fee</p>
                     <p className="font-medium">{formatPrice(deliveryFee)}</p>
-                  </div>
+                  </div> */}
                   <div className="flex justify-between items-center pt-3 border-t border-gray-200">
                     <p className="font-bold text-gray-900">Total</p>
                     <p className="font-bold text-blue-primary text-lg">

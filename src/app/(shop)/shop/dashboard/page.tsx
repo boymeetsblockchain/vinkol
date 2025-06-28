@@ -173,8 +173,6 @@ function ShopId() {
         onUpdateQuantity={function (id: string, quantity: number): void {
           throw new Error("Function not implemented.");
         }}
-        subtotal={0}
-        deliveryFee={0}
         total={0}
       />
     </section>
