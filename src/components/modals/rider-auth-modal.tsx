@@ -7,19 +7,23 @@ import { useRouter } from "next/navigation";
 import {
   useRiderRegisterMutation,
   useRiderLoginMutation,
-} from "@/services/rider/mutation"; // Assuming these are correctly defined
+} from "@/services/rider/mutation";
 import { toast } from "sonner"; // For user notifications
+import { useShopLoginMutation } from "@/services/shops/mutation";
 import { TermsCheckbox } from "../shared/terms";
+import { X } from "lucide-react";
 
-interface RiderAuthModalProps {
+interface ShopperAuthModalProps {
   isOpen: boolean;
   onClose: () => void;
-  // The 'islogin' prop seems redundant given 'swithAuthType' state,
-  // but keeping it here as per your original code.
   islogin: boolean;
 }
 
-export const RiderAuthModal = ({ isOpen, onClose }: RiderAuthModalProps) => {
+export const RiderAuthModal = ({
+  isOpen,
+  onClose,
+  islogin,
+}: ShopperAuthModalProps) => {
   // State to manage whether the user is in login or register mode
   const [swithAuthType, setSwitchAuthType] = useState<"login" | "register">(
     "login"
@@ -30,7 +34,6 @@ export const RiderAuthModal = ({ isOpen, onClose }: RiderAuthModalProps) => {
   const [confirmPassword, setConfirmPassword] = useState(""); // For registration
   const [isChecked, setIsChecked] = useState<boolean>(false);
 
-  // Determine if the current mode is login based on state
   const isLogin = swithAuthType === "login";
   const modalRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
@@ -40,9 +43,11 @@ export const RiderAuthModal = ({ isOpen, onClose }: RiderAuthModalProps) => {
     useRiderRegisterMutation();
   const { mutate: riderLogin, isPending: isLoggingIn } =
     useRiderLoginMutation();
-
-  // Determine if any mutation is currently pending
   const isPending = isRegistering || isLoggingIn;
+
+  useEffect(() => {
+    setSwitchAuthType(islogin ? "login" : "register");
+  }, [islogin]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -63,7 +68,6 @@ export const RiderAuthModal = ({ isOpen, onClose }: RiderAuthModalProps) => {
     };
   }, [isOpen, onClose]);
 
-  // If the modal is not open, render nothing
   if (!isOpen) {
     return null;
   }
@@ -71,10 +75,10 @@ export const RiderAuthModal = ({ isOpen, onClose }: RiderAuthModalProps) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault(); // Prevent default form submission behavior
     if (!isLogin && !isChecked) {
-      // <--- MODIFIED CONDITION HERE
       toast.error("Please accept terms and conditions.");
       return;
     }
+
     // Basic validation
     if (!email || !password) {
       toast.error("Please enter both email and password.");
@@ -93,7 +97,7 @@ export const RiderAuthModal = ({ isOpen, onClose }: RiderAuthModalProps) => {
         {
           onSuccess: () => {
             toast.success("Login successful!");
-            router.push("/rider/dashboard"); // Or wherever the user should go after login
+            router.push("/shopper/dashboard"); // Or wherever the user should go after login
             onClose(); // Close the modal on successful login
           },
           onError: (error) => {
@@ -109,12 +113,11 @@ export const RiderAuthModal = ({ isOpen, onClose }: RiderAuthModalProps) => {
         { email, password },
         {
           onSuccess: () => {
-            localStorage.setItem("ride-email", email);
             toast.success(
               "Registration successful! Please check your email for OTP."
             );
-            router.push(`/rider/auth/otp?email=${encodeURIComponent(email)}`); // Navigate to OTP verification page
-            onClose();
+            router.push(`/shopper/auth/otp?email=${encodeURIComponent(email)}`); // Navigate to OTP verification page
+            onClose(); // Close the modal on successful registration
           },
           onError: (error) => {
             console.error("Registration failed:", error);

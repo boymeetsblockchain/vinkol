@@ -44,6 +44,10 @@ export const ShopperAuthModal = ({
 
   const isPending = isRegistering || isLoggingIn;
 
+    useEffect(() => {
+    setSwitchAuthType(islogin ? "login" : "register");
+  }, [islogin]);
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -66,6 +70,7 @@ export const ShopperAuthModal = ({
   if (!isOpen) {
     return null;
   }
+
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault(); // Prevent default form submission behavior

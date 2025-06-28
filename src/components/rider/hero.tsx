@@ -7,17 +7,12 @@ import { Button } from "../button";
 import { AppStoreCard } from "../shared/appstore";
 import { RiderAuthModal } from "../modals/rider-auth-modal";
 export const Hero = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isLogin, setIsLogin] = useState(false); // distinguish between login/register
+  const [isOpen, setIsOpen] = useState(false);
+  const [isLogin, setIsLogin] = useState(true);
 
-  const triggerRegisterModal = () => {
-    setIsLogin(false);
-    setIsModalOpen(true);
-  };
-
-  const triggerLoginModal = () => {
-    setIsLogin(true);
-    setIsModalOpen(true);
+  const openModal = (mode: "login" | "register") => {
+    setIsLogin(mode === "login");
+    setIsOpen(true);
   };
 
   return (
@@ -43,10 +38,14 @@ export const Hero = () => {
           </div>
           <div>
             <div className="mt-6 flex items-start sm:items-center gap-4">
-              <Button size="lg" onClick={triggerRegisterModal}>
+              <Button size="lg" onClick={() => openModal("register")}>
                 Become a Rider
               </Button>
-              <Button size="lg" variant="secondary" onClick={triggerLoginModal}>
+              <Button
+                size="lg"
+                variant="secondary"
+                onClick={() => openModal("login")}
+              >
                 Login to Rider Forum
               </Button>
             </div>
@@ -67,8 +66,8 @@ export const Hero = () => {
         </div>
         {/* Auth Modal */}
         <RiderAuthModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
+          isOpen={isOpen}
+          onClose={() => setIsOpen(false)}
           islogin={isLogin}
         />
       </div>
