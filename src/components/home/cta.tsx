@@ -10,10 +10,6 @@ export const CTA = () => {
         <div className="md:col-span-2">
           {/* call to action */}
           <div className="flex flex-col m1-10 justify-center items-center md:items-start px-4 text-white space-y-4">
-            <button className="bg-[rgba(255,255,255,0.5)] opacity-50 text-sm py-2 px-3 rounded-full text-black flex items-center gap-x-3">
-              <GiLightningElectron />
-              Call to Action
-            </button>
             <p className="text-2xl md:text-4xl  md:max-w-2xl sm:w-full font-semibold text-center md:text-left">
               Elevate Your Delivery Experience with Our Easy-to-Use Vinkol App
               Today!
@@ -22,7 +18,7 @@ export const CTA = () => {
               Connect instantly with verified riders to deliver your goods or
               pick up purchases from any store.
             </p>
-            <div className="mt-6 flex flex-row  items-start sm:items-center gap-4">
+            <div className="mt-6 flex flex-col md:flex-row  items-start sm:items-center gap-4">
               <AppStoreCard
                 platform="Google Play"
                 icon={<FaGooglePlay color="black" size={24} />}
