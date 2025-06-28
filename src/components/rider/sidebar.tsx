@@ -49,7 +49,10 @@ export const RiderDashBoardSidebBar = ({ isOpen, onClose }: SidebarProps) => {
     >
       {/* Close button (mobile only) */}
       <div className="flex justify-between items-center p-4 md:hidden">
-        <img src="/logo.png" alt="Vinkol Logo" className="w-28 h-12" />
+        <Link href={"/"}>
+          {" "}
+          <img src="/logo.png" alt="Vinkol Logo" className="w-28 h-12" />
+        </Link>
         <button onClick={onClose}>
           <X size={24} />
         </button>
@@ -57,7 +60,10 @@ export const RiderDashBoardSidebBar = ({ isOpen, onClose }: SidebarProps) => {
 
       {/* Desktop logo */}
       <div className="hidden md:flex justify-center p-4">
-        <img src="/logo.png" alt="Vinkol Logo" className="w-28 h-12" />
+        <Link href={"/"}>
+          {" "}
+          <img src="/logo.png" alt="Vinkol Logo" className="w-28 h-12" />
+        </Link>
       </div>
 
       {/* Dashboard Links */}

@@ -95,27 +95,27 @@ export const CartModal = ({
                     key={item.id}
                     className="flex justify-between bg-[#FAFAFA] items-start p-3 rounded-lg hover:bg-gray-50 transition-colors"
                   >
-                    <div className="flex items-start gap-4 flex-1">
+                    <div className="flex items-start gap-2 sm:gap-4 flex-1">
                       <img
                         src={item.imageUrl}
-                        className="h-16 w-16 object-cover rounded-md bg-white p-1 border border-gray-200"
+                        className="h-12 w-12 sm:h-16 sm:w-16 object-cover rounded-md bg-white p-1 border border-gray-200"
                         alt={item.title}
                         onError={(e) => {
                           (e.target as HTMLImageElement).src =
                             "/assets/placeholder.png";
                         }}
                       />
-                      <div className="space-y-2">
-                        <p className="text-blue-primary font-medium">
+                      <div className="space-y-1 sm:space-y-2">
+                        <p className="text-blue-primary text-xs sm:text-base font-medium">
                           {item.title}
                         </p>
-                        <p className="text-sm text-gray-600 line-clamp-1">
+                        <p className="text-xs sm:text-sm text-gray-600 line-clamp-1">
                           {item.description}
                         </p>
                         <div className="flex items-center gap-4">
                           <div className="flex items-center gap-2 bg-white px-2 py-1 rounded border">
                             <button
-                              className="px-1 text-gray-500 hover:text-gray-700 disabled:opacity-30"
+                              className="px-1 text-gray-500 hover:text-gray-700 text-xs md:text-base disabled:opacity-30"
                               onClick={() =>
                                 onUpdateQuantity(item.id, item.quantity - 1)
                               }
@@ -125,7 +125,6 @@ export const CartModal = ({
                             </button>
                             <span className="font-medium w-6 text-center">
                               {" "}
-                              {/* Fixed width */}
                               {item.quantity}
                             </span>
                             <button
@@ -147,9 +146,11 @@ export const CartModal = ({
                         </div>
                       </div>
                     </div>
-                    <div className="text-right space-y-1">
-                      <p className="text-gray-600">{formatPrice(item.price)}</p>
-                      <h2 className="text-blue-primary font-bold text-lg">
+                    <div className="text-right space-y-1 mt-2 sm:mt-0">
+                      <p className="text-gray-600 text-xs sm:text-base">
+                        {formatPrice(item.price)}
+                      </p>
+                      <h2 className="text-blue-primary font-bold text-base sm:text-lg">
                         {formatPrice(item.price * item.quantity)}
                       </h2>
                     </div>

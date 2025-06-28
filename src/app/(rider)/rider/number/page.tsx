@@ -1,6 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/button";
+import Link from "next/link";
 
 function Profile() {
   const router = useRouter();
@@ -9,7 +10,10 @@ function Profile() {
     <section className="max-w-screen-2xl w-full px-4 md:px-20 py-10 mx-auto">
       {/* Logo */}
       <div className="mb-8">
-        <img src="/logo.png" alt="Vinkol Logo" className="w-28 h-12" />
+        <Link href={"/"}>
+          {" "}
+          <img src="/logo.png" alt="Vinkol Logo" className="w-28 h-12" />
+        </Link>
       </div>
 
       {/* Content Grid */}

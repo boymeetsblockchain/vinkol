@@ -5,6 +5,7 @@ import { toast } from "sonner";
 
 import { Button } from "@/components/button";
 import { useSubmitVechicle } from "@/services/rider/mutation";
+import Link from "next/link";
 
 function SubmitVehicle() {
   // Corrected spelling here
@@ -42,7 +43,10 @@ function SubmitVehicle() {
     <section className="max-w-screen-2xl w-full px-4 md:px-20 py-10 mx-auto">
       {/* Logo */}
       <div className="mb-8">
-        <img src="/logo.png" alt="Vinkol Logo" className="w-28 h-12" />
+        <Link href={"/"}>
+          {" "}
+          <img src="/logo.png" alt="Vinkol Logo" className="w-28 h-12" />
+        </Link>
       </div>
 
       {/* Content Grid */}
@@ -77,8 +81,10 @@ function SubmitVehicle() {
                   {/* Corrected spelling */}
                   {/* These options seem to be for ID types. If they are truly vehicle types, ensure they are relevant. 
                       Otherwise, you might want to adjust them, e.g., "Car", "Motorcycle", "Bicycle". */}
+                  <option value="bike">Bike</option>
                   <option value="car">Car</option>
                   <option value="truck">Truck</option>
+                  <option value="bicycle">Bicycle</option>
                 </select>
               </div>
               {/* ID Image Upload */}

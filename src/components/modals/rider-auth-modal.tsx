@@ -2,7 +2,7 @@
 import { FcGoogle } from "react-icons/fc";
 import { FaApple } from "react-icons/fa6";
 import { Button } from "../button";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import {
   useRiderRegisterMutation,
@@ -32,7 +32,7 @@ export const RiderAuthModal = ({ isOpen, onClose }: RiderAuthModalProps) => {
 
   // Determine if the current mode is login based on state
   const isLogin = swithAuthType === "login";
-
+  const modalRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
   // Initialize mutations for registration and login
@@ -43,6 +43,25 @@ export const RiderAuthModal = ({ isOpen, onClose }: RiderAuthModalProps) => {
 
   // Determine if any mutation is currently pending
   const isPending = isRegistering || isLoggingIn;
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        modalRef.current &&
+        !modalRef.current.contains(event.target as Node)
+      ) {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen, onClose]);
 
   // If the modal is not open, render nothing
   if (!isOpen) {
@@ -112,7 +131,10 @@ export const RiderAuthModal = ({ isOpen, onClose }: RiderAuthModalProps) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center overflow-y-hidden text-black justify-center min-h-screen bg-black/80">
       <div className="w-full h-full flex md:items-end md:justify-end">
-        <div className="w-full md:w-1/2 bg-white h-full flex flex-col p-8 gap-y-4 items-center justify-center">
+        <div
+          ref={modalRef}
+          className="w-full md:w-1/2 bg-white h-full flex flex-col p-8 gap-y-4 items-center justify-center"
+        >
           <div className="text-center">
             <h1 className="text-black font-bold text-3xl">Welcome</h1>
             <p className="font-medium">

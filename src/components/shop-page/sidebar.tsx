@@ -89,11 +89,11 @@ export const ShopSideBar = ({
           <h3 className="text-lg font-semibold text-gray-800 mb-4">
             Categories
           </h3>
-          <ul className="space-y-0.5">
+          <ul className="space-y-0.5 pr-1 overflow-y-auto">
             <li>
               <button
                 onClick={handleAllProductsClick}
-                className={`w-full text-left p-2 rounded-md transition-colors uppercase ${
+                className={`w-full text-left p-2  text-xs md:text-base rounded-md transition-colors uppercase ${
                   !selectedCategory
                     ? "bg-blue-primary text-white font-semibold"
                     : "text-gray-700 hover:bg-gray-100"
@@ -106,7 +106,7 @@ export const ShopSideBar = ({
               <li key={category.value}>
                 <button
                   onClick={() => handleCategoryClick(category.value)}
-                  className={`w-full text-left p-2 rounded-md transition-colors uppercase ${
+                  className={`w-full text-left text-xs md:text-base p-2 rounded-md transition-colors uppercase ${
                     selectedCategory === category.value
                       ? "bg-blue-primary text-white font-semibold"
                       : "text-gray-700 hover:bg-gray-100"

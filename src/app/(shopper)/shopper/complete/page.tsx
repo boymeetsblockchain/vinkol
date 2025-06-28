@@ -5,6 +5,7 @@ import { toast } from "sonner";
 
 import { Button } from "@/components/button";
 import { useSubmitKycMutation } from "@/services/rider/mutation";
+import Link from "next/link";
 
 function Complete() {
   const router = useRouter();
@@ -40,7 +41,10 @@ function Complete() {
     <section className="max-w-screen-2xl w-full px-4 md:px-20 py-10 mx-auto">
       {/* Logo */}
       <div className="mb-8">
-        <img src="/logo.png" alt="Vinkol Logo" className="w-28 h-12" />
+        <Link href={"/"}>
+          {" "}
+          <img src="/logo.png" alt="Vinkol Logo" className="w-28 h-12" />
+        </Link>
       </div>
 
       {/* Content Grid */}

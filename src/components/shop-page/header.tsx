@@ -1,4 +1,5 @@
 import { MapPin, Pen, Search } from "lucide-react";
+import Link from "next/link";
 import { BsCart } from "react-icons/bs";
 
 export const ShopHeader = ({ isLogo = true }: { isLogo: boolean }) => {
@@ -7,11 +8,13 @@ export const ShopHeader = ({ isLogo = true }: { isLogo: boolean }) => {
       {/* Logo */}
       {isLogo && (
         <div className="flex-shrink-0 mr-10">
-          <img
-            src="/logo.png"
-            alt="Vinkol Logo"
-            className="w-28 h-12 object-contain"
-          />
+          <Link href={"/"}>
+            <img
+              src="/logo.png"
+              alt="Vinkol Logo"
+              className="w-28 h-12 object-contain"
+            />
+          </Link>
         </div>
       )}
       <div className="w-full border-b-2  px-4 py-2  flex gap-x-3  justify-end items-center">

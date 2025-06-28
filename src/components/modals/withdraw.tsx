@@ -4,14 +4,14 @@ import { Button } from "../button";
 import { useRouter } from "next/navigation";
 import { useWithDraw } from "@/services/rider/mutation";
 import { useWithDraw as useShopWithdraw } from "@/services/shops/mutation";
+import { useState } from "react";
+import { toast } from "sonner"; // Assuming you're using sonner for notifications
 
 interface RiderAuthModalProps {
   isOpen: boolean;
   onClose: () => void;
   isStore?: boolean;
 }
-
-import { useState } from "react";
 
 export const WithdrawalModal = ({
   isOpen,
@@ -20,16 +20,46 @@ export const WithdrawalModal = ({
 }: RiderAuthModalProps) => {
   const router = useRouter();
   const { mutate, isPending } = useWithDraw();
-  const { mutate: shopWithdraw } = useShopWithdraw();
-
+  const { mutate: shopWithdraw, isPending: isShopPending } = useShopWithdraw();
   const [amount, setAmount] = useState("");
 
   if (!isOpen) return null;
 
+  const handleWithdraw = () => {
+    if (!amount) {
+      toast.error("Please enter an amount");
+      return;
+    }
+
+    if (isStore) {
+      shopWithdraw(amount, {
+        onSuccess: () => {
+          toast.success("Withdrawal successful!");
+          onClose();
+        },
+        onError: (error) => {
+          toast.error(error.message || "Withdrawal failed");
+          onClose();
+        },
+      });
+    } else {
+      mutate(amount, {
+        onSuccess: () => {
+          toast.success("Withdrawal successful!");
+          onClose();
+        },
+        onError: (error) => {
+          toast.error(error.message || "Withdrawal failed");
+          onClose();
+        },
+      });
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80">
       <div className="bg-white rounded-xl w-[90%] max-w-md p-6 space-y-4 shadow-lg">
-        <h2 className="text-xl font-semibold text-center ">
+        <h2 className="text-xl font-semibold text-center">
           Withdraw to Bank Account
         </h2>
 
@@ -48,17 +78,10 @@ export const WithdrawalModal = ({
             Cancel
           </Button>
           <Button
-            onClick={() => {
-              if (isStore) {
-                shopWithdraw(amount);
-                onClose();
-              } else {
-                mutate(amount);
-                onClose();
-              }
-            }}
+            onClick={handleWithdraw}
+            disabled={isPending || isShopPending}
           >
-            {isPending ? "Withdrawing" : "Withdraw"}
+            {isPending || isShopPending ? "Processing..." : "Withdraw"}
           </Button>
         </div>
       </div>

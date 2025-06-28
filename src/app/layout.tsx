@@ -19,7 +19,7 @@ export default function RootLayout({
       <body className={` antialiased`}>
         <ReactQueryProvider>{children}</ReactQueryProvider>
       </body>
-      <Toaster position="top-right" />
+      <Toaster position="top-right" richColors />
     </html>
   );
 }

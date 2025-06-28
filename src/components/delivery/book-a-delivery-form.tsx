@@ -214,7 +214,9 @@ export const BookADeliveryForm = () => {
                 <FormControl>
                   <input
                     {...field}
-                    type="number"
+                    type="tel"
+                    maxLength={11}
+                    minLength={11}
                     placeholder="Phone Number"
                     className="w-full border border-blue-primary placeholder:text-blue-primary py-4 px-3 rounded-md"
                   />
@@ -457,6 +459,7 @@ export const BookADeliveryForm = () => {
                     <option value="bike">Bike</option>
                     <option value="car">Car</option>
                     <option value="truck">Truck</option>
+                    <option value="bicycle">Bicycle</option>
                   </select>
                 </FormControl>
                 <FormMessage />

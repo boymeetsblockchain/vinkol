@@ -15,7 +15,7 @@ export const getQuoteSchema = z.object({
   }),
 
   deliveryType: z.enum(["regular", "express"]),
-  vehicleRequest: z.enum(["truck", "car", "bike"]),
+  vehicleRequest: z.enum(["truck", "car", "bike", "bicycle"]),
 });
 
 export const createOrderSchema = z.object({
@@ -28,7 +28,7 @@ export const createOrderSchema = z.object({
   dropoffLocation: z.string(),
   amount: z.number(),
   deliveryType: z.enum(["regular", "express"]),
-  vehicleRequest: z.enum(["truck", "car", "bike"]),
+  vehicleRequest: z.enum(["truck", "car", "bike", "bicycle"]),
   guest: z.object({
     email: z.string().email(),
     firstname: z.string(),

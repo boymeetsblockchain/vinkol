@@ -27,7 +27,7 @@ export const deliverySchema = z.object({
     errorMap: () => ({ message: "Please select a valid priority" }),
   }),
 
-  vehicle: z.enum(["bike", "car", "truck"], {
+  vehicle: z.enum(["bike", "car", "truck", "bicycle"], {
     errorMap: () => ({ message: "Please select a valid vehicle type" }),
   }),
   note: z.string().optional(),

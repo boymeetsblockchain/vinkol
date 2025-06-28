@@ -10,7 +10,7 @@ import Link from "next/link";
 import { ShopperAuthModal } from "../modals/shopper-auth-modal.";
 export const Hero = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isLogin, setIsLogin] = useState(false); // distinguish between login/register
+  const [isLogin, setIsLogin] = useState(false);
 
   const triggerRegisterModal = () => {
     setIsLogin(false);
@@ -26,7 +26,6 @@ export const Hero = () => {
     <>
       <div
         className="relative text-white bg-cover bg-center md:h-[100vh] h-[600px]"
-        // style={{ backgroundImage: `url('/assets/hero.png')` }}
         style={{
           backgroundImage: `url('https://client-companyshopgroup.s3-eu-west-1.amazonaws.com/resized-images/communityshop_675x400_27.jpg')`,
         }}

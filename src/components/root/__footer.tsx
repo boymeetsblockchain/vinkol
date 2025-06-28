@@ -14,7 +14,10 @@ export const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10 w-full">
           {/* Logo and Contact */}
           <div className="space-y-4">
-            <img src="/logo.png" alt="Vinkol Logo" className="w-28 h-12" />
+            <Link href={"/"}>
+              {" "}
+              <img src="/logo.png" alt="Vinkol Logo" className="w-28 h-12" />
+            </Link>
             <div className="flex items-center gap-2 text-sm text-gray-700">
               <IoMdMail className="text-xl" />
 

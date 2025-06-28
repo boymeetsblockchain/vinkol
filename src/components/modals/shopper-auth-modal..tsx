@@ -2,7 +2,7 @@
 import { FcGoogle } from "react-icons/fc";
 import { FaApple } from "react-icons/fa6";
 import { Button } from "../button";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import {
   useShopperRegisterMutation,
@@ -21,6 +21,7 @@ interface ShopperAuthModalProps {
 export const ShopperAuthModal = ({
   isOpen,
   onClose,
+  islogin,
 }: ShopperAuthModalProps) => {
   // State to manage whether the user is in login or register mode
   const [swithAuthType, setSwitchAuthType] = useState<"login" | "register">(
@@ -32,30 +33,40 @@ export const ShopperAuthModal = ({
   const [confirmPassword, setConfirmPassword] = useState(""); // For registration
   const [isChecked, setIsChecked] = useState<boolean>(false);
 
-  // Determine if the current mode is login based on state
   const isLogin = swithAuthType === "login";
-
-  // Initialize Next.js router
+  const modalRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
-  // Initialize mutations for registration and login
   const { mutate: riderRegister, isPending: isRegistering } =
     useShopperRegisterMutation();
   const { mutate: riderLogin, isPending: isLoggingIn } =
     useRiderLoginMutation();
 
-  // Determine if any mutation is currently pending
   const isPending = isRegistering || isLoggingIn;
 
-  // If the modal is not open, render nothing
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        modalRef.current &&
+        !modalRef.current.contains(event.target as Node)
+      ) {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen, onClose]);
+
   if (!isOpen) {
     return null;
   }
 
-  /**
-   * Handles the form submission for both login and registration.
-   * It determines which mutation to call based on the current `swithAuthType`.
-   */
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault(); // Prevent default form submission behavior
     if (!isLogin && !isChecked) {
@@ -118,7 +129,10 @@ export const ShopperAuthModal = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center overflow-y-hidden text-black justify-center min-h-screen bg-black/80">
       <div className="w-full h-full flex md:items-end md:justify-end">
-        <div className="w-full md:w-1/2 bg-white h-full flex flex-col p-8 gap-y-4 items-center justify-center">
+        <div
+          ref={modalRef}
+          className="w-full md:w-1/2 bg-white h-full flex flex-col p-8 gap-y-4 items-center justify-center"
+        >
           <div className="text-center">
             <h1 className="text-black font-bold text-3xl">Welcome</h1>
             <p className="font-medium">

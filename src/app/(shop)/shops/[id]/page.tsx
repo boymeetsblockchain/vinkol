@@ -11,6 +11,7 @@ import { ShopSideBar } from "@/components/shop-page/sidebar";
 import { Menu, ShoppingCart } from "lucide-react";
 import { getCartFromStorage, saveCartToStorage } from "@/config/storage";
 import { ContactModal } from "@/components/modals/contactmodal";
+import { toast } from "sonner";
 
 const productCategories = [
   { name: "fresh Produce", value: "fresh-produce" },
@@ -69,6 +70,7 @@ function ShopIdPage() {
   const products = productsData?.data.fetchedData || [];
 
   const handleAddToCart = (product: any) => {
+    toast.success("added to cart");
     setCartItems((prevItems) => {
       // Check if product already exists in cart
       const existingItem = prevItems.find((item) => item.id === product._id);
@@ -171,7 +173,7 @@ function ShopIdPage() {
         <main className="flex-1 overflow-y-auto">
           <div className="container mx-auto px-4 md:px-6 py-8">
             <div className="flex justify-between items-center mb-6">
-              <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
+              <h1 className="text-2xl md:text-3xl mt-8 font-bold text-gray-900">
                 {selectedCategory || "All Products"}
               </h1>
             </div>
@@ -179,7 +181,7 @@ function ShopIdPage() {
             {areProductsLoading ? (
               <div className="text-center py-10">Loading products...</div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
                 {products.map((product) => (
                   <div
                     key={product._id}

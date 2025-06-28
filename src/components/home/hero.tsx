@@ -63,27 +63,39 @@ export const Hero = () => {
           </p>
         </div>
         {trackDelivery ? (
-          <div className="relative my-4 flex items-center justify-center w-full ">
-            <input
-              type="text"
-              placeholder="Enter package number..."
-              value={trackingId}
-              onChange={(e) => setTrackingId(e.target.value)}
-              className="flex-grow py-3 px-6 pr-16 border border-gray-300 rounded-full text-gray-800 bg-white  placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300 ease-in-out shadow-sm"
-            />
-            <div className="absolute right-0 mr-1.5">
-              {" "}
-              <Button
-                size="lg"
-                onClick={fetchTrackingdata}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-6 rounded-full shadow-md transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-              >
-                Track
-              </Button>
+          <div className="relative my-4 flex flex-col sm:flex-row items-center justify-center w-full gap-3">
+            <div className="flex flex-grow w-full relative">
+              <input
+                type="text"
+                placeholder="Enter package number..."
+                value={trackingId}
+                onChange={(e) => setTrackingId(e.target.value)}
+                className="flex-grow py-3 px-6 pr-16 border border-gray-300 rounded-full text-gray-800 bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300 ease-in-out shadow-sm"
+              />
+              <div className="absolute right-0 mr-1.5 top-1/2 -translate-y-1/2">
+                <Button
+                  size="lg"
+                  onClick={fetchTrackingdata}
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-6 rounded-full shadow-md transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                >
+                  Track
+                </Button>
+              </div>
             </div>
+            <Button
+              size="lg"
+              variant="secondary"
+              className="mt-2 sm:mt-0"
+              onClick={() => {
+                setTrackDelivery(false);
+                setTrackingId("");
+              }}
+            >
+              Back
+            </Button>
           </div>
         ) : (
-          <div className="mt-6 flex  items-start sm:items-center gap-4">
+          <div className="mt-6 flex items-start sm:items-center gap-4">
             <Button size="lg">
               <Link href="/book-a-delivery">Book a Delivery</Link>
             </Button>

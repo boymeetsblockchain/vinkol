@@ -55,7 +55,10 @@ export const ShopperDashBoardSidebBar = ({ isOpen, onClose }: SidebarProps) => {
     >
       {/* Close button (mobile only) */}
       <div className="flex justify-between items-center p-4 md:hidden border-b border-gray-200">
-        <img src="/logo.png" alt="Vinkol Logo" className="w-28 h-12" />
+        <Link href={"/"}>
+          {" "}
+          <img src="/logo.png" alt="Vinkol Logo" className="w-28 h-12" />
+        </Link>
         <button
           onClick={onClose}
           className="p-1 rounded-md hover:bg-gray-100 transition"
@@ -66,7 +69,10 @@ export const ShopperDashBoardSidebBar = ({ isOpen, onClose }: SidebarProps) => {
 
       {/* Desktop logo */}
       <div className="hidden md:flex justify-center p-4 border-b border-gray-200">
-        <img src="/logo.png" alt="Vinkol Logo" className="w-28 h-12" />
+        <Link href={"/"}>
+          {" "}
+          <img src="/logo.png" alt="Vinkol Logo" className="w-28 h-12" />
+        </Link>
       </div>
 
       {/* Dashboard Links */}
