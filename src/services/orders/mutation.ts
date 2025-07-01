@@ -16,6 +16,7 @@ import {
   getShoppingDeliveryFeeSchema,
   createStoreOrderSchema,
 } from "@/types/order";
+import { toast } from "sonner";
 
 /**
  * Defines the common options structure for mutation hooks.
@@ -69,11 +70,12 @@ export function useAcceptOrderMutation(options?: MutationOptions<any, Error>) {
       return await acceptOrder(id);
     },
     onSuccess: (responseData) => {
-      console.log("Accept Order successful:", responseData);
       options?.onSuccess?.(responseData);
+      toast.success(responseData.message);
     },
     onError: (errorData: Error) => {
       console.error("Accept Order failed:", errorData.message);
+      toast.error(errorData.message);
       options?.onError?.(errorData);
     },
   });

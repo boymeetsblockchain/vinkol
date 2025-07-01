@@ -73,9 +73,9 @@ function Orders() {
     setAcceptingOrderId(orderId); // Set the ID of the order being accepted
     try {
       // await the mutation call
-      await acceptOrderMutate(orderId);
-      toast.success("Order accepted successfully!");
-      refetch(); // Re-fetch orders to update the UI
+      const response = await acceptOrderMutate(orderId);
+
+      refetch();
     } catch (error: any) {
       console.error("Failed to accept order:", error);
       toast.error(

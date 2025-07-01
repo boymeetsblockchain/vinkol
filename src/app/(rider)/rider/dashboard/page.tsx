@@ -32,6 +32,7 @@ interface OrderData {
   vehicleRequest: string;
   orderType: string;
   amount: number;
+  deliveryFee: number;
   paystackReference: string;
   paymentStatus: string;
   products: any[];
@@ -50,9 +51,16 @@ interface OrderData {
   };
 }
 
+interface AcceptOrderResponse {
+  message: string;
+}
 function Orders() {
   const { data, isPending, refetch } = useGetOrders();
-  const { mutate: acceptOrderMutate } = useAcceptOrderMutation(); // Use mutateAsync for await
+  const {
+    mutate: acceptOrderMutate,
+    isSuccess,
+    isError,
+  } = useAcceptOrderMutation(); // Use mutateAsync for await
 
   // State to track which order is currently being accepted
   const [acceptingOrderId, setAcceptingOrderId] = useState<string | null>(null);
@@ -73,8 +81,9 @@ function Orders() {
     setAcceptingOrderId(orderId); // Set the ID of the order being accepted
     try {
       // await the mutation call
+
       await acceptOrderMutate(orderId);
-      toast.success("Order accepted successfully!");
+
       refetch(); // Re-fetch orders to update the UI
     } catch (error: any) {
       console.error("Failed to accept order:", error);
@@ -194,12 +203,12 @@ function Orders() {
                   </p>
                 </div>
 
-                {order && typeof order.amount === "number" ? (
+                {order && typeof order.deliveryFee === "number" ? (
                   <p className="text-sm font-semibold text-gray-700">
                     Amount:{" "}
                     <span className="text-blue-primary">
                       ₦
-                      {order.amount.toLocaleString("en-NG", {
+                      {order.deliveryFee.toLocaleString("en-NG", {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                       })}

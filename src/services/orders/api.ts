@@ -120,7 +120,7 @@ export const getSingleOrder = async (id: string) => {
   }
 };
 
-export const acceptOrder = async (id: string) => {
+export const acceptOrder = async (id: string): Promise<any> => {
   try {
     const response = await axiosInstance.patch(`/orders/${id}/accept`);
     return response.data;

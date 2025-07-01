@@ -27,7 +27,7 @@ export const Hero = () => {
       <div
         className="relative text-white bg-cover bg-center md:h-[100vh] h-[600px]"
         style={{
-          backgroundImage: `url('https://client-companyshopgroup.s3-eu-west-1.amazonaws.com/resized-images/communityshop_675x400_27.jpg')`,
+          backgroundImage: `url('https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.istockphoto.com%2Fphotos%2Fblack-people-shopping&psig=AOvVaw1zPyK8XD8AqFpxUssqmxw-&ust=1751467782616000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCJjrhIr0m44DFQAAAAAdAAAAABAEhttps://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.istockphoto.com%2Fphotos%2Fblack-people-shopping&psig=AOvVaw1zPyK8XD8AqFpxUssqmxw-&ust=1751467782616000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCJjrhIr0m44DFQAAAAAdAAAAABAE')`,
         }}
       >
         <div className="inset-0 absolute bg-black/40" />

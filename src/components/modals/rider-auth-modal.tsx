@@ -97,7 +97,8 @@ export const RiderAuthModal = ({
         {
           onSuccess: () => {
             toast.success("Login successful!");
-            router.push("/shopper/dashboard"); // Or wherever the user should go after login
+            // router.push("/rider/dashboard"); // Or wherever the user should go after login
+            console.log("rider login modal");
             onClose(); // Close the modal on successful login
           },
           onError: (error) => {
@@ -116,7 +117,7 @@ export const RiderAuthModal = ({
             toast.success(
               "Registration successful! Please check your email for OTP."
             );
-            router.push(`/shopper/auth/otp?email=${encodeURIComponent(email)}`); // Navigate to OTP verification page
+            router.push(`/rider/auth/otp?email=${encodeURIComponent(email)}`); // Navigate to OTP verification page
             onClose(); // Close the modal on successful registration
           },
           onError: (error) => {
