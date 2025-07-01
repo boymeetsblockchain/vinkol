@@ -7,9 +7,9 @@ import { useRouter } from "next/navigation";
 import {
   useRiderRegisterMutation,
   useRiderLoginMutation,
+  useForgotPasswordMutation,
 } from "@/services/rider/mutation";
 import { toast } from "sonner"; // For user notifications
-import { useShopLoginMutation } from "@/services/shops/mutation";
 import { TermsCheckbox } from "../shared/terms";
 import { X } from "lucide-react";
 
@@ -97,7 +97,7 @@ export const RiderAuthModal = ({
         {
           onSuccess: () => {
             toast.success("Login successful!");
-            // router.push("/rider/dashboard"); // Or wherever the user should go after login
+            router.push("/rider/dashboard"); // Or wherever the user should go after login
             console.log("rider login modal");
             onClose(); // Close the modal on successful login
           },
@@ -201,7 +201,10 @@ export const RiderAuthModal = ({
 
             {/* Forgot Password - Only in login mode */}
             {isLogin && (
-              <div className="w-3/4 text-right">
+              <div
+                className="w-3/4 text-right"
+                onClick={() => router.push("/rider/auth/forgot-password")}
+              >
                 <span className="text-sm text-blue-primary underline cursor-pointer">
                   Forgot Password?
                 </span>

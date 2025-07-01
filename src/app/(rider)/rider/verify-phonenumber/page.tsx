@@ -117,8 +117,6 @@ function Complete() {
                   disabled={otpSent}
                 />
               </div>
-
-              {/* OTP Input (shown only after OTP is sent) */}
               {otpSent && (
                 <div>
                   <label

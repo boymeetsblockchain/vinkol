@@ -44,7 +44,7 @@ export const ShopperAuthModal = ({
 
   const isPending = isRegistering || isLoggingIn;
 
-    useEffect(() => {
+  useEffect(() => {
     setSwitchAuthType(islogin ? "login" : "register");
   }, [islogin]);
 
@@ -70,7 +70,6 @@ export const ShopperAuthModal = ({
   if (!isOpen) {
     return null;
   }
-
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault(); // Prevent default form submission behavior
@@ -200,7 +199,10 @@ export const ShopperAuthModal = ({
 
             {/* Forgot Password - Only in login mode */}
             {isLogin && (
-              <div className="w-3/4 text-right">
+              <div
+                className="w-3/4 text-right"
+                onClick={() => router.push("/shopper/auth/forgot-password")}
+              >
                 <span className="text-sm text-blue-primary underline cursor-pointer">
                   Forgot Password?
                 </span>

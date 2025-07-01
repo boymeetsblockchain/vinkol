@@ -17,8 +17,8 @@ const infoArray = [
   },
   {
     name: "Phone",
-    desc: "+2349039106561",
-    subdesc: "+2348033670745",
+    desc: "+234807972231",
+    subdesc: "+23433670745",
     icon: Phone,
     iconcolor: "#F8BD00",
   },

@@ -47,7 +47,7 @@ export const Hero = () => {
   return (
     <div
       className="relative text-white bg-cover  md:h-[100vh] h-[600px]"
-      style={{ backgroundImage: `url('/assets/hero.png')` }}
+      style={{ backgroundImage: `url('/assets/hero.jpg')` }}
     >
       <div className="absolute bottom-10 left-4 md:left-20 px-4">
         <div className="space-y-4 max-w-2xl sm:max-w-3xl">
