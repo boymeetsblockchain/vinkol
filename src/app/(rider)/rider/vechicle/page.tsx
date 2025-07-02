@@ -28,7 +28,7 @@ function SubmitVehicle() {
     submitVehicle(formData, {
       onSuccess: () => {
         toast.success("Vehicle submitted successfully!");
-        router.push("/become-a-rider");
+        router.push("/rider/account");
       },
       onError: (error: any) => {
         console.error("Vehicle submission failed:", error);
