@@ -41,10 +41,11 @@ const Layout = ({ children }: { children: ReactNode }) => {
                 }. Please re-upload your documents.`
               : "Your documents are being reviewed. You'll be ready to take orders in less than 20 minutes if everything checks out."}
           </p>
-
-          <Button asChild>
-            <Link href={"/rider/complete"}>Reupload Documents</Link>
-          </Button>
+          {data?.data?.kyc?.status == "rejected" ? (
+            <Button asChild>
+              <Link href={"/rider/complete"}>Reupload Documents</Link>
+            </Button>
+          ) : null}
         </div>
       </section>
     );
