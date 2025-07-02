@@ -28,8 +28,10 @@ import {
   contactMessage,
   subscribe,
   withdraw,
+  createUserBank,
 } from "./api"; // Assuming 'api' is the file containing all the API functions
 import { toast } from "sonner";
+import { createStoreBankSchema } from "@/types/shop";
 
 /**
  * Defines the common options structure for mutation hooks.
@@ -223,6 +225,24 @@ export function useUpdateProfileMutation(
     },
     onError: (errorData: Error) => {
       console.error("Profile update failed:", errorData.message);
+      options?.onError?.(errorData);
+    },
+  });
+
+  return { mutate, data, error, isPending, isSuccess, isError };
+}
+
+export function useCreateUserBank(options?: MutationOptions<any, Error>) {
+  const { mutate, data, error, isPending, isSuccess, isError } = useMutation({
+    mutationFn: async (payload: z.infer<typeof createStoreBankSchema>) => {
+      return await createUserBank(payload);
+    },
+    onSuccess: (responseData) => {
+      console.log("Update User Bank successful:", responseData);
+      options?.onSuccess?.(responseData);
+    },
+    onError: (errorData: Error) => {
+      console.error("Update User Bank  failed:", errorData.message);
       options?.onError?.(errorData);
     },
   });

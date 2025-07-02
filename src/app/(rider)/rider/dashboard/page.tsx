@@ -65,7 +65,7 @@ function Orders() {
   // State to track which order is currently being accepted
   const [acceptingOrderId, setAcceptingOrderId] = useState<string | null>(null);
 
-  console.log(data);
+  // console.log(data);
 
   // Filter accepted orders for the counter display
   const acceptedOrders =
