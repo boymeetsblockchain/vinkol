@@ -71,7 +71,7 @@ function AccountDetails() {
   useEffect(() => {
     if (createSuccess) {
       toast.success("Bank details saved successfully!");
-      router.push("/become-a-rider");
+      router.push("/rider/complete");
     } else if (createError) {
       toast.error(
         `Failed to save bank details: ${
