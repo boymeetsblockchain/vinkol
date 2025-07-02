@@ -65,7 +65,7 @@ function Complete() {
     try {
       await verifyPhone({ email, phone, otp });
       toast.success("Phone number verified successfully");
-      router.push("/rider/complete");
+      router.push("/rider/account");
     } catch (error: any) {
       toast.error(error.message || "Verification failed");
     } finally {
