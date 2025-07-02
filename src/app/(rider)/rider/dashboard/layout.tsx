@@ -4,6 +4,8 @@ import { Menu } from "lucide-react";
 import { RiderDashBoardSidebBar } from "@/components/rider/sidebar";
 import { Profile } from "@/components/rider/profile";
 import { useUserProfile } from "@/services/rider/query";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 const Layout = ({ children }: { children: ReactNode }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -27,12 +29,22 @@ const Layout = ({ children }: { children: ReactNode }) => {
 
           {/* Headings */}
           <h1 className="text-2xl md:text-3xl font-bold ">
-            Document Under Review
+            {data?.data?.kyc?.status == "rejected"
+              ? "Documents Rejected"
+              : "Documents Under Review"}
           </h1>
+
           <p className="text-sm md:text-base text-gray-700 max-w-md">
-            Your documents are being reviewed. You’ll be ready to take orders in
-            less than 20 minutes if everything checks out.
+            {data?.data?.kyc?.status == "rejected"
+              ? `Your documents have been rejected for the reason ${
+                  data?.data?.kyc?.remark || ""
+                }. Please re-upload your documents.`
+              : "Your documents are being reviewed. You'll be ready to take orders in less than 20 minutes if everything checks out."}
           </p>
+
+          <Button asChild>
+            <Link href={"/rider/complete"}>Reupload Documents</Link>
+          </Button>
         </div>
       </section>
     );

@@ -11,6 +11,7 @@ import {
   verifyEmailSchema,
   verifyPhoneSchema,
 } from "@/types/rider";
+import { createStoreBankSchema } from "@/types/shop";
 import * as z from "zod";
 
 /**
@@ -204,6 +205,17 @@ export const submitVehicle = async (data: any) => {
     return response.data;
   } catch (error) {
     handleApiError(error, "Failed to submit vehicle.");
+  }
+};
+
+export const createUserBank = async (
+  data: z.infer<typeof createStoreBankSchema>
+) => {
+  try {
+    const response = await axiosInstance.post("/banks/create-user-bank", data);
+    return response.data;
+  } catch (error) {
+    handleApiError(error, "Failed to create  user bank");
   }
 };
 
