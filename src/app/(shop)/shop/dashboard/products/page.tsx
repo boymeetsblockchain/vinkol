@@ -1,6 +1,9 @@
 "use client";
 
-import { useGetAllProductsQuery } from "@/services/products/query";
+import {
+  useGetAllProductsQuery,
+  useGetStoreProductsQuery,
+} from "@/services/products/query";
 import {
   useCreateProductMutation,
   useUpdateProductMutation,
@@ -83,7 +86,7 @@ function ProductPage() {
     isError,
     error,
     refetch,
-  } = useGetAllProductsQuery();
+  } = useGetStoreProductsQuery();
   // Extract the products from the nested structure
   const productList = products?.data?.fetchedData || [];
   const createProductMutation = useCreateProductMutation({

@@ -88,6 +88,22 @@ export const getOrders = async (params: GetOrdersParams = {}) => {
   }
 };
 
+export const getAvailableOrders = async (params: GetOrdersParams = {}) => {
+  try {
+    const query = new URLSearchParams();
+
+    Object.entries(params).forEach(([key, value]) => {
+      if (value) query.append(key, value);
+    });
+    const response = await axiosInstance.get(
+      `/orders/available-orders?${query.toString()}`
+    );
+    return response.data;
+  } catch (error) {
+    handleApiError(error, "Get Order failed");
+  }
+};
+
 export const getStoreOrders = async () => {
   try {
     const response = await axiosInstance.get(`/stores/orders`);

@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getAllProducts, getSingleProduct } from "./api";
+import { getAllProducts, getSingleProduct, getStoreProducts } from "./api";
 
 type StoreImage = {
   imageUrl: string;
@@ -71,6 +71,29 @@ export function useGetAllProductsQuery(
 
     queryFn: async () => {
       const data = await getAllProducts(params);
+      return data;
+    },
+    onSuccess: (data: Product[]) => {
+      console.log("Successfully fetched all products:", data);
+      options?.onSuccess?.(data);
+    },
+    onError: (error: Error) => {
+      console.error("Failed to fetch all products:", error.message);
+      options?.onError?.(error);
+    },
+    ...options,
+  });
+}
+
+export function useGetStoreProductsQuery(
+  options?: QueryOptions<Product[], Error>,
+  params?: ProductQueryParams
+) {
+  return useQuery<ApiResponse, Error>({
+    queryKey: ["products", params],
+
+    queryFn: async () => {
+      const data = await getStoreProducts(params);
       return data;
     },
     onSuccess: (data: Product[]) => {

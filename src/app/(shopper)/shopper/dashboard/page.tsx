@@ -2,7 +2,7 @@
 
 import { useState } from "react"; // Import useState
 import { Button } from "@/components/button";
-import { useGetOrders } from "@/services/orders/query";
+import { useGetAvailableOrders, useGetOrders } from "@/services/orders/query";
 import { formatDistanceToNow, isValid } from "date-fns"; // Import isValid
 import { useAcceptOrderMutation } from "@/services/orders/mutation";
 import { toast } from "sonner"; // Import toast for notifications
@@ -51,17 +51,17 @@ interface OrderData {
 }
 
 function Orders() {
-  const { data, isPending, refetch } = useGetOrders();
+  const { data, isPending, refetch } = useGetAvailableOrders();
   const { mutate: acceptOrderMutate } = useAcceptOrderMutation(); // Use mutateAsync for await
 
   // State to track which order is currently being accepted
   const [acceptingOrderId, setAcceptingOrderId] = useState<string | null>(null);
 
-  console.log(data);
+  // console.log(data);
 
   // Filter accepted orders for the counter display
   const acceptedOrders =
-    data?.data?.filter(
+    data?.data?.fetchedData.filter(
       (order: OrderData) =>
         order.status === "Delivered" ||
         order.status === "Picked" ||
@@ -92,7 +92,7 @@ function Orders() {
     <section className="py-6 px-4">
       <div className="bg-blue-primary w-full rounded-md p-4 text-sm text-white mb-6 shadow-md">
         You currently have{" "}
-        <span className="font-bold">{acceptedOrders.length}</span> accepted
+        <span className="font-bold">{acceptedOrders?.length}</span> accepted
         orders{" "}
         <span className="font-bold text-base underline cursor-pointer">
           CLICK HERE TO SEE DETAILS
@@ -103,7 +103,7 @@ function Orders() {
         {isPending ? (
           <p className="text-center text-gray-600">Loading orders...</p>
         ) : (
-          data?.data?.map((order: OrderData) => {
+          data?.data?.fetchedData?.map((order: OrderData) => {
             // Check if the current order's ID matches the one being accepted
             const isThisOrderBeingAccepted = acceptingOrderId === order._id;
 
