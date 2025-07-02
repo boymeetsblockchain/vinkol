@@ -15,11 +15,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={` antialiased`}>
         <ReactQueryProvider>{children}</ReactQueryProvider>
+        <Toaster position="top-right" richColors />
       </body>
-      <Toaster position="top-right" richColors />
     </html>
   );
 }

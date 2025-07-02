@@ -129,6 +129,8 @@ export const RiderAuthModal = ({
           },
         }
       );
+
+      localStorage.setItem("ride-email", email);
     }
   };
 

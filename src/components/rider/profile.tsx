@@ -1,9 +1,16 @@
 "use client";
 import { ChevronDown } from "lucide-react";
 import { useUserProfile } from "@/services/rider/query";
+import { useRouter } from "next/navigation";
 
 export const Profile = () => {
+  const router = useRouter();
   const { data, isLoading } = useUserProfile();
+
+  const handleLogout = () => {
+    localStorage.clear();
+    router.push("/");
+  };
 
   // Show a loading state or nothing if data is still fetching
   if (isLoading) {
@@ -43,11 +50,14 @@ export const Profile = () => {
         </div>
         <div className="flex items-center gap-1">
           <img
-            src={avatar.imageUrl}
+            src={avatar?.imageUrl}
             className="h-8 w-8 rounded-full object-cover"
             alt="User Profile"
           />
-          <ChevronDown className="text-blue-primary cursor-pointer" />
+          <ChevronDown
+            className="text-blue-primary cursor-pointer"
+            onClick={handleLogout}
+          />
         </div>
       </div>
     </header>

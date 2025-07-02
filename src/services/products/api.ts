@@ -91,6 +91,24 @@ export const getAllProducts = async (params?: GetAllProductsParams) => {
     handleApiError(error, "Error fetching all products");
   }
 };
+
+export const getStoreProducts = async (params?: GetAllProductsParams) => {
+  try {
+    const response = await axiosInstance.get("/products/mine", {
+      params: {
+        category: params?.category,
+        search: params?.search,
+        price: params?.price,
+        pageNo: params?.pageNo,
+        pageSize: params?.pageSize,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    handleApiError(error, "Error fetching all products");
+  }
+};
+
 export const deleteSingleProduct = async (id: string) => {
   try {
     const response = await axiosInstance.delete(`/products/${id}`);

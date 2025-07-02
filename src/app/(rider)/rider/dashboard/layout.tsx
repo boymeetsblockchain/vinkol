@@ -8,9 +8,8 @@ import { useUserProfile } from "@/services/rider/query";
 const Layout = ({ children }: { children: ReactNode }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { data } = useUserProfile();
-  console.log(data.data);
 
-  if (!data.data.isKYCVerified) {
+  if (!data?.data?.isKYCVerified) {
     return (
       <section className="max-w-screen-2xl min-h-screen w-full px-4 md:px-20 py-10 mx-auto">
         {/* Logo */}

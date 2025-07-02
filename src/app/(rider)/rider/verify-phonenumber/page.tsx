@@ -50,8 +50,8 @@ function Complete() {
   const handleVerifyPhone = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!otp || otp.length !== 6) {
-      toast.error("Please enter a valid 6-digit OTP");
+    if (!otp || otp.length !== 4) {
+      toast.error("Please enter a valid 4-digit OTP");
       return;
     }
 
