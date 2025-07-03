@@ -252,6 +252,7 @@ export function useUpdateProfileMutation(
       options?.onSuccess?.(responseData);
     },
     onError: (errorData: Error) => {
+      // throw new Error(errorData.message);
       console.error("Profile update failed:", errorData.message);
       options?.onError?.(errorData);
     },

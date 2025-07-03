@@ -77,7 +77,7 @@ function Profile() {
             <form onSubmit={handleSubmit} className="flex flex-col gap-6">
               <div className="flex flex-col gap-2">
                 <label htmlFor="avatar" className="text-sm text-gray-700">
-                  Upload Avatar
+                  Upload Avatar (image should be less than 2MB)
                 </label>
                 <input
                   id="avatar"
