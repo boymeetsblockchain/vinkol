@@ -20,6 +20,7 @@ interface Rider {
 interface OrderData {
   trackingId: string;
   user: OrderUser;
+  guest?: OrderUser;
   pickupLocation: string;
   dropoffLocation: string;
   status: string;
@@ -43,6 +44,7 @@ export const TrackingModal = ({
   const {
     trackingId = "Not Picked Yet",
     user,
+    guest,
     pickupLocation = "Not Picked Yet",
     dropoffLocation = "Not Picked Yet",
     status = "Not Picked Yet",
@@ -50,9 +52,9 @@ export const TrackingModal = ({
     rider,
   } = data;
 
-  const userName = user?.email || "Not Picked Yet";
+  const userName = guest?.email || "Not Picked Yet";
   const riderName = rider
-    ? `${rider.firstname} ${rider.lastname}`
+    ? `${rider.firstname || ""} ${rider.lastname || ""}`
     : "Not Picked Yet";
   const riderNumber = rider?.phone || "Not Picked Yet";
 
@@ -67,7 +69,7 @@ export const TrackingModal = ({
           <p className="text-gray-400 capitalize">
             Package Number: <span className="text-black">{trackingId}</span>
           </p>
-          <p className="text-gray-400 capitalize">
+          <p className="text-gray-400">
             Owner: <span className="text-black">{userName}</span>
           </p>
         </div>

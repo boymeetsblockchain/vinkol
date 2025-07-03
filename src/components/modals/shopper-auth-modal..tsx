@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import {
   useShopperRegisterMutation,
   useRiderLoginMutation,
+  useShopperLoginMutation,
 } from "@/services/rider/mutation"; // Assuming these are correctly defined
 import { toast } from "sonner"; // For user notifications
 import { useShopLoginMutation } from "@/services/shops/mutation";
@@ -39,8 +40,8 @@ export const ShopperAuthModal = ({
 
   const { mutate: riderRegister, isPending: isRegistering } =
     useShopperRegisterMutation();
-  const { mutate: riderLogin, isPending: isLoggingIn } =
-    useRiderLoginMutation();
+  const { mutate: shopperLogin, isPending: isLoggingIn } =
+    useShopperLoginMutation();
 
   const isPending = isRegistering || isLoggingIn;
 
@@ -91,7 +92,7 @@ export const ShopperAuthModal = ({
 
     if (isLogin) {
       // Handle login
-      riderLogin(
+      shopperLogin(
         { email, password },
         {
           onSuccess: () => {
