@@ -6,6 +6,7 @@ import { useGetAvailableOrders, useGetOrders } from "@/services/orders/query";
 import { formatDistanceToNow, isValid } from "date-fns"; // Import isValid
 import { useAcceptOrderMutation } from "@/services/orders/mutation";
 import { toast } from "sonner"; // Import toast for notifications
+import { useUserProfile } from "@/services/rider/query";
 
 // Define an interface for your order data for better type safety
 interface OrderData {
@@ -51,7 +52,11 @@ interface OrderData {
 }
 
 function Orders() {
-  const { data, isPending, refetch } = useGetAvailableOrders();
+  const { data: userProfile } = useUserProfile();
+
+  const { data, isPending, refetch } = useGetAvailableOrders({
+    state: userProfile?.data?.state,
+  });
   const { mutate: acceptOrderMutate } = useAcceptOrderMutation(); // Use mutateAsync for await
 
   // State to track which order is currently being accepted

@@ -96,6 +96,9 @@ export function useRiderLoginMutation(options?: MutationOptions<any, Error>) {
     },
     onSuccess: (responseData) => {
       console.log("Rider login successful:", responseData);
+      if (responseData?.data?.role != "RIDER") {
+        throw new Error("User role does not match RIDER!");
+      }
       if (responseData.token) {
         localStorage.setItem("accessToken", responseData.token);
       } else {
@@ -105,6 +108,31 @@ export function useRiderLoginMutation(options?: MutationOptions<any, Error>) {
     },
     onError: (errorData: Error) => {
       console.error("Rider login failed:", errorData.message);
+      options?.onError?.(errorData);
+    },
+  });
+
+  return { mutate, data, error, isPending, isSuccess, isError };
+}
+export function useShopperLoginMutation(options?: MutationOptions<any, Error>) {
+  const { mutate, data, error, isPending, isSuccess, isError } = useMutation({
+    mutationFn: async (payload: z.infer<typeof loginRiderSchema>) => {
+      return await loginRider(payload);
+    },
+    onSuccess: (responseData) => {
+      console.log("Shopper login successful:", responseData);
+      if (responseData?.data?.role != "PERSONAL-SHOPPER") {
+        throw new Error("User role does not match PERSONAL-SHOPPER!");
+      }
+      if (responseData.token) {
+        localStorage.setItem("accessToken", responseData.token);
+      } else {
+        console.log("token not stored");
+      }
+      options?.onSuccess?.(responseData);
+    },
+    onError: (errorData: Error) => {
+      console.error("Shopper login failed:", errorData.message);
       options?.onError?.(errorData);
     },
   });
@@ -224,6 +252,7 @@ export function useUpdateProfileMutation(
       options?.onSuccess?.(responseData);
     },
     onError: (errorData: Error) => {
+      // throw new Error(errorData.message);
       console.error("Profile update failed:", errorData.message);
       options?.onError?.(errorData);
     },
