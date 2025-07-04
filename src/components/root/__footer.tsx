@@ -21,8 +21,11 @@ export const Footer = () => {
             <div className="flex items-center gap-2 text-sm text-gray-700">
               <IoMdMail className="text-xl" />
 
-              <a href="mailto:info@vinkol.ng" className="font-semibold">
-                info@vinkol.ng
+              <a
+                href="mailto:info@vinkolventures.onmicrosoft.com"
+                className="font-semibold"
+              >
+                info@vinkolventures.onmicrosoft.com
               </a>
             </div>
           </div>
