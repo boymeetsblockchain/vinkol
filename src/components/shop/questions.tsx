@@ -32,7 +32,7 @@ export const Question = () => {
           </h1>
           <p className="text-lg md:text-xl font-semibold text-gray-700">
             Contact us, we are always ready to help you. <br />
-            <span>support@vinkol.com</span>
+            <span>support@vinkol.ng</span>
           </p>
         </div>
 
