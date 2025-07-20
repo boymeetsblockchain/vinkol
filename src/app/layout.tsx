@@ -7,6 +7,9 @@ import { Toaster } from "@/components/ui/sonner";
 export const metadata: Metadata = {
   title: "Vinkol",
   description: "Vinkol Logistics",
+  verification: {
+    google: "gE62S8YMos99yfz3krkRnWgaiaEZfofw3IDnIr5VMrs",
+  },
 };
 
 export default function RootLayout({
@@ -16,7 +19,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={` antialiased`}>
+      <body className="antialiased">
         <ReactQueryProvider>{children}</ReactQueryProvider>
         <Toaster position="top-right" richColors />
       </body>
