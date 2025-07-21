@@ -5,6 +5,8 @@ import { useState } from "react";
 import { useGetStoreOrders } from "@/services/orders/query";
 import { useGetSingleProductQuery } from "@/services/products/query";
 import { Button } from "@/components/button";
+import { useConfirmOrderMutation } from "@/services/orders/mutation";
+import { toast } from "sonner";
 
 interface Guest {
   email: string;
@@ -78,16 +80,40 @@ const OrderItemCard: React.FC<OrderItemCardProps> = ({
           ₦{product.price.toLocaleString()} x {quantity}
         </p>
       </div>
-      <Button className="">Available for Pickup</Button>
+      {/* <Button className="">Available for Pickup</Button> */}
     </li>
   );
 };
 
 function ShopId() {
   const [openCartModal, setOpenCartModal] = useState<boolean>(false);
-  const { data, isLoading } = useGetStoreOrders();
+  const { data, isLoading, refetch } = useGetStoreOrders();
 
   const orders: Order[] | undefined = data?.data;
+
+  const {
+    mutate: confirmOrderMutate,
+    isPending,
+    isSuccess,
+    isError,
+  } = useConfirmOrderMutation();
+
+  const handleConfirmOrder = async (orderId: string) => {
+    try {
+      // await the mutation call
+
+      await confirmOrderMutate(orderId);
+
+      refetch(); // Re-fetch orders to update the UI
+    } catch (error: any) {
+      console.error("Failed to accept order:", error);
+      toast.error(
+        `Failed to confirm order: ${
+          error.response?.data?.message || error.message || "Unknown error"
+        }`
+      );
+    }
+  };
 
   if (isLoading) {
     return (
@@ -129,8 +155,8 @@ function ShopId() {
                   </p>
                   <p>
                     <strong className="font-semibold">Customer:</strong>{" "}
-                    {order.guest.firstname} {order.guest.lastname} (
-                    {order.guest.email})
+                    {order?.guest?.firstname} {order?.guest?.lastname} (
+                    {order?.guest?.email})
                   </p>
                   <p>
                     <strong className="font-semibold">
@@ -155,6 +181,16 @@ function ShopId() {
                       />
                     ))}
                   </ul>
+
+                  {order.status == "Pending" ? (
+                    <Button
+                      disabled={isPending}
+                      onClick={() => handleConfirmOrder(order._id)}
+                      className="mt-6 bg-green-600"
+                    >
+                      Confirm Order
+                    </Button>
+                  ) : null}
                 </div>
               </div>
             ))}

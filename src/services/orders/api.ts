@@ -146,6 +146,16 @@ export const acceptOrder = async (id: string): Promise<any> => {
   }
 };
 
+export const confirmOrder = async (id: string): Promise<any> => {
+  try {
+    const response = await axiosInstance.patch(`/orders/${id}/confirm`);
+    return response.data;
+  } catch (error) {
+    handleApiError(error, " Error Confirmimng Orders");
+    throw error;
+  }
+};
+
 export const changeOrderStatus = async (
   id: string,
   data: z.infer<typeof changeOrderStatusSchema>

@@ -2,6 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import {
   acceptOrder,
   changeOrderStatus,
+  confirmOrder,
   createGuestOrder,
   createStoreOrder,
   getQuote,
@@ -75,6 +76,25 @@ export function useAcceptOrderMutation(options?: MutationOptions<any, Error>) {
     },
     onError: (errorData: Error) => {
       console.error("Accept Order failed:", errorData.message);
+      toast.error(errorData.message);
+      options?.onError?.(errorData);
+    },
+  });
+
+  return { mutate, data, error, isPending, isSuccess, isError };
+}
+
+export function useConfirmOrderMutation(options?: MutationOptions<any, Error>) {
+  const { mutate, data, error, isPending, isSuccess, isError } = useMutation({
+    mutationFn: async (id: string) => {
+      return await confirmOrder(id);
+    },
+    onSuccess: (responseData) => {
+      options?.onSuccess?.(responseData);
+      toast.success(responseData.message);
+    },
+    onError: (errorData: Error) => {
+      console.error("Confirm Order failed:", errorData.message);
       toast.error(errorData.message);
       options?.onError?.(errorData);
     },
