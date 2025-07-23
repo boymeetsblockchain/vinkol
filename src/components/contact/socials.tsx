@@ -32,6 +32,7 @@ const infoArray = [
     name: "Email",
     desc: "info@vinkol.com",
     subdesc: "info@vinkolventures.onmicrosoft.com",
+    extra:"vinkollogistics@gmail.com",
     icon: Mail,
     iconcolor: "#60D669",
   },
@@ -87,6 +88,9 @@ export const Socials = () => {
             <p className="text-gray-600  text-xs text-left ml-8">{item.desc}</p>
             <p className="text-gray-600  text-xs text-left ml-8 ">
               {item.subdesc}
+            </p>
+               <p className="text-gray-600  text-xs text-left ml-8 ">
+              {item.extra}
             </p>
           </div>
         ))}

@@ -42,7 +42,7 @@ export const Footer = () => {
               </li>
               {helpCenter && (
                 <ul>
-                  {["info@vinkol.ng", "support@vinkol.ng", "hr@vinkol.ng"].map(
+                  {["info@vinkol.ng", "support@vinkol.ng", "hr@vinkol.ng", "vinkollogistics@gmail.com"].map(
                     (email, index) => (
                       <li key={index}>
                         <a href={`mailto:${email}`}>{email}</a>
