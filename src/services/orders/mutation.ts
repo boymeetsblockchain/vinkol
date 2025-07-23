@@ -109,26 +109,26 @@ interface ChangeOrderStatusPayload {
 }
 
 export function useChangeOrderStatus(options?: MutationOptions<any, Error>) {
-  const { mutate, data, error, isPending, isSuccess, isError } = useMutation<
-    any,
-    Error,
-    { id: string; data: ChangeOrderStatusPayload }
-  >({
-    mutationFn: async (mutationPayload): Promise<any> => {
-      // Here, mutationPayload.id is the order ID, and mutationPayload.data is the actual body
-      // that contains 'status' and 'orderOtp'.
-      return await changeOrderStatus(mutationPayload.id, mutationPayload.data);
-    },
-    onSuccess: (responseData) => {
-      console.log("Change Order Status successful:", responseData);
-      options?.onSuccess?.(responseData);
-    },
-    onError: (errorData: Error) => {
-      console.error("Change Order Status failed:", errorData.message);
-      options?.onError?.(errorData);
-    },
-  });
-  return { mutate, data, error, isPending, isSuccess, isError };
+  const { mutateAsync, data, error, isPending, isSuccess, isError } =
+    useMutation<any, Error, { id: string; data: ChangeOrderStatusPayload }>({
+      mutationFn: async (mutationPayload): Promise<any> => {
+        // Here, mutationPayload.id is the order ID, and mutationPayload.data is the actual body
+        // that contains 'status' and 'orderOtp'.
+        return await changeOrderStatus(
+          mutationPayload.id,
+          mutationPayload.data
+        );
+      },
+      onSuccess: (responseData) => {
+        console.log("Change Order Status successful:", responseData);
+        options?.onSuccess?.(responseData);
+      },
+      onError: (errorData: Error) => {
+        console.error("Change Order Status failed:", errorData.message);
+        options?.onError?.(errorData);
+      },
+    });
+  return { mutateAsync, data, error, isPending, isSuccess, isError };
 }
 
 export function useGetShoppingDeliveryFee(

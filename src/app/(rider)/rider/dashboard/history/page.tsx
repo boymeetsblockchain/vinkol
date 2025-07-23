@@ -57,7 +57,7 @@ interface OrderData {
 function OrderHistory() {
   const { data, isLoading, isError, refetch } = useGetRiderOrders();
   // Using mutateAsync from useChangeOrderStatus for better async control
-  const { mutate: changeStatusMutate } = useChangeOrderStatus();
+  const { mutateAsync: changeStatusMutate } = useChangeOrderStatus();
 
   const [otpModalOpen, setOtpModalOpen] = useState(false);
   const [currentOrderId, setCurrentOrderId] = useState<string | null>(null);
@@ -72,6 +72,7 @@ function OrderHistory() {
         order.status === "Accepted" || order.status === "Picked"
     ).length || 0;
 
+  console.log(data);
   const historyOrders =
     data?.data?.filter((order: OrderData) => order.status !== "Pending") || [];
 
@@ -82,8 +83,6 @@ function OrderHistory() {
   ) => {
     setChangingStatusOrderId(orderId);
     try {
-      // Define the payload structure that matches what useChangeOrderStatus expects
-      // This is { status: "..." } or { status: "...", orderOtp: "..." }
       const requestData: { status: "Picked" | "Delivered"; orderOtp?: string } =
         {
           status: newStatus,
@@ -93,16 +92,20 @@ function OrderHistory() {
         requestData.orderOtp = otp;
       }
 
-      // Pass the orderId and the requestData as a single object to mutateAsync
       await changeStatusMutate({ id: orderId, data: requestData });
+      await refetch();
 
       toast.success(`Order status updated to ${newStatus}!`);
-      refetch();
+
       if (newStatus === "Delivered") {
         setOtpModalOpen(false);
         setOtpInput("");
         setCurrentOrderId(null);
       }
+
+      // Only reload if absolutely necessary
+      // Consider removing this line entirely and relying on refetch
+      // location.reload();
     } catch (error: any) {
       console.error(`Failed to change order status to ${newStatus}:`, error);
       toast.error(
@@ -161,11 +164,11 @@ function OrderHistory() {
             const orderDate = new Date(order.createdAt);
             const timeAgo = isValid(orderDate)
               ? formatDistanceToNow(orderDate, { addSuffix: true })
-              : "N/A";
+              : "N/A"; // Fallback if date is invalid
 
             const customerName = order.guest
               ? `${order.guest.firstname} ${order.guest.lastname}`
-              : order.user?.email || "N/A Customer";
+              : order.user?.email || "";
 
             const isButtonLoading = changingStatusOrderId === order._id;
 
@@ -190,13 +193,6 @@ function OrderHistory() {
                     {order.status}
                   </p>
                 </div>
-
-                <p className="text-sm text-gray-500">
-                  <span className="font-semibold text-gray-700">
-                    Order Placed:
-                  </span>{" "}
-                  {timeAgo}
-                </p>
 
                 <p className="text-sm text-gray-500">
                   <span className="font-semibold text-gray-700">State:</span>{" "}
