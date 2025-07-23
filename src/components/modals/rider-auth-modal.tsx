@@ -11,7 +11,7 @@ import {
 } from "@/services/rider/mutation";
 import { toast } from "sonner"; // For user notifications
 import { TermsCheckbox } from "../shared/terms";
-import { X } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
 interface ShopperAuthModalProps {
   isOpen: boolean;
@@ -139,8 +139,15 @@ export const RiderAuthModal = ({
       <div className="w-full h-full flex md:items-end md:justify-end">
         <div
           ref={modalRef}
-          className="w-full md:w-1/2 bg-white h-full flex flex-col p-8 gap-y-4 items-center justify-center"
+          className="w-full md:w-1/2 bg-white h-full flex flex-col p-8 gap-y-4 items-center justify-center relative"
         >
+          <button
+            className="absolute top-[5%] left-[5%] p-2 cursor-pointer"
+            title="Go Back"
+            onClick={onClose}
+          >
+            <ArrowLeft size={18} />
+          </button>
           <div className="text-center">
             <h1 className="text-black font-bold text-3xl">Welcome</h1>
             <p className="font-medium">
@@ -151,20 +158,20 @@ export const RiderAuthModal = ({
           </div>
 
           {/* Social login options */}
-          <div className="flex items-center gap-x-4">
+          {/* <div className="flex items-center gap-x-4">
             <div className="w-8 h-8 rounded-full border flex items-center justify-center border-[rgba(0,0,0,0.1)] cursor-pointer">
               <FcGoogle />
             </div>
             <div className="w-8 h-8 rounded-full bg-black border flex items-center justify-center border-[rgba(0,0,0,0.1)] cursor-pointer">
               <FaApple color="white" />
             </div>
-          </div>
+          </div> */}
 
-          <div className="w-full flex items-center justify-center gap-x-3">
+          {/* <div className="w-full flex items-center justify-center gap-x-3">
             <div className="bg-[#A5A4A0] h-0.5 w-1/3" />
             <p className="text-[#A5A4A0] font-xs">or</p>
             <div className="bg-[#A5A4A0] h-0.5 w-1/3" />
-          </div>
+          </div> */}
 
           {/* Authentication Form */}
           <form

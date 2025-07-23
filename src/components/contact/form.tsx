@@ -7,12 +7,13 @@ import { toast } from "sonner";
 
 export const ContactForm = () => {
   const { mutate, isPending } = useSendContactMessageMutation();
-  const [formData, setFormData] = useState({
+  const initialFormState = {
     name: "",
     email: "",
     address: "",
     message: "",
-  });
+  };
+  const [formData, setFormData] = useState(initialFormState);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -28,6 +29,7 @@ export const ContactForm = () => {
     e.preventDefault();
     console.log("Form data submitted:", formData);
     mutate(formData);
+    setFormData(initialFormState);
   };
 
   return (

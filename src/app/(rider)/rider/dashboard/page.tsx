@@ -2,7 +2,7 @@
 
 import { useState } from "react"; // Import useState
 import { Button } from "@/components/button";
-import { useGetAvailableOrders, useGetOrders } from "@/services/orders/query";
+import { useGetAvailableOrders } from "@/services/orders/query";
 import { formatDistanceToNow, isValid } from "date-fns"; // Import isValid
 import { useAcceptOrderMutation } from "@/services/orders/mutation";
 import { toast } from "sonner"; // Import toast for notifications
@@ -108,9 +108,6 @@ function Orders() {
         You currently have{" "}
         <span className="font-bold">{acceptedOrders?.length}</span> accepted
         orders{" "}
-        <span className="font-bold text-base underline cursor-pointer">
-          CLICK HERE TO SEE DETAILS
-        </span>
       </div>
 
       <div className="flex flex-col space-y-6">
