@@ -57,7 +57,7 @@ interface OrderData {
 function OrderHistory() {
   const { data, isLoading, isError, refetch } = useGetRiderOrders();
   // Using mutateAsync from useChangeOrderStatus for better async control
-  const { mutate: changeStatusMutate } = useChangeOrderStatus();
+  const { mutateAsync: changeStatusMutate } = useChangeOrderStatus();
 
   const [otpModalOpen, setOtpModalOpen] = useState(false);
   const [currentOrderId, setCurrentOrderId] = useState<string | null>(null);
