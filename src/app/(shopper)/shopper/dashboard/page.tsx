@@ -56,6 +56,7 @@ function Orders() {
 
   const { data, isPending, refetch } = useGetAvailableOrders({
     state: userProfile?.data?.state,
+    orderType: "Shopping",
   });
   const { mutate: acceptOrderMutate } = useAcceptOrderMutation(); // Use mutateAsync for await
 
@@ -99,9 +100,6 @@ function Orders() {
         You currently have{" "}
         <span className="font-bold">{acceptedOrders?.length}</span> accepted
         orders{" "}
-        <span className="font-bold text-base underline cursor-pointer">
-          CLICK HERE TO SEE DETAILS
-        </span>
       </div>
 
       <div className="flex flex-col space-y-6">

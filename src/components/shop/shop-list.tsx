@@ -25,7 +25,7 @@ export const ShopList = () => {
         </h1>
 
         <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-6 mt-8">
-          {data.data.slice(0, 5).map((shop: any, idx: any) => (
+          {data.data.slice(0, 4).map((shop: any, idx: any) => (
             <img
               key={idx}
               src={shop.avatar?.imageUrl || "/assets/placeholder.png"}

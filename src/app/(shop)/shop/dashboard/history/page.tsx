@@ -100,9 +100,6 @@ function Orders() {
       <div className="bg-blue-primary w-full rounded-md p-4 text-sm text-white mb-6 shadow-md">
         You currently have{" "}
         <span className="font-bold">{deliveries.length}</span> accepted orders{" "}
-        <span className="font-bold text-base underline cursor-pointer">
-          CLICK HERE TO SEE DETAILS
-        </span>
       </div>
 
       <div className="flex flex-col space-y-6">

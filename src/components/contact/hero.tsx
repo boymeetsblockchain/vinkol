@@ -9,8 +9,6 @@ export const ContactHero = () => {
         <h1 className="text-4xl sm:text-5xl font-bold mb-2 leading-tight">
           Contact Us
         </h1>
-
-        <p className="text-lg sm:text-xl font-medium">Home \ Contact</p>
       </div>
     </section>
   );
