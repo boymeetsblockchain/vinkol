@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import {
+  getAllCollorativeStores,
   getAllStores,
   getBankLists,
   getSingleStore,
@@ -32,6 +33,12 @@ export const useGetAllStores = (params?: GetAllStoresParams) => {
   return useQuery({
     queryKey: ["stores", params],
     queryFn: () => getAllStores(params),
+  });
+};
+export const useGetAllCollaborativeStores = () => {
+  return useQuery({
+    queryKey: ["stores", "collaborative"],
+    queryFn: () => getAllCollorativeStores(),
   });
 };
 export const useGetAllBanks = () => {

@@ -1,9 +1,9 @@
 "use client";
 
-import { useGetAllStores } from "@/services/shops/query";
+import { useGetAllCollaborativeStores } from "@/services/shops/query";
 
 export const ShopList = () => {
-  const { data, isLoading, isError } = useGetAllStores();
+  const { data, isLoading, isError } = useGetAllCollaborativeStores();
 
   if (isLoading) {
     return <div className="text-center py-10">Loading stores...</div>;

@@ -1,15 +1,32 @@
-// src/app/(rider)/rider/dashboard/history/page.tsx (your component file)
-
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/button";
-import { useGetRiderOrders } from "@/services/orders/query";
-import { useChangeOrderStatus } from "@/services/orders/mutation";
+import {
+  useGetAvailableOrders,
+  useGetRiderOrders,
+} from "@/services/orders/query";
 import { formatDistanceToNow, isValid } from "date-fns";
+import { useAcceptOrderMutation } from "@/services/orders/mutation";
 import { toast } from "sonner";
+import { useUserProfile } from "@/services/rider/query";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import { Input } from "@/components/ui/input";
 
-// Define an interface for your order data
 interface OrderData {
   _id: string;
   guest?: {
@@ -27,13 +44,13 @@ interface OrderData {
   pickupLocation: string;
   dropoffLocation: string;
   state: string;
-  status: "Pending" | "Accepted" | "Delivered" | "Picked" | string;
+  status: "Pending" | "Delivered" | "Picked" | "Accepted" | string;
   date?: string;
   time?: string;
   deliveryType: string;
   vehicleRequest: string;
   orderType: string;
-  amount: number;
+  deliveryFee: number;
   paystackReference: string;
   paymentStatus: string;
   products: any[];
@@ -50,124 +67,152 @@ interface OrderData {
     lastname: string;
     phone: string;
   };
-  totalAmount?: number;
-  note?: string;
 }
 
+const ITEMS_PER_PAGE = 5;
+
 function OrderHistory() {
-  const { data, isLoading, isError, refetch } = useGetRiderOrders();
-  // Using mutateAsync from useChangeOrderStatus for better async control
-  const { mutateAsync: changeStatusMutate } = useChangeOrderStatus();
+  const { data: userProfile } = useUserProfile();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [deliveryTypeFilter, setDeliveryTypeFilter] = useState<string>("all");
 
-  const [otpModalOpen, setOtpModalOpen] = useState(false);
-  const [currentOrderId, setCurrentOrderId] = useState<string | null>(null);
-  const [otpInput, setOtpInput] = useState("");
-  const [changingStatusOrderId, setChangingStatusOrderId] = useState<
-    string | null
-  >(null);
+  const { data, isPending, isError, refetch } = useGetRiderOrders();
 
-  const activeOrdersCount =
-    data?.data?.filter(
-      (order: OrderData) =>
-        order.status === "Accepted" || order.status === "Picked"
-    ).length || 0;
+  console.log(data);
 
-  const historyOrders =
-    data?.data?.filter((order: OrderData) => order.status !== "Pending") || [];
+  const { mutate: acceptOrderMutate } = useAcceptOrderMutation();
+  const [acceptingOrderId, setAcceptingOrderId] = useState<string | null>(null);
 
-  const handleChangeStatus = async (
-    orderId: string,
-    newStatus: "Picked" | "Delivered",
-    otp?: string
-  ) => {
-    setChangingStatusOrderId(orderId);
+  // Filter and search logic
+  const filteredOrders = (data?.data?.fetchedData || []).filter(
+    (order: OrderData) => {
+      // Status filter
+      if (statusFilter !== "all" && order.status !== statusFilter) {
+        return false;
+      }
+
+      // Delivery type filter
+      if (
+        deliveryTypeFilter !== "all" &&
+        order.deliveryType !== deliveryTypeFilter
+      ) {
+        return false;
+      }
+
+      // Search term filter
+      if (searchTerm) {
+        const searchLower = searchTerm.toLowerCase();
+        return (
+          order.guest?.firstname?.toLowerCase().includes(searchLower) ||
+          order.guest?.lastname?.toLowerCase().includes(searchLower) ||
+          order.trackingId?.toLowerCase().includes(searchLower) ||
+          order.pickupLocation?.toLowerCase().includes(searchLower) ||
+          order.dropoffLocation?.toLowerCase().includes(searchLower)
+        );
+      }
+
+      return true;
+    }
+  );
+  console.log(data);
+  // Pagination logic
+  const totalPages = Math.ceil(filteredOrders.length / ITEMS_PER_PAGE);
+  const paginatedOrders = filteredOrders.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
+
+  // Reset to first page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [statusFilter, deliveryTypeFilter, searchTerm]);
+
+  const handleAcceptOrder = async (orderId: string) => {
+    setAcceptingOrderId(orderId);
     try {
-      // Define the payload structure that matches what useChangeOrderStatus expects
-      // This is { status: "..." } or { status: "...", orderOtp: "..." }
-      const requestData: { status: "Picked" | "Delivered"; orderOtp?: string } =
-        {
-          status: newStatus,
-        };
-
-      if (newStatus === "Delivered" && otp) {
-        requestData.orderOtp = otp;
-      }
-
-      // Pass the orderId and the requestData as a single object to mutateAsync
-      await changeStatusMutate({ id: orderId, data: requestData });
-
-      toast.success(`Order status updated to ${newStatus}!`);
+      await acceptOrderMutate(orderId);
       refetch();
-      if (newStatus === "Delivered") {
-        setOtpModalOpen(false);
-        setOtpInput("");
-        setCurrentOrderId(null);
-      }
+      toast.success("Order accepted successfully!");
     } catch (error: any) {
-      console.error(`Failed to change order status to ${newStatus}:`, error);
+      console.error("Failed to accept order:", error);
       toast.error(
-        `Failed to update status: ${
+        `Failed to accept order: ${
           error.response?.data?.message || error.message || "Unknown error"
         }`
       );
     } finally {
-      setChangingStatusOrderId(null);
+      setAcceptingOrderId(null);
     }
   };
 
-  const handleOpenOtpModal = (orderId: string) => {
-    setCurrentOrderId(orderId);
-    setOtpModalOpen(true);
-  };
-
-  const handleOtpSubmit = () => {
-    if (currentOrderId && otpInput) {
-      handleChangeStatus(currentOrderId, "Delivered", otpInput);
-    } else {
-      toast.error("Please enter the OTP.");
-    }
-  };
-
-  if (isLoading) {
-    return (
-      <section className="py-6 px-4 text-center text-gray-600">
-        Loading order history...
-      </section>
-    );
-  }
-
-  if (isError) {
-    return (
-      <section className="py-6 px-4 text-center text-red-600">
-        Error loading orders. Please try again later.
-      </section>
-    );
-  }
+  const acceptedOrders = filteredOrders.filter(
+    (order: OrderData) =>
+      order.status === "Delivered" ||
+      order.status === "Picked" ||
+      order.status === "Accepted"
+  );
 
   return (
     <section className="py-6 px-4">
       <div className="bg-blue-primary w-full rounded-md p-4 text-sm text-white mb-6 shadow-md">
         You currently have{" "}
-        <span className="font-bold">{activeOrdersCount}</span> accepted orders{" "}
+        <span className="font-bold">{acceptedOrders?.length}</span> accepted
+        orders
       </div>
 
+      {/* Filter and Search Controls */}
+      <div className="mb-6 grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="md:col-span-1">
+          <Select onValueChange={(value: any) => setStatusFilter(value)}>
+            <SelectTrigger>
+              <SelectValue placeholder="Filter by status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Statuses</SelectItem>
+              <SelectItem value="Pending">Pending</SelectItem>
+              <SelectItem value="Accepted">Accepted</SelectItem>
+              <SelectItem value="Picked">Picked</SelectItem>
+              <SelectItem value="Delivered">Delivered</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="md:col-span-1">
+          <Select onValueChange={(value: any) => setDeliveryTypeFilter(value)}>
+            <SelectTrigger>
+              <SelectValue placeholder="Filter by delivery type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Types</SelectItem>
+              <SelectItem value="regular">Regular</SelectItem>
+              <SelectItem value="express">Express</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="md:col-span-2">
+          <Input
+            type="text"
+            placeholder="Search by name, tracking ID, or location..."
+            value={searchTerm}
+            onChange={(e: any) => setSearchTerm(e.target.value)}
+          />
+        </div>
+      </div>
+
+      {/* Orders List */}
       <div className="flex flex-col space-y-6">
-        {historyOrders.length === 0 ? (
-          <p className="text-center text-gray-600">
-            No past orders to display.
-          </p>
-        ) : (
-          historyOrders.map((order: OrderData) => {
+        {isPending ? (
+          <p className="text-center text-gray-600">Loading orders history...</p>
+        ) : paginatedOrders.length > 0 ? (
+          paginatedOrders.map((order: OrderData) => {
+            const isThisOrderBeingAccepted = acceptingOrderId === order._id;
             const orderDate = new Date(order.createdAt);
             const timeAgo = isValid(orderDate)
               ? formatDistanceToNow(orderDate, { addSuffix: true })
               : "N/A";
-
-            const customerName = order.guest
-              ? `${order.guest.firstname} ${order.guest.lastname}`
-              : order.user?.email || "N/A Customer";
-
-            const isButtonLoading = changingStatusOrderId === order._id;
 
             return (
               <div
@@ -175,169 +220,180 @@ function OrderHistory() {
                 className="w-full bg-white rounded-xl shadow-md border p-4 space-y-2"
               >
                 <div className="flex items-center justify-between">
-                  <h1 className="text-lg font-semibold text-gray-800">
-                    {customerName}
-                  </h1>
+                  <div>
+                    <h1 className="text-lg font-semibold text-gray-800">
+                      {order.guest
+                        ? `${order.guest.firstname} ${order.guest.lastname}`
+                        : order.user?.email || "N/A Customer"}
+                    </h1>
+                    <p className="text-xs text-gray-500">
+                      Tracking: {order.trackingId}
+                    </p>
+                  </div>
                   <p
                     className={`text-white text-xs px-3 py-1 rounded-full ${
-                      order.status === "Delivered"
-                        ? "bg-green-500"
+                      order.status === "Pending"
+                        ? "bg-gray-500"
+                        : order.status === "Accepted"
+                        ? "bg-blue-primary"
                         : order.status === "Picked"
                         ? "bg-yellow-500"
-                        : "bg-blue-primary"
+                        : "bg-green-500"
                     }`}
                   >
                     {order.status}
                   </p>
                 </div>
 
-                <p className="text-sm text-gray-500">
-                  <span className="font-semibold text-gray-700">
-                    Order Placed:
-                  </span>{" "}
-                  {timeAgo}
-                </p>
-
-                <p className="text-sm text-gray-500">
-                  <span className="font-semibold text-gray-700">State:</span>{" "}
-                  {order.state}
-                </p>
-                <p className="text-sm text-gray-500">
-                  <span className="font-semibold text-gray-700">
-                    Pick-up Location:
-                  </span>{" "}
-                  {order.pickupLocation}
-                </p>
-                <p className="text-sm text-gray-500">
-                  <span className="font-semibold text-gray-700">
-                    Drop-off Location:
-                  </span>{" "}
-                  {order.dropoffLocation}
-                </p>
-
-                <div className="flex gap-4 text-sm text-gray-600">
-                  <p>
-                    <span className="font-medium">Date:</span>{" "}
-                    {order.date ||
-                      (isValid(orderDate)
-                        ? orderDate.toLocaleDateString("en-US", {
-                            year: "numeric",
-                            month: "long",
-                            day: "numeric",
-                          })
-                        : "N/A")}
-                  </p>
-                  <p>
-                    <span className="font-medium">Time:</span>{" "}
-                    {order.time ||
-                      (isValid(orderDate)
-                        ? orderDate.toLocaleTimeString("en-US", {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })
-                        : "N/A")}
-                  </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm text-gray-500">
+                      <span className="font-semibold text-gray-700">
+                        Order Placed:
+                      </span>{" "}
+                      {timeAgo}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      <span className="font-semibold text-gray-700">
+                        State:
+                      </span>{" "}
+                      {order.state}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      <span className="font-semibold text-gray-700">
+                        Pick-up:
+                      </span>{" "}
+                      {order.pickupLocation}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">
+                      <span className="font-semibold text-gray-700">
+                        Drop-off:
+                      </span>{" "}
+                      {order.dropoffLocation}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      <span className="font-semibold text-gray-700">
+                        Delivery Type:
+                      </span>{" "}
+                      {order.deliveryType}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      <span className="font-semibold text-gray-700">
+                        Vehicle:
+                      </span>{" "}
+                      {order.vehicleRequest}
+                    </p>
+                  </div>
                 </div>
 
-                <div className="flex gap-4 text-sm text-gray-600">
-                  <p>
-                    <span className="font-medium">Delivery Type:</span>{" "}
-                    {order.deliveryType}
+                {order && typeof order.deliveryFee === "number" ? (
+                  <p className="text-sm font-semibold text-gray-700">
+                    Amount:{" "}
+                    <span className="text-blue-primary">
+                      ₦
+                      {order.deliveryFee.toLocaleString("en-NG", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
+                    </span>
                   </p>
-                  <p>
-                    <span className="font-medium">Vehicle Request:</span>{" "}
-                    {order.vehicleRequest}
-                  </p>
-                </div>
-
-                <p className="text-sm font-semibold text-gray-700">
-                  Amount:{" "}
-                  <span className="text-blue-primary">
-                    ₦
-                    {(order.totalAmount || order.amount).toLocaleString(
-                      "en-NG",
-                      { minimumFractionDigits: 2, maximumFractionDigits: 2 }
-                    )}
-                  </span>
-                </p>
-
-                {order.note && (
-                  <p className="text-sm italic text-gray-600">
-                    Note: {order.note}
+                ) : (
+                  <p className="text-sm font-semibold text-gray-700">
+                    Amount: <span className="text-blue-primary">₦0.00</span>
                   </p>
                 )}
 
                 <div className="flex justify-end gap-3 pt-4">
+                  {order.status === "Pending" && (
+                    <>
+                      <Button
+                        variant="secondary"
+                        disabled={isThisOrderBeingAccepted}
+                      >
+                        Decline
+                      </Button>
+                      <Button
+                        onClick={() => handleAcceptOrder(order._id)}
+                        disabled={isThisOrderBeingAccepted}
+                      >
+                        {isThisOrderBeingAccepted ? "Accepting..." : "Accept"}
+                      </Button>
+                    </>
+                  )}
                   {order.status === "Accepted" && (
-                    <Button
-                      variant="auth"
-                      onClick={() => handleChangeStatus(order._id, "Picked")}
-                      disabled={isButtonLoading}
-                    >
-                      {isButtonLoading ? "Picking Up..." : "Mark as Picked"}
-                    </Button>
+                    <Button disabled>Order Accepted</Button>
                   )}
                   {order.status === "Picked" && (
-                    <Button
-                      variant="auth"
-                      onClick={() => handleOpenOtpModal(order._id)}
-                      disabled={isButtonLoading}
-                    >
-                      {isButtonLoading ? "Delivering..." : "Mark as Delivered"}
-                    </Button>
+                    <Button disabled>Picked Up</Button>
                   )}
                   {order.status === "Delivered" && (
-                    <Button disabled>Completed</Button>
+                    <Button disabled>Delivered</Button>
                   )}
-                  <Button variant="secondary">View Details</Button>
                 </div>
               </div>
             );
           })
+        ) : (
+          <p className="text-center text-gray-600">
+            No orders match your filters.
+          </p>
         )}
       </div>
 
-      {/* OTP Modal */}
-      {otpModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg p-6 shadow-xl w-full max-w-sm">
-            <h2 className="text-xl font-bold mb-4 text-gray-800">
-              Enter OTP to Complete Delivery
-            </h2>
-            <p className="text-sm text-gray-600 mb-4">
-              Please ask the customer for the One-Time Password (OTP) to confirm
-              delivery.
-            </p>
-            <input
-              type="text"
-              value={otpInput}
-              onChange={(e) => setOtpInput(e.target.value)}
-              placeholder="Enter OTP"
-              className="w-full p-3 border border-gray-300 rounded-md mb-4 focus:outline-none focus:ring-2 focus:ring-blue-primary"
-              inputMode="numeric"
-              pattern="[0-9]*"
-            />
-            <div className="flex justify-end gap-3">
-              <Button
-                variant="secondary"
-                onClick={() => {
-                  setOtpModalOpen(false);
-                  setOtpInput("");
-                  setCurrentOrderId(null);
-                }}
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={handleOtpSubmit}
-                disabled={!otpInput || changingStatusOrderId === currentOrderId}
-              >
-                {changingStatusOrderId === currentOrderId
-                  ? "Submitting..."
-                  : "Submit OTP"}
-              </Button>
-            </div>
-          </div>
+      {/* Pagination Controls */}
+      {totalPages > 1 && (
+        <div className="mt-8">
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  href="#"
+                  onClick={(e: any) => {
+                    e.preventDefault();
+                    if (currentPage > 1) setCurrentPage(currentPage - 1);
+                  }}
+                  className={
+                    currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""
+                  }
+                />
+              </PaginationItem>
+
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                (page) => (
+                  <PaginationItem key={page}>
+                    <PaginationLink
+                      href="#"
+                      onClick={(e: any) => {
+                        e.preventDefault();
+                        setCurrentPage(page);
+                      }}
+                      isActive={page === currentPage}
+                    >
+                      {page}
+                    </PaginationLink>
+                  </PaginationItem>
+                )
+              )}
+
+              <PaginationItem>
+                <PaginationNext
+                  href="#"
+                  onClick={(e: any) => {
+                    e.preventDefault();
+                    if (currentPage < totalPages)
+                      setCurrentPage(currentPage + 1);
+                  }}
+                  className={
+                    currentPage === totalPages
+                      ? "opacity-50 cursor-not-allowed"
+                      : ""
+                  }
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
         </div>
       )}
     </section>

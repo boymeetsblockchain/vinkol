@@ -25,6 +25,16 @@ const getCurrentTime = () => {
   return now.toTimeString().slice(0, 5);
 };
 
+const getStateFromAddressComponents = (addressComponents: any[]) => {
+  if (!addressComponents) return null;
+
+  const stateComponent = addressComponents.find((component) =>
+    component.types.includes("administrative_area_level_1")
+  );
+
+  return stateComponent ? stateComponent.long_name.toLowerCase() : null;
+};
+
 export const BookADeliveryForm = () => {
   const router = useRouter();
   const form = useForm<z.infer<typeof deliverySchema>>({
@@ -58,26 +68,24 @@ export const BookADeliveryForm = () => {
     mutate(
       {
         state: data.state,
-        orderType: "Delivery", // Assuming fixed order type
+        orderType: "Delivery",
         pickupLocation: data.pickupCoords
           ? {
               lat: String(data.pickupCoords.lat),
               lng: String(data.pickupCoords.lng),
             }
-          : { lat: "", lng: "" }, // Ensure coordinates are strings for payload
+          : { lat: "", lng: "" },
         dropoffLocation: data.dropoffCoords
           ? {
               lat: String(data.dropoffCoords.lat),
               lng: String(data.dropoffCoords.lng),
             }
-          : { lat: "", lng: "" }, // Ensure coordinates are strings for payload
+          : { lat: "", lng: "" },
         deliveryType: data.type,
         vehicleRequest: data.vehicle,
       },
       {
         onSuccess: (responseData) => {
-          // Format date for display (e.g., "April 27, 2025")
-          console.log(responseData);
           const dateObj = new Date(data.date);
           const formattedDate = dateObj.toLocaleDateString("en-US", {
             year: "numeric",
@@ -85,7 +93,6 @@ export const BookADeliveryForm = () => {
             day: "numeric",
           });
 
-          // Format time for display (e.g., "6:00 PM")
           const [hours, minutes] = data.time.split(":").map(Number);
           const timeObj = new Date();
           timeObj.setHours(hours, minutes, 0, 0);
@@ -95,7 +102,6 @@ export const BookADeliveryForm = () => {
             hour12: true,
           });
 
-          // Create URLSearchParams to build the query string safely
           const params = new URLSearchParams();
           params.append("firstname", data.firstname);
           params.append("lastname", data.lastname);
@@ -108,17 +114,16 @@ export const BookADeliveryForm = () => {
           params.append("time", formattedTime);
           params.append("deliveryType", data.type);
           params.append("vehicleRequest", data.vehicle);
-          params.append("orderType", data.orderType); // Pass orderType to the quote page
-          params.append("amount", String(responseData.data.price || 0)); // Ensure 'price' is accessed correctly
+          params.append("orderType", data.orderType);
+          params.append("amount", String(responseData.data.price || 0));
           params.append("note", data.note || "");
 
           toast.success("Quote successfully retrieved!", {
             description: `Amount: ₦${
               responseData.data.price?.toLocaleString() || "N/A"
-            }`, // <--- Access 'price' for toast
+            }`,
           });
 
-          // Navigate to the quote page with the generated query string
           router.push(`/quote?${params.toString()}`);
         },
         onError: (error: any) => {
@@ -226,7 +231,7 @@ export const BookADeliveryForm = () => {
             )}
           />
 
-          {/* State Field */}
+          {/* State Field - Now readOnly since it will be auto-populated */}
           <FormField
             control={form.control}
             name="state"
@@ -234,51 +239,11 @@ export const BookADeliveryForm = () => {
               <FormItem>
                 <FormLabel>State</FormLabel>
                 <FormControl>
-                  <select
+                  <input
                     {...field}
-                    className="w-full border border-blue-primary placeholder:text-blue-primary py-4 px-3 rounded-md"
-                  >
-                    <option value="">Select your state</option>
-                    <option value="abia">Abia</option>
-                    <option value="adamawa">Adamawa</option>
-                    <option value="akwa-ibom">Akwa Ibom</option>
-                    <option value="anambra">Anambra</option>
-                    <option value="bauchi">Bauchi</option>
-                    <option value="bayelsa">Bayelsa</option>
-                    <option value="benue">Benue</option>
-                    <option value="borno">Borno</option>
-                    <option value="cross-river">Cross River</option>
-                    <option value="delta">Delta</option>
-                    <option value="ebonyi">Ebonyi</option>
-                    <option value="edo">Edo</option>
-                    <option value="ekiti">Ekiti</option>
-                    <option value="enugu">Enugu</option>
-                    <option value="gombe">Gombe</option>
-                    <option value="imo">Imo</option>
-                    <option value="jigawa">Jigawa</option>
-                    <option value="kaduna">Kaduna</option>
-                    <option value="kano">Kano</option>
-                    <option value="katsina">Katsina</option>
-                    <option value="kebbi">Kebbi</option>
-                    <option value="kogi">Kogi</option>
-                    <option value="kwara">Kwara</option>
-                    <option value="lagos">Lagos</option>
-                    <option value="nasarawa">Nasarawa</option>
-                    <option value="niger">Niger</option>
-                    <option value="ogun">Ogun</option>
-                    <option value="ondo">Ondo</option>
-                    <option value="osun">Osun</option>
-                    <option value="oyo">Oyo</option>
-                    <option value="plateau">Plateau</option>
-                    <option value="rivers">Rivers</option>
-                    <option value="sokoto">Sokoto</option>
-                    <option value="taraba">Taraba</option>
-                    <option value="yobe">Yobe</option>
-                    <option value="zamfara">Zamfara</option>
-                    <option value="abuja">
-                      Federal Capital Territory (Abuja)
-                    </option>
-                  </select>
+                    readOnly
+                    className="w-full border border-blue-primary placeholder:text-blue-primary py-4 px-3 rounded-md bg-gray-100"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -298,26 +263,36 @@ export const BookADeliveryForm = () => {
                     onPlaceSelected={(place) => {
                       const lat = place.geometry?.location?.lat();
                       const lng = place.geometry?.location?.lng();
+                      const state = getStateFromAddressComponents(
+                        place.address_components
+                      );
+
                       form.setValue(
                         "pickup",
                         place.formatted_address || place.name
                       );
                       form.setValue("pickupCoords", { lat, lng });
+
+                      // Update state if found
+                      if (state) {
+                        form.setValue("state", state);
+                      }
                     }}
                     options={{
                       types: ["geocode", "establishment"],
-                      componentRestrictions: { country: ["ng"] }, // Restrict to Nigeria
+                      componentRestrictions: { country: ["ng"] },
                       fields: [
                         "formatted_address",
                         "name",
                         "geometry.location",
+                        "address_components",
                       ],
                     }}
                     placeholder="Pickup Location"
                     className="w-full border border-blue-primary placeholder:text-blue-primary py-4 px-3 rounded-md"
                     defaultValue={field.value}
                     onBlur={field.onBlur}
-                    onChange={field.onChange} // Keep onChange for React Hook Form's internal tracking
+                    onChange={field.onChange}
                   />
                 </FormControl>
                 <FormMessage />
@@ -338,26 +313,36 @@ export const BookADeliveryForm = () => {
                     onPlaceSelected={(place) => {
                       const lat = place.geometry?.location?.lat();
                       const lng = place.geometry?.location?.lng();
+                      const state = getStateFromAddressComponents(
+                        place.address_components
+                      );
+
                       form.setValue(
                         "dropoff",
                         place.formatted_address || place.name
                       );
                       form.setValue("dropoffCoords", { lat, lng });
+
+                      // Only update state if it's not already set from pickup
+                      if (state && !form.getValues("state")) {
+                        form.setValue("state", state);
+                      }
                     }}
                     options={{
                       types: ["geocode", "establishment"],
-                      componentRestrictions: { country: ["ng"] }, // Restrict to Nigeria
+                      componentRestrictions: { country: ["ng"] },
                       fields: [
                         "formatted_address",
                         "name",
                         "geometry.location",
+                        "address_components",
                       ],
                     }}
                     placeholder="Dropoff Location"
                     className="w-full border border-blue-primary placeholder:text-blue-primary py-4 px-3 rounded-md"
                     defaultValue={field.value}
                     onBlur={field.onBlur}
-                    onChange={field.onChange} // Keep onChange for React Hook Form's internal tracking
+                    onChange={field.onChange}
                   />
                 </FormControl>
                 <FormMessage />

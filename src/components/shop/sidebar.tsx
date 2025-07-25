@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { FaSignOutAlt } from "react-icons/fa";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -41,6 +42,11 @@ const dashboardLinks = [
     label: "Wallet",
     icon: <Wallet size={18} />,
     route: "/shop/dashboard/wallet",
+  },
+  {
+    label: "Logout",
+    icon: <FaSignOutAlt size={18} />,
+    route: "/",
   },
 ];
 

@@ -189,6 +189,15 @@ export const getAllStores = async (params?: GetAllStoresParams) => {
     throw error;
   }
 };
+export const getAllCollorativeStores = async () => {
+  try {
+    const response = await axiosInstance.get("stores/homepage");
+    return response.data;
+  } catch (error) {
+    handleApiError(error, "Failed to get stores");
+    throw error;
+  }
+};
 
 // bank details
 
