@@ -55,7 +55,6 @@ function StoreProfile() {
   if (isLoading) {
     return (
       <section className="min-h-screen flex flex-col">
-        <Header />
         <div className="flex items-center justify-center max-w-screen-xl mx-auto px-4 w-full">
           <div className="w-full max-w-md space-y-4">
             <Skeleton className="h-10 w-3/4" />
@@ -77,7 +76,6 @@ function StoreProfile() {
   if (isError) {
     return (
       <section className="min-h-screen flex flex-col">
-        <Header />
         <div className="flex items-center justify-center max-w-screen-xl mx-auto px-4 w-full">
           <div className="text-center text-red-500">
             Failed to load profile. Please try again.
@@ -89,7 +87,6 @@ function StoreProfile() {
 
   return (
     <section className="min-h-screen flex flex-col">
-      <Header />
       <div className="flex items-center justify-center max-w-screen-xl mx-auto px-4 w-full">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 w-full">
           {/* Left: Profile Section */}
@@ -249,15 +246,6 @@ function StoreProfile() {
                 )}
               </div>
             </div>
-          </div>
-
-          {/* Right: Image Section */}
-          <div className="hidden md:block w-full h-full">
-            <img
-              src="/assets/store-profile.jpg"
-              alt="Store Profile Illustration"
-              className="w-full h-full object-contain rounded-lg"
-            />
           </div>
         </div>
       </div>

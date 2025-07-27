@@ -2,7 +2,7 @@
 import { ReactNode, useEffect, useState } from "react";
 import { Menu } from "lucide-react";
 import { Profile } from "@/components/rider/profile";
-import { ShopperDashboardSidebar } from "@/components/shop/shopper-sidebar";
+import { ShopperDashBoardSidebBar } from "@/components/shop/shopper-sidebar";
 import { useUserProfile } from "@/services/rider/query";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -198,7 +198,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
       </div>
 
       {/* Sidebar */}
-      <ShopperDashboardSidebar
+      <ShopperDashBoardSidebBar
         isOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}
       />

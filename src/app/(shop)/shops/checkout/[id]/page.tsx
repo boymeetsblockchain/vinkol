@@ -182,8 +182,14 @@ function CheckoutPage() {
                 setSelectedState(normalizeStateName(foundState));
               }}
               options={{
-                types: ["address"],
-                componentRestrictions: { country: "ng" },
+                types: ["geocode", "establishment"],
+                componentRestrictions: { country: ["ng"] },
+                fields: [
+                  "formatted_address",
+                  "name",
+                  "geometry.location",
+                  "address_components",
+                ],
               }}
               value={address}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>

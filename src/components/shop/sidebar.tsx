@@ -22,11 +22,11 @@ const dashboardLinks = [
     icon: <Package size={18} />,
     route: "/shop/dashboard/",
   },
-  {
-    label: "Order History",
-    icon: <History size={18} />,
-    route: "/shop/dashboard/history",
-  },
+  // {
+  //   label: "Order History",
+  //   icon: <History size={18} />,
+  //   route: "/shop/dashboard/history",
+  // },
   {
     label: "Products",
     icon: <ShoppingBasket size={18} />,

@@ -25,10 +25,14 @@ export const useGetAvailableOrders = (params: GetOrdersParams = {}) => {
   });
 };
 
-export const useGetStoreOrders = () => {
+export const useGetStoreOrders = (params?: {
+  page?: number;
+  status?: string;
+  page_size?: number;
+}) => {
   return useQuery({
-    queryKey: ["store-orders"],
-    queryFn: () => getStoreOrders(),
+    queryKey: ["store-orders", params],
+    queryFn: () => getStoreOrders(params),
     staleTime: 1000 * 60 * 5,
   });
 };

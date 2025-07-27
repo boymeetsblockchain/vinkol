@@ -24,15 +24,18 @@ export const ShopList = () => {
           Shop your favorite stores in Nigeria
         </h1>
 
-        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-6 mt-8">
-          {data.data.slice(0, 4).map((shop: any, idx: any) => (
-            <img
-              key={idx}
-              src={shop.avatar?.imageUrl || "/assets/placeholder.png"}
-              alt={`Shop ${idx + 1}`}
-              className="h-20 w-20 md:h-32 md:w-32 rounded-full object-cover border shadow-sm hover:scale-105 transition-transform"
-            />
-          ))}
+        <div className="w-full flex justify-center">
+          <div className="flex flex-wrap justify-center gap-6 md:gap-8 mt-8">
+            {data.data.slice(0, 4).map((shop: any, idx: any) => (
+              <div key={idx} className="flex justify-center">
+                <img
+                  src={shop.avatar?.imageUrl || "/assets/placeholder.png"}
+                  alt={`Shop ${idx + 1}`}
+                  className="h-20 w-20 md:h-32 md:w-32 rounded-full object-cover border shadow-sm hover:scale-105 transition-transform"
+                />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>

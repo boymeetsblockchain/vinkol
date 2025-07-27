@@ -306,12 +306,6 @@ function Orders() {
                   {order.status === "Pending" && (
                     <>
                       <Button
-                        variant="secondary"
-                        disabled={isThisOrderBeingAccepted}
-                      >
-                        Decline
-                      </Button>
-                      <Button
                         onClick={() => handleAcceptOrder(order._id)}
                         disabled={isThisOrderBeingAccepted}
                       >

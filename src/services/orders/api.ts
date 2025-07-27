@@ -104,12 +104,34 @@ export const getAvailableOrders = async (params: GetOrdersParams = {}) => {
   }
 };
 
-export const getStoreOrders = async () => {
+// Updated getStoreOrders function with pagination and filtering support
+export const getStoreOrders = async (params?: {
+  page?: number;
+  status?: string;
+  page_size?: number;
+}) => {
   try {
-    const response = await axiosInstance.get(`/stores/orders`);
+    const queryParams = new URLSearchParams();
+
+    if (params?.page) {
+      queryParams.append("page", params.page.toString());
+    }
+
+    if (params?.status && params.status !== "all") {
+      queryParams.append("status", params.status);
+    }
+
+    if (params?.page_size) {
+      queryParams.append("page_size", params.page_size.toString());
+    }
+
+    const response = await axiosInstance.get(
+      `/stores/orders?${queryParams.toString()}`
+    );
     return response.data;
   } catch (error) {
-    handleApiError(error, "Get Order failed");
+    handleApiError(error, "Failed to fetch orders");
+    throw error; // Re-throw the error to be caught by react-query
   }
 };
 
