@@ -1,7 +1,9 @@
 "use client";
+
 import { useUserProfile } from "@/services/rider/query";
 import { X, Package, History, Wallet, FileText, Settings } from "lucide-react";
 import Link from "next/link";
+import { FaSignOutAlt } from "react-icons/fa";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -9,41 +11,46 @@ interface SidebarProps {
 }
 
 const unVerifiedDashboardLinks = [
-  { label: "Orders", icon: <Package size={18} />, route: "/rider/dashboard" },
+  { label: "Orders", icon: <Package size={18} />, route: "/shopper/dashboard" },
   {
     label: "Order History",
     icon: <History size={18} />,
-    route: "/rider/dashboard/history",
+    route: "/shopper/dashboard/history",
   },
   {
     label: "Documents",
     icon: <FileText size={18} />,
-    route: "/rider/dashboard/documents",
+    route: "/shopper/dashboard/documents",
   },
   {
     label: "Settings",
     icon: <Settings size={18} />,
-    route: "/rider/dashboard/settings",
+    route: "/shopper/dashboard/settings",
   },
 ];
 
 const verifiedDashboardLinks = [
-  { label: "Orders", icon: <Package size={18} />, route: "/rider/dashboard" },
+  { label: "Orders", icon: <Package size={18} />, route: "/shopper/dashboard" },
   {
     label: "Order History",
     icon: <History size={18} />,
-    route: "/rider/dashboard/history",
+    route: "/shopper/dashboard/history",
   },
   {
     label: "Wallet",
     icon: <Wallet size={18} />,
-    route: "/rider/dashboard/wallet",
+    route: "/shopper/dashboard/wallet",
   },
 
   {
     label: "Settings",
     icon: <Settings size={18} />,
-    route: "/rider/dashboard/settings",
+    route: "/shopper/dashboard/settings",
+  },
+  {
+    label: "Logout",
+    icon: <FaSignOutAlt size={18} />,
+    route: "/",
   },
 ];
 

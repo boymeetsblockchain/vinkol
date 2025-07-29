@@ -2,6 +2,7 @@
 import { useUserProfile } from "@/services/rider/query";
 import { X, Package, History, Wallet, FileText, Settings } from "lucide-react";
 import Link from "next/link";
+import { FaSignOutAlt } from "react-icons/fa";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -44,6 +45,11 @@ const verifiedDashboardLinks = [
     label: "Settings",
     icon: <Settings size={18} />,
     route: "/rider/dashboard/settings",
+  },
+  {
+    label: "Logout",
+    icon: <FaSignOutAlt size={18} />,
+    route: "/",
   },
 ];
 

@@ -3,7 +3,8 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/button";
 import { useUpdateProfileMutation } from "@/services/rider/mutation";
 import { useUserProfile } from "@/services/rider/query";
-import { toast } from "sonner"; // Assuming you have react-toastify for notifications
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 function SettingsPage() {
   const { data, isPending, refetch } = useUserProfile();
@@ -13,6 +14,7 @@ function SettingsPage() {
   const [selectedState, setSelectedState] = useState("");
   const [avatarFile, setAvatarFile] = useState(null); // To hold the new avatar file
 
+  const router = useRouter();
   // Update state when user profile data loads
   useEffect(() => {
     if (data?.data) {
@@ -46,6 +48,7 @@ function SettingsPage() {
       updateProfileMutation.mutate(payload);
       toast.success("Profile updated successfully!");
       refetch(); // Re-fetch user profile to show updated data
+      router.refresh();
     } catch (error) {
       console.error("Error updating profile:", error);
       toast.error("Failed to update profile. Please try again.");
@@ -112,12 +115,47 @@ function SettingsPage() {
               className="w-full py-2 px-4 border border-gray-300 rounded-md text-gray-700"
               value={selectedState}
               onChange={(e) => setSelectedState(e.target.value)}
+              disabled={isPending}
+              required
             >
               <option value="">Select your state</option>
-              <option value="lagos">Lagos</option>
-              <option value="abuja">Abuja</option>
+              <option value="abia">Abia</option>
+              <option value="adamawa">Adamawa</option>
+              <option value="akwa-ibom">Akwa Ibom</option>
+              <option value="anambra">Anambra</option>
+              <option value="bauchi">Bauchi</option>
+              <option value="bayelsa">Bayelsa</option>
+              <option value="benue">Benue</option>
+              <option value="borno">Borno</option>
+              <option value="cross-river">Cross River</option>
+              <option value="delta">Delta</option>
+              <option value="ebonyi">Ebonyi</option>
+              <option value="edo">Edo</option>
+              <option value="ekiti">Ekiti</option>
+              <option value="enugu">Enugu</option>
+              <option value="gombe">Gombe</option>
+              <option value="imo">Imo</option>
+              <option value="jigawa">Jigawa</option>
+              <option value="kaduna">Kaduna</option>
               <option value="kano">Kano</option>
-              {/* Add more states here */}
+              <option value="katsina">Katsina</option>
+              <option value="kebbi">Kebbi</option>
+              <option value="kogi">Kogi</option>
+              <option value="kwara">Kwara</option>
+              <option value="lagos">Lagos</option>
+              <option value="nasarawa">Nasarawa</option>
+              <option value="niger">Niger</option>
+              <option value="ogun">Ogun</option>
+              <option value="ondo">Ondo</option>
+              <option value="osun">Osun</option>
+              <option value="oyo">Oyo</option>
+              <option value="plateau">Plateau</option>
+              <option value="rivers">Rivers</option>
+              <option value="sokoto">Sokoto</option>
+              <option value="taraba">Taraba</option>
+              <option value="yobe">Yobe</option>
+              <option value="zamfara">Zamfara</option>
+              <option value="abuja">Federal Capital Territory (Abuja)</option>
             </select>
           </div>
 

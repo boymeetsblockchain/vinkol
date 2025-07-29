@@ -112,8 +112,6 @@ export function useChangeOrderStatus(options?: MutationOptions<any, Error>) {
   const { mutateAsync, data, error, isPending, isSuccess, isError } =
     useMutation<any, Error, { id: string; data: ChangeOrderStatusPayload }>({
       mutationFn: async (mutationPayload): Promise<any> => {
-        // Here, mutationPayload.id is the order ID, and mutationPayload.data is the actual body
-        // that contains 'status' and 'orderOtp'.
         return await changeOrderStatus(
           mutationPayload.id,
           mutationPayload.data

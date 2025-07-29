@@ -2,12 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/button";
-import {
-  useGetAvailableOrders,
-  useGetRiderOrders,
-} from "@/services/orders/query";
+import { useGetRiderOrders } from "@/services/orders/query";
 import { formatDistanceToNow, isValid } from "date-fns";
-import { useAcceptOrderMutation } from "@/services/orders/mutation";
+import {
+  useAcceptOrderMutation,
+  useChangeOrderStatus,
+} from "@/services/orders/mutation";
 import { toast } from "sonner";
 import { useUserProfile } from "@/services/rider/query";
 import {
@@ -26,6 +26,15 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { Input } from "@/components/ui/input";
+import { Dialog } from "@radix-ui/react-dialog";
+import {
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { useRouter } from "next/navigation";
 
 interface OrderData {
   _id: string;
@@ -72,19 +81,20 @@ interface OrderData {
 const ITEMS_PER_PAGE = 5;
 
 function OrderHistory() {
-  const { data: userProfile } = useUserProfile();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [deliveryTypeFilter, setDeliveryTypeFilter] = useState<string>("all");
+  const [otpModalOpen, setOtpModalOpen] = useState(false);
+  const [currentOrderId, setCurrentOrderId] = useState<string | null>(null);
+  const [otp, setOtp] = useState("");
 
   const { data, isPending, isError, refetch } = useGetRiderOrders();
-
-  console.log(data);
-
   const { mutate: acceptOrderMutate } = useAcceptOrderMutation();
+  const { mutateAsync: changeOrderStatus } = useChangeOrderStatus();
   const [acceptingOrderId, setAcceptingOrderId] = useState<string | null>(null);
 
+  const router = useRouter();
   // Filter and search logic
   const filteredOrders = (data?.data?.fetchedData || []).filter(
     (order: OrderData) => {
@@ -116,7 +126,7 @@ function OrderHistory() {
       return true;
     }
   );
-  console.log(data);
+
   // Pagination logic
   const totalPages = Math.ceil(filteredOrders.length / ITEMS_PER_PAGE);
   const paginatedOrders = filteredOrders.slice(
@@ -147,6 +157,66 @@ function OrderHistory() {
     }
   };
 
+  const handleStatusChange = (
+    orderId: string,
+    status: "Delivered" | "Picked"
+  ) => {
+    if (status === "Delivered") {
+      setCurrentOrderId(orderId);
+      setOtpModalOpen(true);
+    } else {
+      changeOrderStatus(
+        {
+          id: orderId,
+          data: {
+            status,
+          },
+        },
+        {
+          onSuccess: () => {
+            refetch();
+            router.refresh();
+
+            toast.success(`Order status changed to ${status}`);
+          },
+          onError: (error: any) => {
+            toast.error(
+              `Failed to change status: ${
+                error.response?.data?.message ||
+                error.message ||
+                "Unknown error"
+              }`
+            );
+          },
+        }
+      );
+    }
+  };
+
+  const handleOtpSubmit = () => {
+    if (!currentOrderId || !otp) return;
+
+    changeOrderStatus(
+      { id: currentOrderId, data: { status: "Delivered", orderOtp: otp } },
+      {
+        onSuccess: () => {
+          refetch();
+          toast.success("Order marked as delivered successfully!");
+          setOtpModalOpen(false);
+          setOtp("");
+          setCurrentOrderId(null);
+        },
+        onError: (error: any) => {
+          toast.error(
+            `Failed to mark as delivered: ${
+              error.response?.data?.message || error.message || "Unknown error"
+            }`
+          );
+        },
+      }
+    );
+  };
+
   const acceptedOrders = filteredOrders.filter(
     (order: OrderData) =>
       order.status === "Delivered" ||
@@ -156,6 +226,37 @@ function OrderHistory() {
 
   return (
     <section className="py-6 px-4">
+      <Dialog open={otpModalOpen} onOpenChange={setOtpModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Enter OTP for Delivery Confirmation</DialogTitle>
+            <DialogDescription>
+              Please enter the OTP provided by the customer to confirm delivery.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <Input
+              type="text"
+              placeholder="Enter OTP"
+              value={otp}
+              onChange={(e) => setOtp(e.target.value)}
+            />
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setOtpModalOpen(false);
+                setOtp("");
+                setCurrentOrderId(null);
+              }}
+            >
+              Cancel
+            </Button>
+            <Button onClick={handleOtpSubmit}>Confirm Delivery</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       <div className="bg-blue-primary w-full rounded-md p-4 text-sm text-white mb-6 shadow-md">
         You currently have{" "}
         <span className="font-bold">{acceptedOrders?.length}</span> accepted
@@ -230,19 +331,55 @@ function OrderHistory() {
                       Tracking: {order.trackingId}
                     </p>
                   </div>
-                  <p
-                    className={`text-white text-xs px-3 py-1 rounded-full ${
-                      order.status === "Pending"
-                        ? "bg-gray-500"
-                        : order.status === "Accepted"
-                        ? "bg-blue-primary"
-                        : order.status === "Picked"
-                        ? "bg-yellow-500"
-                        : "bg-green-500"
-                    }`}
-                  >
-                    {order.status}
-                  </p>
+                  {/* useChangeOrderStatus here */}
+                  <div className="flex justify-end space-x-2 mt-4">
+                    {order.status === "Pending" && (
+                      <Button
+                        onClick={() => handleAcceptOrder(order._id)}
+                        disabled={isThisOrderBeingAccepted}
+                      >
+                        {isThisOrderBeingAccepted
+                          ? "Accepting..."
+                          : "Accept Order"}
+                      </Button>
+                    )}
+                    {order.status === "Delivered" && (
+                      <div className="inline-flex items-center px-3 py-1 rounded-full bg-green-100 text-green-800">
+                        <svg
+                          className="w-4 h-4 mr-1.5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M5 13l4 4L19 7"
+                          />
+                        </svg>
+                        <span className="text-xs font-medium">Delivered</span>
+                      </div>
+                    )}
+                    {order.status === "Accepted" && (
+                      <Button
+                        onClick={() => handleStatusChange(order._id, "Picked")}
+                      >
+                        Mark as Picked
+                      </Button>
+                    )}
+
+                    {order.status === "Picked" && (
+                      <Button
+                        onClick={() =>
+                          handleStatusChange(order._id, "Delivered")
+                        }
+                      >
+                        Mark as Delivered
+                      </Button>
+                    )}
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -304,34 +441,6 @@ function OrderHistory() {
                     Amount: <span className="text-blue-primary">₦0.00</span>
                   </p>
                 )}
-
-                <div className="flex justify-end gap-3 pt-4">
-                  {order.status === "Pending" && (
-                    <>
-                      <Button
-                        variant="secondary"
-                        disabled={isThisOrderBeingAccepted}
-                      >
-                        Decline
-                      </Button>
-                      <Button
-                        onClick={() => handleAcceptOrder(order._id)}
-                        disabled={isThisOrderBeingAccepted}
-                      >
-                        {isThisOrderBeingAccepted ? "Accepting..." : "Accept"}
-                      </Button>
-                    </>
-                  )}
-                  {order.status === "Accepted" && (
-                    <Button disabled>Order Accepted</Button>
-                  )}
-                  {order.status === "Picked" && (
-                    <Button disabled>Picked Up</Button>
-                  )}
-                  {order.status === "Delivered" && (
-                    <Button disabled>Delivered</Button>
-                  )}
-                </div>
               </div>
             );
           })
