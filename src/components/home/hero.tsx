@@ -49,6 +49,7 @@ export const Hero = () => {
       className="relative text-white bg-cover  md:h-[100vh] h-[600px]"
       style={{ backgroundImage: `url('/assets/hero.jpg')` }}
     >
+      <div className="absolute inset-0 bg-black opacity-50"></div>
       <div className="absolute bottom-10 left-4 md:left-20 px-4">
         <div className="space-y-4 max-w-2xl sm:max-w-3xl">
           <h1 className="font-bold text-3xl sm:text-5xl leading-tight">
