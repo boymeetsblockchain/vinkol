@@ -22,10 +22,10 @@ export const Footer = () => {
               <IoMdMail className="text-xl" />
 
               <a
-                href="mailto:info@vinkolventures.onmicrosoft.com"
+                href="mailto:vinkollogistics@gmail.com"
                 className="font-semibold"
               >
-                info@vinkolventures.onmicrosoft.com
+                vinkollogistics@gmail.com
               </a>
             </div>
           </div>
@@ -42,13 +42,16 @@ export const Footer = () => {
               </li>
               {helpCenter && (
                 <ul>
-                  {["info@vinkol.ng", "support@vinkol.ng", "hr@vinkol.ng", "vinkollogistics@gmail.com"].map(
-                    (email, index) => (
-                      <li key={index}>
-                        <a href={`mailto:${email}`}>{email}</a>
-                      </li>
-                    )
-                  )}
+                  {[
+                    "info@vinkol.ng",
+                    "support@vinkol.ng",
+                    "hr@vinkol.ng",
+                    "vinkollogistics@gmail.com",
+                  ].map((email, index) => (
+                    <li key={index}>
+                      <a href={`mailto:${email}`}>{email}</a>
+                    </li>
+                  ))}
                 </ul>
               )}
               <Link href={"/product-support"}>Product Support</Link>
