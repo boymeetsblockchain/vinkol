@@ -23,6 +23,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { Input } from "@/components/ui/input";
+import { useRouter } from "next/navigation";
 
 interface OrderData {
   _id: string;
@@ -70,6 +71,7 @@ const ITEMS_PER_PAGE = 5;
 
 function Orders() {
   const { data: userProfile } = useUserProfile();
+  const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -113,7 +115,7 @@ function Orders() {
       return true;
     }
   );
-  console.log(data);
+  // console.log(data);
   // Pagination logic
   const totalPages = Math.ceil(filteredOrders.length / ITEMS_PER_PAGE);
   const paginatedOrders = filteredOrders.slice(
@@ -129,9 +131,21 @@ function Orders() {
   const handleAcceptOrder = async (orderId: string) => {
     setAcceptingOrderId(orderId);
     try {
-      await acceptOrderMutate(orderId);
-      refetch();
-      toast.success("Order accepted successfully!");
+      acceptOrderMutate(orderId, {
+        onSuccess: () => {
+          refetch();
+          router.refresh();
+
+          toast.success("Order accepted successfully!");
+        },
+        onError: (error: any) => {
+          toast.error(
+            `Failed to accept order: ${
+              error.response?.data?.message || error.message || "Unknown error"
+            }`
+          );
+        },
+      });
     } catch (error: any) {
       console.error("Failed to accept order:", error);
       toast.error(
@@ -303,15 +317,13 @@ function Orders() {
                 )}
 
                 <div className="flex justify-end gap-3 pt-4">
-                  {order.status === "Pending" && (
-                    <>
-                      <Button
-                        onClick={() => handleAcceptOrder(order._id)}
-                        disabled={isThisOrderBeingAccepted}
-                      >
-                        {isThisOrderBeingAccepted ? "Accepting..." : "Accept"}
-                      </Button>
-                    </>
+                  {["Pending", "Confirmed"].includes(order.status) && (
+                    <Button
+                      onClick={() => handleAcceptOrder(order._id)}
+                      disabled={isThisOrderBeingAccepted}
+                    >
+                      {isThisOrderBeingAccepted ? "Accepting..." : "Accept"}
+                    </Button>
                   )}
                   {order.status === "Accepted" && (
                     <Button disabled>Order Accepted</Button>
