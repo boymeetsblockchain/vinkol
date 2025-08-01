@@ -48,11 +48,11 @@ export const TrackingModal = ({
     pickupLocation = "Not Picked Yet",
     dropoffLocation = "Not Picked Yet",
     status = "Not Picked Yet",
-    vehicleRequest = "Not Picked Yet",
+    vehicleRequest = "N/A",
     rider,
   } = data;
 
-  const userName = guest?.email || "Not Picked Yet";
+  const userName = guest?.email || user?.email || "N/A";
   const riderName = rider
     ? `${rider.firstname || ""} ${rider.lastname || ""}`
     : "Not Picked Yet";
@@ -109,7 +109,9 @@ export const TrackingModal = ({
               <div className="h-16 bg-gray-400 w-0.5"></div>
               <div
                 className={`h-6 w-6 rounded-full flex items-center justify-center ${
-                  status === "Pending" ? "bg-gray-400" : "bg-blue-600"
+                  ["Pending", "Confirmed"].includes(status)
+                    ? "bg-gray-400"
+                    : "bg-blue-600"
                 }`}
               >
                 <div className="bg-white h-4 w-4 rounded-full" />
