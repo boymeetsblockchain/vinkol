@@ -43,7 +43,7 @@ export const Hero = () => {
     setTrackingId(""); // Clear tracking ID when modal is closed
   };
 
-  console.log(data);
+  // console.log(data);
   return (
     <div
       className="relative text-white bg-cover  md:h-[100vh] h-[600px]"

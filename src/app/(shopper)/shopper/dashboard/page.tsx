@@ -23,8 +23,10 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { Input } from "@/components/ui/input";
+import { useRouter } from "next/navigation";
 
 interface OrderData {
+  deliveryFee: any;
   _id: string;
   guest?: {
     email: string;
@@ -70,6 +72,7 @@ const ITEMS_PER_PAGE = 5;
 
 function Orders() {
   const { data: userProfile } = useUserProfile();
+  const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -114,7 +117,7 @@ function Orders() {
       return true;
     }
   );
-  console.log(data);
+  // console.log(data);
   // Pagination logic
   const totalPages = Math.ceil(filteredOrders.length / ITEMS_PER_PAGE);
   const paginatedOrders = filteredOrders.slice(
@@ -130,9 +133,21 @@ function Orders() {
   const handleAcceptOrder = async (orderId: string) => {
     setAcceptingOrderId(orderId);
     try {
-      await acceptOrderMutate(orderId);
-      refetch();
-      toast.success("Order accepted successfully!");
+      acceptOrderMutate(orderId, {
+        onSuccess: () => {
+          refetch();
+          router.refresh();
+          toast.success("Order accepted successfully!");
+          router.push("/shopper/history");
+        },
+        onError: (error: any) => {
+          toast.error(
+            `Failed to accept order: ${
+              error.response?.data?.message || error.message || "Unknown error"
+            }`
+          );
+        },
+      });
     } catch (error: any) {
       console.error("Failed to accept order:", error);
       toast.error(
@@ -287,12 +302,12 @@ function Orders() {
                   </div>
                 </div>
 
-                {order && typeof order.amount === "number" ? (
+                {order && typeof order?.deliveryFee === "number" ? (
                   <p className="text-sm font-semibold text-gray-700">
                     Amount:{" "}
                     <span className="text-blue-primary">
                       ₦
-                      {order.amount.toLocaleString("en-NG", {
+                      {order.deliveryFee.toLocaleString("en-NG", {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                       })}
@@ -305,21 +320,13 @@ function Orders() {
                 )}
 
                 <div className="flex justify-end gap-3 pt-4">
-                  {order.status === "Pending" && (
-                    <>
-                      <Button
-                        variant="secondary"
-                        disabled={isThisOrderBeingAccepted}
-                      >
-                        Decline
-                      </Button>
-                      <Button
-                        onClick={() => handleAcceptOrder(order._id)}
-                        disabled={isThisOrderBeingAccepted}
-                      >
-                        {isThisOrderBeingAccepted ? "Accepting..." : "Accept"}
-                      </Button>
-                    </>
+                  {["Pending", "Confirmed"].includes(order.status) && (
+                    <Button
+                      onClick={() => handleAcceptOrder(order._id)}
+                      disabled={isThisOrderBeingAccepted}
+                    >
+                      {isThisOrderBeingAccepted ? "Accepting..." : "Accept"}
+                    </Button>
                   )}
                   {order.status === "Accepted" && (
                     <Button disabled>Order Accepted</Button>

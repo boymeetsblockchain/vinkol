@@ -95,7 +95,7 @@ export function useRiderLoginMutation(options?: MutationOptions<any, Error>) {
       return await loginRider(payload);
     },
     onSuccess: (responseData) => {
-      console.log("Rider login successful:", responseData);
+      // console.log("Rider login successful:", responseData);
       if (responseData?.data?.role != "RIDER") {
         throw new Error("User role does not match RIDER!");
       }
@@ -120,7 +120,7 @@ export function useShopperLoginMutation(options?: MutationOptions<any, Error>) {
       return await loginRider(payload);
     },
     onSuccess: (responseData) => {
-      console.log("Shopper login successful:", responseData);
+      // console.log("Shopper login successful:", responseData);
       if (responseData?.data?.role != "PERSONAL-SHOPPER") {
         throw new Error("User role does not match PERSONAL-SHOPPER!");
       }
@@ -248,7 +248,7 @@ export function useUpdateProfileMutation(
       return await updateProfile(payload);
     },
     onSuccess: (responseData) => {
-      console.log("Profile update successful:", responseData);
+      // console.log("Profile update successful:", responseData);
       options?.onSuccess?.(responseData);
     },
     onError: (errorData: Error) => {
@@ -267,7 +267,7 @@ export function useCreateUserBank(options?: MutationOptions<any, Error>) {
       return await createUserBank(payload);
     },
     onSuccess: (responseData) => {
-      console.log("Update User Bank successful:", responseData);
+      // console.log("Update User Bank successful:", responseData);
       options?.onSuccess?.(responseData);
     },
     onError: (errorData: Error) => {
