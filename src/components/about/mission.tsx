@@ -12,12 +12,12 @@ export const Mission = () => {
       {/* Image content */}
       <div
         style={{
-          backgroundImage: `url('/assets/contact-about.jpg')`,
+          backgroundImage: `url('/assets/mission.jpg')`,
         }}
         className="h-[400px] bg-cover relative w-full object-contain  rounded-3xl bg-center flex items-center justify-center"
       >
         <img
-          src="/assets/contact-about.jpg"
+          src="/assets/mission.jpg"
           alt="About Vinkol"
           className="md:block hidden w-64 h-48 object-contain z-10 border-4 absolute  right-[-40px] border-white
            bg-black/60  rounded-3xl shadow-md"

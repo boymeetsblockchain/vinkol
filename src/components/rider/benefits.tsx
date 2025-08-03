@@ -10,7 +10,7 @@ export const Benefits = () => {
     <section className="max-w-screen-2xl w-full px-4 py-10 md:px-20 md:py-20 mx-auto">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
         <img
-          src="/assets/benefit.jpg"
+          src="/assets/trust.jpg"
           alt="Trust Visual"
           className="w-full h-[250px] md:h-[400px] object-cover rounded-lg"
         />
