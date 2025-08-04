@@ -2,6 +2,7 @@
 import { useUserProfile } from "@/services/rider/query";
 import { X, Package, History, Wallet, FileText, Settings } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { FaSignOutAlt } from "react-icons/fa";
 
 interface SidebarProps {
@@ -46,15 +47,15 @@ const verifiedDashboardLinks = [
     icon: <Settings size={18} />,
     route: "/rider/dashboard/settings",
   },
-  {
-    label: "Logout",
-    icon: <FaSignOutAlt size={18} />,
-    route: "/",
-  },
 ];
 
 export const RiderDashBoardSidebBar = ({ isOpen, onClose }: SidebarProps) => {
   const { data, isLoading } = useUserProfile();
+  const router = useRouter();
+  const handleLogout = () => {
+    localStorage.clear();
+    router.push("/");
+  };
 
   // Determine which links to show based on verification status
   const dashboardLinks = data?.data?.isKYCVerified
@@ -114,6 +115,13 @@ export const RiderDashBoardSidebBar = ({ isOpen, onClose }: SidebarProps) => {
             {label}
           </Link>
         ))}
+        <button
+          onClick={handleLogout}
+          className="w-full flex items-center gap-3 font-semibold text-sm md:text-base text-gray-700 hover:text-blue-primary transition"
+        >
+          <FaSignOutAlt size={18} />
+          Logout
+        </button>
       </div>
     </aside>
   );
