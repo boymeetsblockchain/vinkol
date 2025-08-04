@@ -8,7 +8,7 @@ import {
   Settings,
 } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { FaSignOutAlt } from "react-icons/fa";
 
 interface SidebarProps {
@@ -43,15 +43,16 @@ const dashboardLinks = [
     icon: <Wallet size={18} />,
     route: "/shop/dashboard/wallet",
   },
-  {
-    label: "Logout",
-    icon: <FaSignOutAlt size={18} />,
-    route: "/",
-  },
 ];
 
 export const ShopperDashBoardSidebBar = ({ isOpen, onClose }: SidebarProps) => {
   const pathname = usePathname();
+
+  const router = useRouter();
+  const handleLogout = () => {
+    localStorage.clear();
+    router.push("/");
+  };
 
   return (
     <aside
@@ -101,6 +102,13 @@ export const ShopperDashBoardSidebBar = ({ isOpen, onClose }: SidebarProps) => {
             {label}
           </Link>
         ))}
+        <button
+          onClick={handleLogout}
+          className="w-full flex items-center gap-3 font-semibold text-sm md:text-base text-gray-700 hover:text-blue-primary transition"
+        >
+          <FaSignOutAlt size={18} />
+          Logout
+        </button>
       </div>
     </aside>
   );
