@@ -46,8 +46,9 @@ export const Hero = () => {
   // console.log(data);
   return (
     <div
-      className="relative text-white bg-cover  md:h-[100vh] h-[600px]"
-      style={{ backgroundImage: `url('/assets/hero.jpg')` }}
+      className="relative text-white bg-cover h-[600px] md:h-screen
+             bg-[url('/assets/mobile.png')] 
+             md:bg-[url('/assets/hero.jpg')]"
     >
       <div className="absolute inset-0 bg-black opacity-50"></div>
       <div className="absolute bottom-10 left-4 md:left-20 px-4">
