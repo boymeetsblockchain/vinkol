@@ -136,7 +136,7 @@ function Orders() {
           refetch();
           router.refresh();
           toast.success("Order accepted successfully!");
-          router.push("/rider/history");
+          router.push("/rider/dashboard/history");
         },
         onError: (error: any) => {
           toast.error(
