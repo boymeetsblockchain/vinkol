@@ -3,7 +3,6 @@ import { ShopHeader } from "@/components/shop-page/header";
 import { CartModal } from "@/components/modals/cartmodal";
 import { useState } from "react";
 import { useGetStoreOrders } from "@/services/orders/query";
-import { useGetSingleProductQuery } from "@/services/products/query";
 import { Button } from "@/components/button";
 import { useConfirmOrderMutation } from "@/services/orders/mutation";
 import { toast } from "sonner";
@@ -25,7 +24,8 @@ interface OrderProduct {
 
 interface Order {
   _id: string;
-  guest: Guest;
+  guest?: Guest;
+  user?: Guest;
   dropoffLocation: string;
   state: string;
   status: string;
@@ -41,29 +41,10 @@ interface Order {
 }
 
 interface OrderItemCardProps {
-  productId: string;
-  quantity: number;
+  product: any;
 }
 
-const OrderItemCard: React.FC<OrderItemCardProps> = ({
-  productId,
-  quantity,
-}) => {
-  const { data: product, isLoading: isLoadingProduct } =
-    useGetSingleProductQuery(productId);
-
-  if (isLoadingProduct) {
-    return <li className="text-gray-500">Loading product details...</li>;
-  }
-
-  if (!product) {
-    return (
-      <li className="text-red-500">
-        Product details not found for ID: {productId}.
-      </li>
-    );
-  }
-
+const OrderItemCard: React.FC<OrderItemCardProps> = ({ product }) => {
   return (
     <li className="flex items-center space-x-4 border-b pb-2 mb-2 last:border-b-0 last:pb-0 last:mb-0">
       {product.image?.imageUrl && (
@@ -77,7 +58,7 @@ const OrderItemCard: React.FC<OrderItemCardProps> = ({
         <p className="font-semibold text-base">{product.title}</p>
         <p className="text-gray-700 text-sm">{product.description}</p>
         <p className="text-gray-600 text-sm">
-          ₦{product.price.toLocaleString()} x {quantity}
+          ₦{product.price.toLocaleString()} x {product.quantity}
         </p>
       </div>
       {/* <Button className="">Available for Pickup</Button> */}
@@ -191,8 +172,9 @@ function ShopId() {
                     </p>
                     <p>
                       <strong className="font-semibold">Customer:</strong>{" "}
-                      {order?.guest?.firstname} {order?.guest?.lastname} (
-                      {order?.guest?.email})
+                      {order?.guest
+                        ? `${order?.guest?.firstname} ${order?.guest?.lastname} (${order?.guest?.email})`
+                        : `${order?.user?.firstname} ${order?.user?.lastname} (${order?.user?.email})`}
                     </p>
                     <p>
                       <strong className="font-semibold">
@@ -210,11 +192,7 @@ function ShopId() {
                     <h3 className="font-semibold text-md mb-2">Products:</h3>
                     <ul className="list-none p-0 m-0">
                       {order.products.map((item) => (
-                        <OrderItemCard
-                          key={item._id}
-                          productId={item.product}
-                          quantity={item.quantity}
-                        />
+                        <OrderItemCard key={item._id} product={item} />
                       ))}
                     </ul>
 
