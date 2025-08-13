@@ -45,6 +45,7 @@ export const orderDataSchema = z.object({
   state: z.string().min(1, "State is required"),
   date: z.string().min(1, "Date is required"), // Consider using z.date() if you're working with Date objects
   time: z.string().min(1, "Time is required"),
+  note: z.string().optional(),
   pickupLocation: z.string().min(1, "Pickup location is required"),
   dropoffLocation: z.string().min(1, "Dropoff location is required"),
   deliveryFee: z.number().positive("Amount must be a positive number"), // Use .positive() for amounts

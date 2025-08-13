@@ -96,6 +96,7 @@ export const QuotePage = () => {
           lastname: lastname,
           phone: phone,
         },
+        note: note || "",
       },
       {
         onSuccess: () => {
