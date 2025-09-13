@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/button";
 import { useVerifyPhoneNumber, useSendSmsOtp } from "@/services/rider/mutation";
 import Link from "next/link";
+import { useGetUserBank } from "@/services/rider/query";
 
 function Complete() {
   const router = useRouter();
@@ -13,9 +14,11 @@ function Complete() {
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-
+  const { data: userBank } = useGetUserBank();
   const { mutate: verifyPhone } = useVerifyPhoneNumber();
   const { mutate: sendOtp } = useSendSmsOtp();
+
+  console.log({ userBank });
 
   const handleSendOtp = async () => {
     if (!phone) {
@@ -65,7 +68,11 @@ function Complete() {
     try {
       await verifyPhone({ email, phone, otp });
       toast.success("Phone number verified successfully");
-      router.push("/rider/account");
+      if (userBank?.data) {
+        router.push("/rider/dashboard");
+      } else {
+        router.push("/rider/account");
+      }
     } catch (error: any) {
       toast.error(error.message || "Verification failed");
     } finally {
@@ -111,7 +118,7 @@ function Complete() {
                   className="w-full py-2 px-3 focus:outline-none border border-[#A5A4A0] rounded-md placeholder:text-gray-500"
                   id="phone"
                   type="tel"
-                  placeholder="+2348137584161"
+                  placeholder="+234812345678"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   disabled={otpSent}

@@ -7,10 +7,14 @@ import { useValidateBankDetials } from "@/services/shops/mutation";
 import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { useCreateUserBank } from "@/services/rider/mutation";
+import { useUserProfile } from "@/services/rider/query";
 
 function AccountDetails() {
   const router = useRouter();
   const { data: banksData, isLoading: isLoadingBanks } = useGetAllBanks();
+  const { data: userProfile } = useUserProfile();
+
+  console.log({ userProfile });
 
   const [formData, setFormData] = useState({
     bankCode: "",
@@ -71,7 +75,8 @@ function AccountDetails() {
   useEffect(() => {
     if (createSuccess) {
       toast.success("Bank details saved successfully!");
-      router.push("/rider/complete");
+      if (userProfile?.data?.kyc) router.push("/rider/complete");
+      else router.push("/rider/dashboard");
     } else if (createError) {
       toast.error(
         `Failed to save bank details: ${

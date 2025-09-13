@@ -219,6 +219,15 @@ export const createUserBank = async (
   }
 };
 
+export const getUserBank = async () => {
+  try {
+    const response = await axiosInstance.get("/banks/user-bank");
+    return response.data;
+  } catch (error) {
+    handleApiError(error, "Failed to Get User bank");
+  }
+};
+
 export const getUserProfile = async () => {
   try {
     const response = await axiosInstance.get("/users/profile");

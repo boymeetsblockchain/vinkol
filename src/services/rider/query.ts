@@ -1,10 +1,22 @@
 import { useQuery } from "@tanstack/react-query";
-import { getUserProfile, getWallet, getWithdrawalHistory } from "./api";
+import {
+  getUserBank,
+  getUserProfile,
+  getWallet,
+  getWithdrawalHistory,
+} from "./api";
 
 export const useUserProfile = () => {
   return useQuery({
     queryKey: ["userProfile"],
     queryFn: getUserProfile,
+  });
+};
+
+export const useGetUserBank = () => {
+  return useQuery({
+    queryKey: ["bank"],
+    queryFn: getUserBank,
   });
 };
 
