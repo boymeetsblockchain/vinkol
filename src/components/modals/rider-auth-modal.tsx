@@ -98,7 +98,7 @@ export const RiderAuthModal = ({
           onSuccess: () => {
             toast.success("Login successful!");
             router.push("/rider/dashboard"); // Or wherever the user should go after login
-            console.log("rider login modal");
+            localStorage.setItem("ride-email", email);
             onClose(); // Close the modal on successful login
           },
           onError: (error) => {
