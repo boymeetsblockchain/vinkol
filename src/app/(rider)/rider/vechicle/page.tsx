@@ -84,7 +84,7 @@ function SubmitVehicle() {
               {/* ID Image Upload */}
               <div className="flex flex-col gap-2">
                 <label htmlFor="idImage" className="text-sm text-gray-700">
-                  Upload Vehicle Image
+                  Upload Vehicle Image (Max 2MB)
                 </label>
                 <input
                   id="idImage"

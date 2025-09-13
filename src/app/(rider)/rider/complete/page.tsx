@@ -74,16 +74,17 @@ function Complete() {
                 >
                   <option value="">Select ID Type</option>
                   <option value="nin">NIN</option>
-                  <option value="national_id">National ID</option>
-                  <option value="drivers_license">Driver's License</option>
+                  <option value="national-id">National ID</option>
+                  <option value="drivers-license">Driver's License</option>
                   <option value="passport">Passport</option>
+                  <option value="voters-card">Voter's Card</option>
                 </select>
               </div>
 
               {/* ID Image Upload */}
               <div className="flex flex-col gap-2">
                 <label htmlFor="idImage" className="text-sm text-gray-700">
-                  Upload ID Image
+                  Upload ID Image (Max 2MB)
                 </label>
                 <input
                   id="idImage"
