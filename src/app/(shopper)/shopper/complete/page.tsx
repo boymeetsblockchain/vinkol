@@ -74,9 +74,10 @@ function Complete() {
                 >
                   <option value="">Select ID Type</option>
                   <option value="nin">NIN</option>
-                  <option value="national_id">National ID</option>
-                  <option value="drivers_license">Driver's License</option>
+                  <option value="national-id">National ID</option>
+                  <option value="drivers-license">Driver's License</option>
                   <option value="passport">Passport</option>
+                  <option value="voters-card">Voter's Card</option>
                 </select>
               </div>
 
