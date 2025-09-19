@@ -221,7 +221,7 @@ const PrivacyPolicy = () => {
               />
               <PolicyPoint
                 icon={<Shield className="w-5 h-5 text-blue-primary" />}
-                title="3.3 Insurance Claims (Vinkol Self-Retention Coverage)"
+                title="3.3 Vinkol Self-Retention Coverage"
                 content={
                   <>
                     <ul className="list-disc list-inside text-gray-700 space-y-1">
@@ -367,6 +367,10 @@ const PrivacyPolicy = () => {
                 <li>
                   Vinkol shall not be liable for user negligence or inaccurate
                   data entry.
+                </li>
+                <li>
+                  Vinkol shall not be liable for loss or damage exceeding the
+                  approved claim cap (unless explicitly covered)
                 </li>
               </ul>
             </div>
