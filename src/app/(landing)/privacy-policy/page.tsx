@@ -428,7 +428,7 @@ const PrivacyPolicy = () => {
                     href="tel:+2349039106561"
                     className="ml-2 text-blue-600 hover:underline"
                   >
-                    +234-903-910-6561
+                    +2348033670745
                   </a>
                 </li>
                 <li className="flex items-center">
