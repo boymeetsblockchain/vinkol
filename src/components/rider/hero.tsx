@@ -55,12 +55,12 @@ export const Hero = () => {
             <AppStoreCard
               platform="Google Play"
               icon={<FaGooglePlay color="black" size={24} />}
-              link="https://play.google.com/store"
+              link="https://play.google.com/store/apps/details?id=app.vinkol.rider"
             />
             <AppStoreCard
               platform="App Store"
               icon={<IoLogoApple color="black" size={24} />}
-              link="https://www.apple.com/app-store/"
+              link="https://apps.apple.com/ng/app/vinkol-go/id6751474425"
             />
           </div>
         </div>
