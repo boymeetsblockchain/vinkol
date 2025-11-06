@@ -1,4 +1,4 @@
-import { CTA } from "@/components/home/cta";
+import { CTA } from "@/components/rider/cta";
 import { Benefits } from "@/components/rider/benefits";
 import { Hero } from "@/components/rider/hero";
 import { Question } from "@/components/rider/questions";

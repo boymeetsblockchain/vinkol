@@ -22,12 +22,12 @@ export const CTA = () => {
               <AppStoreCard
                 platform="Google Play"
                 icon={<FaGooglePlay color="black" size={24} />}
-                link="https://play.google.com/store"
+                link="https://play.google.com/store/apps/details?id=app.vinkol.user"
               />
               <AppStoreCard
                 platform="App Store"
                 icon={<IoLogoApple color="black" size={24} />}
-                link="https://www.apple.com/app-store/"
+                link="https://apps.apple.com/ng/app/vinkol/id6751447117"
               />
             </div>
           </div>
