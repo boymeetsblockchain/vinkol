@@ -35,6 +35,7 @@ export const CartModal = ({
   shopId,
 }: CartModalProps) => {
   const [openContactModal, setOpenContactModal] = useState<boolean>(false);
+  const router = useRouter();
 
   if (!isOpen) return null;
 
@@ -43,7 +44,6 @@ export const CartModal = ({
   };
 
   console.log(shopId);
-  const router = useRouter();
   const handleProceed = () => {
     router.push(`/shops/checkout/${shopId}`);
   };
