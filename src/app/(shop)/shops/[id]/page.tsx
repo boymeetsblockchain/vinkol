@@ -12,19 +12,8 @@ import { Menu, ShoppingCart } from "lucide-react";
 import { getCartFromStorage, saveCartToStorage } from "@/config/storage";
 import { ContactModal } from "@/components/modals/contactmodal";
 import { toast } from "sonner";
-
-const productCategories = [
-  { name: "fresh Produce", value: "fresh-produce" },
-  { name: "dairy Products", value: "dairy-products" },
-  { name: "bakery And Snacks", value: "bakery-and-snacks" },
-  { name: "dry Food And Staples", value: "dry-food-and-staples" },
-  { name: "breakfast And Beverages", value: "breakfast-and-beverages" },
-  { name: "baby And Kids", value: "baby-and-kids" },
-  { name: "personal Care", value: "personal-care" },
-  { name: "household And Cleaning", value: "household-and-cleaning" },
-  { name: "home Essentials", value: "home-essentials" },
-  { name: "Others", value: "Others" },
-];
+import Link from "next/link";
+import { productCategories } from "@/lib/constants";
 
 type CartItem = {
   id: string;
@@ -130,10 +119,28 @@ function ShopIdPage() {
     }
   };
 
+  type CategoryValue = (typeof productCategories)[number]["value"];
+
+  const getCategoryName = (value: CategoryValue): string => {
+    const category = productCategories.find((c) => c.value === value);
+    return category?.name ?? value;
+  };
+
   if (isStoreLoading) {
     return (
       <div className="flex items-center justify-center h-screen">
         Loading Store...
+      </div>
+    );
+  }
+
+  if (!store && !isStoreLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen">
+        <p>Store not found</p>
+        <Link href="/shops" className="underline mt-4">
+          Go Back
+        </Link>
       </div>
     );
   }
@@ -162,7 +169,7 @@ function ShopIdPage() {
         <ShopSideBar
           isOpen={isSidebarOpen}
           onClose={() => setIsSidebarOpen(false)}
-          store={store.data.store}
+          store={store?.data?.store}
           categories={productCategories}
           selectedCategory={selectedCategory}
           onSelectCategory={handleSelectCategory}
@@ -170,9 +177,21 @@ function ShopIdPage() {
 
         <main className="flex-1 overflow-y-auto">
           <div className="container mx-auto px-4 md:px-6 py-8">
-            <div className="flex justify-between items-center mb-6">
+            <div className="flex flex-col mt-8 mb-6">
+              <Link href="/shops" className="underline my-1">
+                Go Back
+              </Link>
+              <div className="flex md:hidden flex-col gap-1">
+                <h3 className="font-semibold">{store?.data?.store?.name}</h3>
+                <p>
+                  <span className="font-medium">Store Address:</span>{" "}
+                  {store?.data?.store?.address}
+                </p>
+              </div>
               <h1 className="text-2xl md:text-3xl mt-8 font-bold text-gray-900">
-                {selectedCategory || "All Products"}
+                {selectedCategory
+                  ? getCategoryName(selectedCategory)
+                  : "All Products"}
               </h1>
             </div>
 

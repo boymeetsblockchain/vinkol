@@ -11,18 +11,17 @@ import {
 } from "@/services/products/mutation";
 import React, { useState } from "react";
 import { toast } from "sonner";
-import {
-  createProductSchema,
-  updateProductSchema,
-  productCategories,
-} from "@/types/product";
+import { createProductSchema, updateProductSchema } from "@/types/product";
 import * as z from "zod";
+import { productCategories } from "@/lib/constants";
+
+type CategoryValue = (typeof productCategories)[number]["value"];
 
 interface Product {
   _id: string;
   title: string;
   price: number;
-  category: string;
+  category: CategoryValue;
   image?: string;
   description: string;
 }
@@ -242,9 +241,9 @@ const ProductForm: React.FC<ProductFormProps> = ({
 }) => {
   const [title, setTitle] = useState(initialData?.title || "");
   const [price, setPrice] = useState(initialData?.price || 0);
-  const [category, setCategory] = useState<
-    (typeof productCategories)[number] | undefined
-  >(initialData?.category as (typeof productCategories)[number] | undefined);
+  const [category, setCategory] = useState<CategoryValue | undefined>(
+    initialData?.category as CategoryValue | undefined
+  );
   const [imageFile, setImageFile] = useState<File | null>(null); // For new image selection (File object)
   const [currentImageUrl, setCurrentImageUrl] = useState(
     initialData?.image || ""
@@ -366,9 +365,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
           <select
             id="category"
             value={category}
-            onChange={(e) =>
-              setCategory(e.target.value as (typeof productCategories)[number])
-            }
+            onChange={(e) => setCategory(e.target.value as CategoryValue)}
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
             required
           >
@@ -377,12 +374,8 @@ const ProductForm: React.FC<ProductFormProps> = ({
               (
                 cat // Use imported productCategories
               ) => (
-                <option key={cat} value={cat}>
-                  {cat
-                    .replace(/-/g, " ")
-                    .split(" ")
-                    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-                    .join(" ")}
+                <option key={cat.value} value={cat.value}>
+                  {cat.name}
                 </option>
               )
             )}

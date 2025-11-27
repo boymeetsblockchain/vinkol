@@ -6,6 +6,7 @@ import { Header } from "@/components/shop/header";
 import { useRouter } from "next/navigation";
 import { useUpdateStoreProfile } from "@/services/shops/mutation";
 import Autocomplete from "react-google-autocomplete";
+import { toast } from "sonner";
 
 function SetUpProfile() {
   const router = useRouter();
@@ -23,7 +24,7 @@ function SetUpProfile() {
   const [lng, setLng] = useState("");
 
   const handleSubmit = () => {
-    console.log(lat, lng);
+    // console.log(lat, lng);
     mutate(
       {
         name,
@@ -39,6 +40,9 @@ function SetUpProfile() {
       {
         onSuccess: () => {
           router.push("/shop/account");
+        },
+        onError: (error, variables) => {
+          toast.error(error?.message);
         },
       }
     );

@@ -44,11 +44,11 @@ export function useShopRegisterMutation(options?: MutationOptions<any, Error>) {
       return await registerShop(payload);
     },
     onSuccess: (responseData) => {
-      console.log("Rider registration successful:", responseData);
+      // console.log("Store registration successful:", responseData);
       options?.onSuccess?.(responseData);
     },
     onError: (errorData: Error) => {
-      console.error("Rider registration failed:", errorData.message);
+      console.error("Store registration failed:", errorData.message);
       options?.onError?.(errorData);
     },
   });
@@ -66,7 +66,7 @@ export function useShopLoginMutation(options?: MutationOptions<any, Error>) {
       return await loginShop(payload);
     },
     onSuccess: (responseData) => {
-      console.log("Rider login successful:", responseData);
+      // console.log("Rider login successful:", responseData);
       if (responseData.token) {
         localStorage.setItem("accessToken", responseData.token);
       } else {
@@ -75,7 +75,7 @@ export function useShopLoginMutation(options?: MutationOptions<any, Error>) {
       options?.onSuccess?.(responseData);
     },
     onError: (errorData: Error) => {
-      console.error("Rider login failed:", errorData.message);
+      console.error("Store login failed:", errorData.message);
       options?.onError?.(errorData);
     },
   });
@@ -93,7 +93,7 @@ export function useVerifyEmailMutation(options?: MutationOptions<any, Error>) {
       return await verifyEmail(payload);
     },
     onSuccess: (responseData) => {
-      console.log("Email verification successful:", responseData);
+      // console.log("Email verification successful:", responseData);
       options?.onSuccess?.(responseData);
       localStorage.setItem("accessToken", responseData.token);
     },
@@ -116,7 +116,7 @@ export function useResendOtpMutation(options?: MutationOptions<any, Error>) {
       return await resendOtp(payload);
     },
     onSuccess: (responseData) => {
-      console.log("Resend OTP successful:", responseData);
+      // console.log("Resend OTP successful:", responseData);
       options?.onSuccess?.(responseData);
     },
     onError: (errorData: Error) => {
@@ -140,7 +140,7 @@ export function useForgotPasswordMutation(
       return await forgotPassword(payload);
     },
     onSuccess: (responseData) => {
-      console.log("Forgot password request successful:", responseData);
+      // console.log("Forgot password request successful:", responseData);
       options?.onSuccess?.(responseData);
     },
     onError: (errorData: Error) => {
@@ -164,7 +164,7 @@ export function useResetPasswordMutation(
       return await resetPassword(payload);
     },
     onSuccess: (responseData) => {
-      console.log("Password reset successful:", responseData);
+      // console.log("Password reset successful:", responseData);
       options?.onSuccess?.(responseData);
     },
     onError: (errorData: Error) => {
@@ -182,7 +182,7 @@ export function useUpdateStoreProfile(options?: MutationOptions<any, Error>) {
       return await updateStoreProfile(payload);
     },
     onSuccess: (responseData) => {
-      console.log("Update Store Profile successful:", responseData);
+      // console.log("Update Store Profile successful:", responseData);
       options?.onSuccess?.(responseData);
     },
     onError: (errorData: Error) => {
@@ -200,7 +200,7 @@ export function useValidateBankDetials(options?: MutationOptions<any, Error>) {
       return await validateBank(payload);
     },
     onSuccess: (responseData) => {
-      console.log("Update Store Profile successful:", responseData);
+      // console.log("Update Store Profile successful:", responseData);
       options?.onSuccess?.(responseData);
     },
     onError: (errorData: Error) => {
@@ -218,7 +218,7 @@ export function useCreateStoreBank(options?: MutationOptions<any, Error>) {
       return await createStoreBank(payload);
     },
     onSuccess: (responseData) => {
-      console.log("Update Store Profile successful:", responseData);
+      // console.log("Update Store Profile successful:", responseData);
       options?.onSuccess?.(responseData);
     },
     onError: (errorData: Error) => {
