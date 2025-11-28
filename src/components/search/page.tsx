@@ -42,7 +42,7 @@ function SearchPage() {
                 onClick={() => router.push(`/shops/${store._id}`)}
               >
                 <img
-                  src={store?.avatar?.imageUrl || "/assets/shop2.png"}
+                  src={store?.avatar?.imageUrl || "/default-avatar.png"}
                   alt={store.name || "Supermarket"}
                   className="h-24 md:h-32 w-full rounded-[5px] object-cover hover:opacity-90 transition"
                 />
