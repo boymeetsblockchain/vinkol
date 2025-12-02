@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import {
+  getHompeageStats,
   getUserBank,
   getUserProfile,
   getWallet,
@@ -31,5 +32,11 @@ export const useGetWithdrawalHistory = () => {
   return useQuery({
     queryKey: ["withdrawalhistory"],
     queryFn: getWithdrawalHistory,
+  });
+};
+export const useGetStats = () => {
+  return useQuery({
+    queryKey: ["homepageStats"],
+    queryFn: getHompeageStats,
   });
 };
