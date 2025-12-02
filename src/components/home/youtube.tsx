@@ -10,10 +10,10 @@ export const Youtube = () => {
       url: "https://youtu.be/zhWlkUiUVTI?si=k33I1Hu_kbHogv3z",
     },
     {
-      id: "4455f3sfYUc",
+      id: "34eLXb01aPs",
       isShort: true,
       title: "Short Video",
-      url: "https://youtube.com/shorts/4455f3sfYUc?si=9FWYDVnSVNPJQM1t",
+      url: "https://youtube.com/shorts/34eLXb01aPs?si=GgsqpaKt7qkRQ00G",
     },
   ];
 

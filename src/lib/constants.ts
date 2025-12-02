@@ -24,6 +24,10 @@ export const productCategories = [
     value: "household-kitchen-essentials",
   },
   {
+    name: "Gadgets & Electronics",
+    value: "gadgets-electronics",
+  },
+  {
     name: "Others & Special Items",
     value: "others",
   },

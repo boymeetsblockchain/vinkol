@@ -310,3 +310,12 @@ export const getWithdrawalHistory = async () => {
     handleApiError(error, "Failed to get WithDrawal history");
   }
 };
+
+export const getHompeageStats = async () => {
+  try {
+    const response = await axiosInstance.get("/others/stats");
+    return response.data;
+  } catch (error) {
+    handleApiError(error, "Failed to Get Homepage stats");
+  }
+};

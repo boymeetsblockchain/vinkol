@@ -58,6 +58,14 @@ function ShopIdPage() {
 
   const products = productsData?.data.fetchedData || [];
 
+  // Extract slugs
+  const productCategorySlugs = new Set(products.flatMap((p) => p.category));
+
+  // Filter categories
+  const filteredCategories = productCategories.filter((cat) =>
+    productCategorySlugs.has(cat.value)
+  );
+
   const handleAddToCart = (product: any) => {
     toast.success("added to cart");
     setCartItems((prevItems) => {
@@ -170,7 +178,7 @@ function ShopIdPage() {
           isOpen={isSidebarOpen}
           onClose={() => setIsSidebarOpen(false)}
           store={store?.data?.store}
-          categories={productCategories}
+          categories={filteredCategories ?? productCategories}
           selectedCategory={selectedCategory}
           onSelectCategory={handleSelectCategory}
         />
