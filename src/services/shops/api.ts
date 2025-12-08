@@ -12,6 +12,7 @@ import {
 
 import * as z from "zod";
 import axiosInstance from "@/config/store";
+import { ApiError } from "@/lib/interfaces/error";
 /**
  * Handles common API errors by throwing a new Error with a more specific message.
  * This centralizes error handling logic, making the code DRY.
@@ -25,7 +26,11 @@ const handleApiError = (error: any, defaultMessage: string): never => {
     // The request was made and the server responded with a status code
     // that falls out of the range of 2xx.
     // Use the server's error message if available, otherwise the default.
-    throw new Error(error.response.data.message || defaultMessage);
+    // throw new Error(error.response.data.message || defaultMessage);
+    const message = error.response.data?.message || defaultMessage;
+    const status = error.response.status;
+
+    throw new ApiError(message, status);
   } else if (error.request) {
     // The request was made but no response was received.
     throw new Error(
@@ -172,6 +177,7 @@ export const getStoreProfile = async () => {
     return response.data;
   } catch (error) {
     handleApiError(error, "Failed to get single store");
+    throw error;
   }
 };
 
@@ -250,11 +256,50 @@ export const withdraw = async (amount: string) => {
   }
 };
 
+export const requestITSupport = async (amount: string) => {
+  try {
+    const response = await axiosInstance.post("/stores/it-support");
+    return response;
+  } catch (error) {
+    handleApiError(error, "error requesting support");
+  }
+};
+
 export const getWithdrawalHistory = async () => {
   try {
     const response = await axiosInstance.get("/stores/withdrawal-history");
     return response.data;
   } catch (error) {
     handleApiError(error, "Failed to get WithDrawal history");
+  }
+};
+
+export const submitStoreId = async (data: any) => {
+  try {
+    const response = await axiosInstance.post("/kyc/store/submit-id", data, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    handleApiError(error, "Failed to submit KYC.");
+  }
+};
+
+export const submitBusinessDoc = async (data: any) => {
+  try {
+    const response = await axiosInstance.patch(
+      "/kyc/store/business-document",
+      data,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    handleApiError(error, "Failed to submit business document.");
   }
 };

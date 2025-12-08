@@ -4,35 +4,35 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/button";
-import { useSubmitStoreIdMutation } from "@/services/shops/mutation";
+import { useSubmitBusinessDoc } from "@/services/shops/mutation";
 import Link from "next/link";
 
 function Complete() {
   const router = useRouter();
 
-  const [idType, setIdType] = useState<string>("");
+  const [docType, setdocType] = useState<string>("");
   const [idImage, setIdImage] = useState<File | null>(null);
 
-  const { mutate: submitKyc, isPending } = useSubmitStoreIdMutation();
+  const { mutate: submitBusinessDoc, isPending } = useSubmitBusinessDoc();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     const formData = new FormData();
-    formData.append("idType", idType);
+    formData.append("documentType", docType);
     if (idImage) {
       formData.append("image", idImage);
     }
 
     // console.log("Submitting KYC with formData:", formData.values());
-    submitKyc(formData, {
+    submitBusinessDoc(formData, {
       onSuccess: () => {
-        toast.success("KYC submitted successfully!");
-        router.push("/shop/business-document");
+        toast.success("Business Document submitted successfully!");
+        router.push("/shop/account");
       },
       onError: (error) => {
-        console.error("KYC submission failed:", error);
-        toast.error(error.message || "Failed to submit KYC.");
+        console.error("Business document submission failed:", error);
+        toast.error(error.message || "Failed to submit business document.");
       },
     });
   };
@@ -53,10 +53,13 @@ function Complete() {
           {/* Left: Form Section */}
           <div className="w-full flex flex-col gap-6">
             <div>
-              <h1 className="text-3xl font-bold ">Complete Registration</h1>
+              <h1 className="text-3xl font-bold ">
+                Complete Registration (Business Documents)
+              </h1>
               <p className="text-sm text-gray-600 mt-1">
-                Submit a copy of your personal Id eg: NIN, National ID,
-                International Passport, Drivers License or Voter's Card.
+                Submit a copy of your business registration documents eg: CAC,
+                Certificate of Incorporation, Memorandum & Article of
+                Registration.
               </p>
             </div>
 
@@ -64,30 +67,32 @@ function Complete() {
             <form onSubmit={handleSubmit} className="flex flex-col gap-6">
               {/* ID Type Select */}
               <div className="flex flex-col gap-2">
-                <label htmlFor="idType" className="text-sm text-gray-700">
-                  Select ID Type
+                <label htmlFor="documentType" className="text-sm text-gray-700">
+                  Select Document Type
                 </label>
                 <select
-                  id="idType"
+                  id="documentType"
                   className="w-full py-2 px-4 border border-gray-300 rounded-md text-gray-700 focus:outline-none"
-                  value={idType}
-                  onChange={(e) => setIdType(e.target.value)}
+                  value={docType}
+                  onChange={(e) => setdocType(e.target.value)}
                   disabled={isPending}
                   required
                 >
-                  <option value="">Select ID Type</option>
-                  <option value="nin">NIN</option>
-                  <option value="national-id">National ID</option>
-                  <option value="drivers-license">Driver's License</option>
-                  <option value="passport">Passport</option>
-                  <option value="voters-card">Voter's Card</option>
+                  <option value="">Select Document Type</option>
+                  <option value="cac">CAC</option>
+                  <option value="certificate-of-incorporation">
+                    Certificate of Incorporation
+                  </option>
+                  <option value="memorandum-of-registration">
+                    Memorandum/Article of Registration
+                  </option>
                 </select>
               </div>
 
               {/* ID Image Upload */}
               <div className="flex flex-col gap-2">
                 <label htmlFor="idImage" className="text-sm text-gray-700">
-                  Upload ID Image (Max 2MB)
+                  Upload Business Document Image (Max 2MB)
                 </label>
                 <input
                   id="idImage"
@@ -114,7 +119,7 @@ function Complete() {
                 type="submit"
                 disabled={isPending}
               >
-                {isPending ? "Submitting..." : "Submit KYC"}
+                {isPending ? "Submitting..." : "Submit Business Document"}
               </Button>
             </form>
           </div>

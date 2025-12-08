@@ -6,12 +6,16 @@ import { useGetAllBanks } from "@/services/shops/query";
 import {
   useValidateBankDetials,
   useCreateStoreBank,
+  useRequestITSupport,
 } from "@/services/shops/mutation";
 import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
+import Link from "next/link";
+import Checkbox from "@/components/shared/checkbox";
 
 function AccountDetails() {
   const router = useRouter();
+  const [checked, setChecked] = useState(false);
   const { data: banksData, isLoading: isLoadingBanks } = useGetAllBanks();
 
   const [formData, setFormData] = useState({
@@ -37,6 +41,14 @@ function AccountDetails() {
     isError: createError,
     error: createErrorMessage,
   } = useCreateStoreBank();
+
+  const {
+    mutate: requestSupport,
+    // isPending: creatingStoreBank,
+    // isSuccess: createSuccess,
+    // isError: createError,
+    error: supportErrorMessage,
+  } = useRequestITSupport();
 
   useEffect(() => {
     if (formData.accountNumber.length === 10 && formData.bankCode) {
@@ -110,6 +122,10 @@ function AccountDetails() {
     if (!selectedBank) {
       toast.error("Selected bank not found.");
       return;
+    }
+
+    if (checked) {
+      requestSupport({});
     }
 
     createStoreBank({
@@ -186,6 +202,13 @@ function AccountDetails() {
                 <div className="text-green-600 text-sm">✓ Account verified</div>
               )}
             </div>
+            <div>
+              <Checkbox
+                isChecked={checked}
+                onChange={() => setChecked(!checked)}
+                label="Check this box if you will need assistance from our IT team"
+              />{" "}
+            </div>
 
             <Button
               variant="auth"
@@ -196,6 +219,14 @@ function AccountDetails() {
               }
             >
               {creatingStoreBank ? "Submitting..." : "Submit"}
+            </Button>
+            <Button
+              variant="outline"
+              className="rounded-md text-blue-500 -mt-4"
+            >
+              <Link href={"/shop/dashboard"} className="w-full">
+                Skip
+              </Link>
             </Button>
           </div>
 

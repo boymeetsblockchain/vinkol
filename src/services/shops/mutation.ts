@@ -22,6 +22,9 @@ import {
   verifyEmail,
   createStoreBank,
   withdraw,
+  submitStoreId,
+  submitBusinessDoc,
+  requestITSupport,
 } from "./api";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -242,6 +245,68 @@ export function useWithDraw(options?: MutationOptions<any, Error>) {
     },
     onError: (errorData: Error) => {
       toast.error("WithDrawal failed");
+      options?.onError?.(errorData);
+    },
+  });
+
+  return { mutate, data, error, isPending, isSuccess, isError };
+}
+
+export function useSubmitStoreIdMutation(
+  options?: MutationOptions<any, Error>
+) {
+  const { mutate, data, error, isPending, isSuccess, isError } = useMutation({
+    mutationFn: async (payload: any) => {
+      // Implement the KYC submission logic here
+      console.log("Submitting KYC with payload:", payload);
+      return await submitStoreId(payload); // Assuming submitKyc is defined in your API file
+    },
+    onSuccess: (responseData) => {
+      console.log("KYC submission successful:", responseData);
+      options?.onSuccess?.(responseData);
+    },
+    onError: (errorData: Error) => {
+      console.error("KYC submission failed:", errorData.message);
+      options?.onError?.(errorData);
+    },
+  });
+
+  return { mutate, data, error, isPending, isSuccess, isError };
+}
+
+export function useSubmitBusinessDoc(options?: MutationOptions<any, Error>) {
+  const { mutate, data, error, isPending, isSuccess, isError } = useMutation({
+    mutationFn: async (payload: any) => {
+      // Implement the KYC submission logic here
+      console.log("Submitting business document with payload:", payload);
+      return await submitBusinessDoc(payload);
+    },
+    onSuccess: (responseData) => {
+      console.log("business document submission successful:", responseData);
+      options?.onSuccess?.(responseData);
+    },
+    onError: (errorData: Error) => {
+      console.error("business document submission failed:", errorData.message);
+      options?.onError?.(errorData);
+    },
+  });
+
+  return { mutate, data, error, isPending, isSuccess, isError };
+}
+
+export function useRequestITSupport(options?: MutationOptions<any, Error>) {
+  const { mutate, data, error, isPending, isSuccess, isError } = useMutation({
+    mutationFn: async (payload: any) => {
+      // Implement the KYC submission logic here
+      console.log("Requesting IT support", payload);
+      return await requestITSupport(payload);
+    },
+    onSuccess: (responseData) => {
+      console.log("IT support requested:", responseData);
+      options?.onSuccess?.(responseData);
+    },
+    onError: (errorData: Error) => {
+      console.error("Error requesting IT support: ", errorData.message);
       options?.onError?.(errorData);
     },
   });
