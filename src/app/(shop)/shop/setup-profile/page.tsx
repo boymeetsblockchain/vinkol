@@ -39,7 +39,7 @@ function SetUpProfile() {
       },
       {
         onSuccess: () => {
-          router.push("/shop/account");
+          router.push("/shop/complete");
         },
         onError: (error, variables) => {
           toast.error(error?.message);
