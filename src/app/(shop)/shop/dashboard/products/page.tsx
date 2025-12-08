@@ -49,28 +49,42 @@ const ProductCard: React.FC<ProductCardProps> = ({
   onEdit,
   onDelete,
 }) => (
-  <div className="border p-4 rounded-md shadow-sm space-y-2">
-    <h3 className="font-semibold text-lg">{product.title}</h3>
-    <p className="text-gray-600">₦{product.price.toFixed(2)}</p>
-    <p className="text-sm text-gray-500">Category: {product.category}</p>
-    <p className="text-sm text-gray-700">{product.description}</p>
+  <div className="bg-white border rounded-xl shadow-sm hover:shadow-md transition p-5 flex flex-col">
     {product.image && (
       <img
         src={product.image}
         alt={product.title}
-        className="w-24 h-24 object-cover rounded-md"
+        className="w-full h-40 object-cover rounded-lg mb-3"
       />
     )}
+
+    <div className="flex justify-between items-start flex-wrap">
+      <h3 className="font-semibold text-lg">{product.title}</h3>
+
+      <span className="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-700">
+        {product.category}
+      </span>
+    </div>
+
+    <p className="text-green-700 font-semibold mt-1">
+      ₦{product.price.toLocaleString()}
+    </p>
+
+    <p className="text-gray-600 text-sm mt-2 line-clamp-3">
+      {product.description}
+    </p>
+
     <div className="flex gap-2 mt-4">
       <button
         onClick={() => onEdit(product)}
-        className="px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+        className="flex-1 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition"
       >
         Edit
       </button>
+
       <button
         onClick={() => onDelete(product._id)}
-        className="px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600"
+        className="flex-1 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition"
       >
         Delete
       </button>
@@ -156,25 +170,25 @@ function ProductPage() {
   }
 
   return (
-    <div className="p-8">
-      <h1 className="text-3xl font-bold mb-6">Product Management</h1>
+    <div className="p-6 md:p-10">
+      <div className="flex flex-col md:flex-row justify-between items-center mt-6 md:mt-1 mb-8">
+        <h1 className="text-3xl font-bold">Product Management</h1>
 
-      <button
-        onClick={() => {
-          setIsCreateFormVisible(!isCreateFormVisible);
-          setEditingProduct(null);
-        }}
-        className="mb-6 px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
-      >
-        {isCreateFormVisible
-          ? "Hide Create Product Form"
-          : "Create New Product"}
-      </button>
+        <button
+          onClick={() => {
+            setIsCreateFormVisible(!isCreateFormVisible);
+            setEditingProduct(null);
+          }}
+          className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 shadow-md transition"
+        >
+          {isCreateFormVisible ? "Close Form" : "+ Add Product"}
+        </button>
+      </div>
 
       {isCreateFormVisible && (
         <ProductForm
           onSubmit={handleCreateProduct}
-          initialData={null} // No initial data for creation
+          initialData={null}
           isSubmitting={createProductMutation.isPending}
           onCancel={() => setIsCreateFormVisible(false)}
         />
@@ -183,15 +197,16 @@ function ProductPage() {
       {editingProduct && (
         <ProductForm
           onSubmit={(data) => handleUpdateProduct(editingProduct._id, data)}
-          initialData={editingProduct} // Pass the full Product object
+          initialData={editingProduct}
           isSubmitting={updateProductMutation.isPending}
           onCancel={() => setEditingProduct(null)}
         />
       )}
 
-      <h2 className="text-2xl font-semibold mb-4 mt-8">All Products</h2>
+      <h2 className="text-2xl font-semibold mb-4 mt-10">All Products</h2>
+
       {productList.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
           {productList.map((product: any) => (
             <ProductCard
               key={product._id}
@@ -200,8 +215,8 @@ function ProductPage() {
                 title: product.title,
                 price: product.price,
                 category: product.category,
-                image: product.image?.imageUrl, // Access the nested imageUrl
-                description: product.description || "", // Handle possible undefined description
+                image: product.image?.imageUrl,
+                description: product.description || "",
               }}
               onEdit={(prod) => {
                 setEditingProduct(prod);
@@ -212,9 +227,11 @@ function ProductPage() {
           ))}
         </div>
       ) : (
-        <p className="text-gray-500">
-          No products found. Start by creating one!
-        </p>
+        <div className="text-center py-20 text-gray-500 bg-gray-50 rounded-lg border">
+          No products found. Click
+          <span className="font-semibold text-green-700"> “Add Product” </span>
+          to get started.
+        </div>
       )}
     </div>
   );
@@ -316,136 +333,118 @@ const ProductForm: React.FC<ProductFormProps> = ({
   };
 
   return (
-    <div className="mb-8 p-6 border rounded-lg shadow-md bg-gray-50">
+    <div className="mb-10 p-6 bg-white shadow-md rounded-xl border">
       <h2 className="text-xl font-semibold mb-4">
-        {initialData ? "Edit Product" : "Create New Product"}
+        {initialData ? "Edit Product" : "Create Product"}
       </h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label
-            htmlFor="title"
-            className="block text-sm font-medium text-gray-700"
-          >
+
+      <form
+        onSubmit={handleSubmit}
+        className="grid grid-cols-1 md:grid-cols-2 gap-6"
+      >
+        {/* Title */}
+        <div className="col-span-1 md:col-span-2">
+          <label className="block text-sm font-medium text-gray-700">
             Title
           </label>
           <input
             type="text"
-            id="title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-            required
+            className="mt-1 w-full border rounded-lg p-3 focus:ring-2 focus:ring-blue-500"
           />
         </div>
+
+        {/* Price */}
         <div>
-          <label
-            htmlFor="price"
-            className="block text-sm font-medium text-gray-700"
-          >
+          <label className="block text-sm font-medium text-gray-700">
             Price
           </label>
           <input
             type="number"
-            id="price"
             value={price}
             onChange={(e) => setPrice(parseFloat(e.target.value))}
-            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-            required
-            min="0.01"
-            step="0.01"
+            className="mt-1 w-full border rounded-lg p-3 focus:ring-2 focus:ring-blue-500"
           />
         </div>
+
+        {/* Category */}
         <div>
-          <label
-            htmlFor="category"
-            className="block text-sm font-medium text-gray-700"
-          >
+          <label className="block text-sm font-medium text-gray-700">
             Category
           </label>
           <select
-            id="category"
             value={category}
             onChange={(e) => setCategory(e.target.value as CategoryValue)}
-            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-            required
+            className="mt-1 w-full border rounded-lg p-3 bg-white"
           >
             <option value="">Select a category</option>
-            {productCategories.map(
-              (
-                cat // Use imported productCategories
-              ) => (
-                <option key={cat.value} value={cat.value}>
-                  {cat.name}
-                </option>
-              )
-            )}
+            {productCategories.map((cat) => (
+              <option key={cat.value} value={cat.value}>
+                {cat.name}
+              </option>
+            ))}
           </select>
         </div>
-        <div>
-          <label
-            htmlFor="image"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Image File{" "}
-            {initialData ? "(Optional for Update)" : "(Required for Create)"}
+
+        {/* Image Upload */}
+        <div className="col-span-1 md:col-span-2">
+          <label className="block text-sm font-medium text-gray-700">
+            Product Image (Max: 2MB)
           </label>
+
           <input
             type="file"
-            id="image"
             accept="image/*"
-            onChange={(e) =>
-              setImageFile(e.target.files ? e.target.files[0] : null)
-            }
-            className="mt-1 block w-full text-gray-900 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+            onChange={(e) => setImageFile(e.target.files?.[0] ?? null)}
+            className="mt-2 block w-full text-gray-800 file:bg-blue-50 file:px-4 file:py-2 file:rounded-lg file:border-0 file:text-blue-700 hover:file:bg-blue-100"
           />
-          {currentImageUrl &&
-            !imageFile && ( // Display current image if no new file selected
-              <p className="text-xs text-gray-500 mt-1">
-                Current image:{" "}
-                <a
-                  href={currentImageUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline"
-                >
-                  View
-                </a>
-              </p>
-            )}
+
+          {currentImageUrl && !imageFile && (
+            <p className="text-sm mt-1 text-gray-500">
+              Current image:{" "}
+              <a
+                href={currentImageUrl}
+                target="_blank"
+                className="underline text-blue-600"
+              >
+                View
+              </a>
+            </p>
+          )}
         </div>
-        <div>
-          <label
-            htmlFor="description"
-            className="block text-sm font-medium text-gray-700"
-          >
+
+        {/* Description */}
+        <div className="col-span-1 md:col-span-2">
+          <label className="block text-sm font-medium text-gray-700">
             Description
           </label>
           <textarea
-            id="description"
+            rows={4}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            rows={4}
-            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-            required
+            className="mt-1 w-full border rounded-lg p-3 focus:ring-2 focus:ring-blue-500"
           ></textarea>
         </div>
-        <div className="flex gap-4">
+
+        {/* Buttons */}
+        <div className="col-span-1 md:col-span-2 flex gap-3 mt-3">
           <button
             type="submit"
             disabled={isSubmitting}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
           >
             {isSubmitting
-              ? "Submitting..."
+              ? "Saving..."
               : initialData
               ? "Update Product"
               : "Create Product"}
           </button>
+
           <button
             type="button"
             onClick={onCancel}
-            disabled={isSubmitting}
-            className="px-4 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 disabled:opacity-50"
+            className="px-6 py-2 bg-gray-200 rounded-lg hover:bg-gray-300"
           >
             Cancel
           </button>

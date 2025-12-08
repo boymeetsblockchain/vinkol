@@ -76,6 +76,51 @@ export type GetOrdersParams = {
   status?: string;
 };
 
+enum OrderStatus {
+  Pending = "Pending",
+  Confirmed = "Confirmed",
+  Accepted = "Accepted",
+  Picked = "Picked",
+  Delivered = "Delivered",
+  Cancelled = "Cancelled",
+}
+
+enum OrderTypes {
+  Delivery = "Delivery",
+  Shopping = "Shopping",
+}
+
+export interface IOrder {
+  _id: string;
+  user?: any;
+  guest?: any;
+  rider?: string;
+  state: string;
+  pickupLocation: string;
+  pickPoint?: any;
+  dropPoint?: any;
+  dropoffLocation: string;
+  date: string;
+  time: string;
+  deliveryType: string;
+  vehicleRequest: string;
+  amount: number;
+  deliveryFee: number;
+  totalAmount: number;
+  note?: string;
+  description?: string;
+  orderOtp: string;
+  paystackReference: string;
+  paymentStatus: string;
+  status: OrderStatus;
+  orderType: OrderTypes;
+  trackingId: string;
+  store?: string;
+  products?: any[];
+  dispute: { status: boolean; remark?: string };
+  createdAt: any;
+}
+
 export const changeOrderStatusSchema = z.object({
   status: z.union([z.literal("Delivered"), z.literal("Picked")]),
   orderOtp: z.string().optional(),
