@@ -68,7 +68,7 @@ export const QuotePage = () => {
   const { mutate, isPending, isSuccess } = useCreateOrderFromStore();
 
   const handlePaymentSuccess = (response: any) => {
-    console.log("Paystack Success Response:", response);
+    // console.log("Paystack Success Response:", response);
 
     const transactionRef = response.reference;
 
@@ -137,8 +137,12 @@ export const QuotePage = () => {
     );
   };
 
+  const serviceFee = Math.round(
+    0.025 * (calculatedTotalAmount + calculatedDeliveryFee)
+  );
   // Paystack amount must be in kobo (smallest currency unit), so multiply by 100
-  const amountInKobo = (calculatedTotalAmount + calculatedDeliveryFee) * 100;
+  const amountInKobo =
+    (calculatedTotalAmount + calculatedDeliveryFee + serviceFee) * 100;
 
   return (
     <div className="min-h-screen bg-gray-50 py-10 px-4 sm:px-6 lg:px-8">
@@ -165,11 +169,19 @@ export const QuotePage = () => {
             <span className="font-normal">Delivery Fee:</span> ₦
             {calculatedDeliveryFee.toLocaleString()}
           </p>
+          <p className="text-lg font-semibold">
+            <span className="font-normal">Service Fee:</span> ₦
+            {serviceFee.toLocaleString()}
+          </p>
           <p className="text-2xl font-bold ">
             <span className="font-semibold">Grand Total:</span>{" "}
             <span className="text-blue-primary text-2xl">
               ₦
-              {(calculatedTotalAmount + calculatedDeliveryFee).toLocaleString()}
+              {(
+                calculatedTotalAmount +
+                calculatedDeliveryFee +
+                serviceFee
+              ).toLocaleString()}
             </span>
           </p>
         </div>
