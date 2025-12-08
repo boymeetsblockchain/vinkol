@@ -7,7 +7,7 @@ export const Shop = () => {
       <div className="max-w-screen-xl grid w-full mx-auto h-full p-4 md:p-10 gap-8 md:gap-10 grid-cols-1 md:grid-cols-2">
         <div className="flex justify-center items-center">
           <img
-            src="/assets/shop-from-home.jpg"
+            src="/assets/shop-from-home.png"
             alt="A shopper browsing products in a supermarket"
             className="w-full max-h-60 md:max-h-80 object-cover border-white border-2 rounded-3xl"
           />
