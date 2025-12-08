@@ -20,6 +20,10 @@ export const productCategories = [
     value: "home-care-and-cleaning-supplies",
   },
   {
+    name: "Clothing & Fashion",
+    value: "clothing-and-fashion",
+  },
+  {
     name: "Household, Kitchen & Essentials",
     value: "household-kitchen-essentials",
   },

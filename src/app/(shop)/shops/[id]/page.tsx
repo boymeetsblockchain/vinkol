@@ -185,22 +185,29 @@ function ShopIdPage() {
 
         <main className="flex-1 overflow-y-auto">
           <div className="container mx-auto px-4 md:px-6 py-8">
-            <div className="flex flex-col mt-8 mb-6">
-              <Link href="/shops" className="underline my-1">
-                Go Back
-              </Link>
-              <div className="flex md:hidden flex-col gap-1">
-                <h3 className="font-semibold">{store?.data?.store?.name}</h3>
-                <p>
-                  <span className="font-medium">Store Address:</span>{" "}
-                  {store?.data?.store?.address}
-                </p>
+            <div className="mb-8 p-6 rounded-2xl bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg">
+              <div className="flex flex-col-reverse md:flex-row md:items-center justify-between gap-4">
+                <div>
+                  <h1 className="text-3xl font-bold">
+                    {store?.data?.store?.name}
+                  </h1>
+                  <p className="text-blue-100 mt-1">
+                    {store?.data?.store?.address}
+                  </p>
+                </div>
+                <Link
+                  href="/shops"
+                  className="underline text-blue-100 text-sm hover:text-white transition"
+                >
+                  Back to Shops
+                </Link>
               </div>
-              <h1 className="text-2xl md:text-3xl mt-8 font-bold text-gray-900">
+
+              <h2 className="text-xl font-medium mt-6">
                 {selectedCategory
                   ? getCategoryName(selectedCategory)
                   : "All Products"}
-              </h1>
+              </h2>
             </div>
 
             {areProductsLoading ? (
@@ -210,38 +217,40 @@ function ShopIdPage() {
                 {products.map((product) => (
                   <div
                     key={product._id}
-                    className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 flex flex-col overflow-hidden border border-gray-100"
+                    className="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col overflow-hidden border border-gray-100 hover:-translate-y-1"
                   >
-                    <div className="p-4 flex justify-center items-center h-48 bg-gray-50">
+                    <div className="p-4 flex justify-center items-center h-48 bg-gradient-to-br from-gray-50 to-gray-100">
                       <img
                         src={
                           product.image?.imageUrl || "/assets/placeholder.png"
                         }
-                        className="h-full w-auto max-w-full object-contain"
+                        className="h-full w-auto max-w-full object-contain transition-transform duration-300 group-hover:scale-105"
                         alt={product.description}
                       />
                     </div>
+
                     <div className="p-5 flex flex-col flex-grow">
-                      <h3 className="font-semibold text-gray-900 mb-1 text-lg truncate">
+                      <h3 className="font-semibold text-gray-900 mb-1 text-lg">
                         {product.title}
                       </h3>
-                      <p className="text-gray-600 text-sm mb-3 line-clamp-2">
-                        {product.description
-                          ? product.description
-                          : "No Product description"}
+
+                      <p className="text-gray-500 text-sm mb-3 line-clamp-2">
+                        {product.description || "No product description"}
                       </p>
+
                       <div className="flex items-center justify-between mt-auto">
-                        <span className="font-bold text-blue-primary text-base">
+                        <span className="font-bold text-blue-600 text-lg">
                           {new Intl.NumberFormat("en-NG", {
                             style: "currency",
                             currency: "NGN",
                           }).format(product.price)}
                         </span>
+
                         <button
                           onClick={() => handleAddToCart(product)}
-                          className="flex items-center gap-2 bg-blue-primary hover:bg-blue-700 transition-colors duration-200 text-white font-medium py-2 px-4 rounded-lg shadow-sm"
+                          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 transition-colors duration-300 text-white font-semibold py-2 px-4 rounded-xl shadow-sm"
                         >
-                          <ShoppingCart size={16} /> Add to cart
+                          <ShoppingCart size={16} /> Add
                         </button>
                       </div>
                     </div>
