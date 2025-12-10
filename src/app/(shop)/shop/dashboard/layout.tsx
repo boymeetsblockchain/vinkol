@@ -130,8 +130,11 @@ const Layout = ({ children }: { children: ReactNode }) => {
 
   // Show KYC verification states only after data is loaded
   if (data?.data) {
+    if (!data?.data.name || !data?.data.address) {
+      router.push("/shop/setup-profile");
+    }
+    // console.log(data.data);
     if (!data.data.isKYCVerified) {
-      // console.log(data.data);
       return (
         <section className="max-w-screen-2xl min-h-screen w-full px-4 md:px-20 py-10 mx-auto">
           <div className="flex flex-col items-center justify-center w-full h-full text-center gap-2">
