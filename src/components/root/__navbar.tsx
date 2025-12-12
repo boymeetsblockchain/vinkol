@@ -30,6 +30,10 @@ const navbarArray = [
     name: "Become a Personal Shopper",
     path: "/become-a-personal-shopper",
   },
+  {
+    name: "Register Your Store on Vinkol",
+    path: "/shop",
+  },
 ];
 
 export const Navbar: React.FC<{ shop?: boolean }> = ({ shop }) => {
@@ -116,11 +120,19 @@ export const Navbar: React.FC<{ shop?: boolean }> = ({ shop }) => {
                 {data.name}
               </Link>
             ))}
-            <div className="block md:hidden mt-6">
+            <div className="flex items-center gap-4 md:hidden mt-6">
               {" "}
               {/* Added margin top for separation */}
               <Button size="lg" onClick={navigate}>
                 {shop ? "Register Store on Vinkol" : "Book a Delivery"}
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                className="text-blue-500 rounded-4xl"
+                onClick={() => router.push("/explore-shop")}
+              >
+                Explore Stores
               </Button>
             </div>
           </div>
