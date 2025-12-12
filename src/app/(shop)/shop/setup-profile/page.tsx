@@ -63,7 +63,7 @@ function SetUpProfile() {
             </div>
 
             {/* Profile Image Upload */}
-            <div className="flex justify-center flex-col items-center gap-2">
+            <label className="flex justify-center flex-col items-center gap-2">
               <img
                 src={
                   avatar
@@ -80,7 +80,7 @@ function SetUpProfile() {
                   if (e.target.files?.[0]) setAvatar(e.target.files[0]);
                 }}
               />
-            </div>
+            </label>
 
             {/* Input Fields */}
             <div className="flex flex-col gap-2">
