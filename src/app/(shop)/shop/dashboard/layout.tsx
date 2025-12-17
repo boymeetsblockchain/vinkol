@@ -133,6 +133,32 @@ const Layout = ({ children }: { children: ReactNode }) => {
     if (!data?.data.name || !data?.data.address) {
       router.push("/shop/setup-profile");
     }
+
+    if (!data.data.kyc) {
+      return (
+        <section className="max-w-screen-2xl min-h-screen w-full px-4 md:px-20 py-10 mx-auto">
+          <div className="flex flex-col items-center justify-center w-full h-full text-center gap-2">
+            <div className="w-40 h-40 md:w-1/3 md:h-1/3">
+              <img
+                src="/assets/document.png"
+                alt="Check Icon"
+                className="w-full h-full object-cover"
+                loading="lazy"
+              />
+            </div>
+            <h1 className="text-2xl md:text-3xl font-bold">Upload Documents</h1>
+            <p className="text-sm md:text-base text-gray-700 max-w-md">
+              You do not have any uploaded documents. Please upload your
+              documents.
+            </p>
+            <Button asChild>
+              <Link href="/shop/complete">Upload Documents</Link>
+            </Button>
+          </div>
+        </section>
+      );
+    }
+
     // console.log(data.data);
     if (!data.data.isKYCVerified) {
       return (
@@ -163,31 +189,6 @@ const Layout = ({ children }: { children: ReactNode }) => {
                 <Link href="/shop/complete">Reupload Documents</Link>
               </Button>
             )}
-          </div>
-        </section>
-      );
-    }
-
-    if (!data.data.kyc) {
-      return (
-        <section className="max-w-screen-2xl min-h-screen w-full px-4 md:px-20 py-10 mx-auto">
-          <div className="flex flex-col items-center justify-center w-full h-full text-center gap-2">
-            <div className="w-40 h-40 md:w-1/3 md:h-1/3">
-              <img
-                src="/assets/document.png"
-                alt="Check Icon"
-                className="w-full h-full object-cover"
-                loading="lazy"
-              />
-            </div>
-            <h1 className="text-2xl md:text-3xl font-bold">Upload Documents</h1>
-            <p className="text-sm md:text-base text-gray-700 max-w-md">
-              You do not have any uploaded documents. Please upload your
-              documents.
-            </p>
-            <Button asChild>
-              <Link href="/shop/complete">Upload Documents</Link>
-            </Button>
           </div>
         </section>
       );
