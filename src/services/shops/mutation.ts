@@ -25,6 +25,7 @@ import {
   submitStoreId,
   submitBusinessDoc,
   requestITSupport,
+  updateOpeningHours,
 } from "./api";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -307,6 +308,26 @@ export function useRequestITSupport(options?: MutationOptions<any, Error>) {
     },
     onError: (errorData: Error) => {
       console.error("Error requesting IT support: ", errorData.message);
+      options?.onError?.(errorData);
+    },
+  });
+
+  return { mutate, data, error, isPending, isSuccess, isError };
+}
+
+export function useUpdateOpeningHours(options?: MutationOptions<any, Error>) {
+  const { mutate, data, error, isPending, isSuccess, isError } = useMutation({
+    mutationFn: async (payload: any) => {
+      return await updateOpeningHours(payload);
+    },
+    onSuccess: (responseData) => {
+      // console.log("Update Opening Hours successful:", responseData);
+      options?.onSuccess?.(responseData);
+      // toast.success(responseData?.message || "Opening hours updated");
+    },
+    onError: (errorData: Error) => {
+      console.error("Update Opening Hours failed:", errorData.message);
+      toast.error("Failed to update opening hours");
       options?.onError?.(errorData);
     },
   });

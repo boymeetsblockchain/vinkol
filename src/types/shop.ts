@@ -42,6 +42,7 @@ export const updateStoreProfileSchema = z.object({
   state: z.string().min(1, { message: "State is required" }),
   lat: z.union([z.string(), z.number()]).transform(String),
   lng: z.union([z.string(), z.number()]).transform(String),
+  tags: z.string(),
   phone: z
     .string()
     .min(10, { message: "Phone number is too short" })

@@ -22,6 +22,7 @@ function SetUpProfile() {
   const [avatar, setAvatar] = useState<File | null>(null);
   const [lat, setLat] = useState("");
   const [lng, setLng] = useState("");
+  const [tags, setTags] = useState("");
 
   const handleSubmit = () => {
     // console.log(lat, lng);
@@ -35,11 +36,12 @@ function SetUpProfile() {
         lng,
         state,
         phone,
+        tags,
         avatar: avatar || undefined,
       },
       {
         onSuccess: () => {
-          router.push("/shop/complete");
+          router.push("/shop/opening-hours");
         },
         onError: (error, variables) => {
           toast.error(error?.message);
@@ -49,7 +51,7 @@ function SetUpProfile() {
   };
 
   return (
-    <section className="min-h-screen flex flex-col">
+    <section className="min-h-screen flex flex-col py-6">
       <Header />
       <div className="flex items-center justify-center max-w-screen-xl mx-auto px-4 w-full">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
@@ -97,6 +99,25 @@ function SetUpProfile() {
                 onChange={(e) => setBio(e.target.value)}
                 className="w-full py-2 px-3 focus:outline-none border border-[#A5A4A0] rounded-[5px] placeholder:text-blue-primary placeholder:text-base"
               ></textarea>
+              <select
+                required
+                value={tags}
+                onChange={(e) => setTags(e.target.value)}
+                name="tags"
+                id="tags"
+                className="w-full py-2 px-3 focus:outline-none border border-[#A5A4A0] rounded-[5px] placeholder:text-blue-primary placeholder:text-base"
+              >
+                <option value="" className="text-blue-primary">
+                  --Select store tag--
+                </option>
+                <option value="food">Food</option>
+                <option value="fashion">Clothing and Fashion</option>
+                <option value="electronics">Gadget and Electronics</option>
+                <option value="bakery">Bakery and Catering</option>
+                <option value="pharmacy">Pharmacy</option>
+                <option value="beauty">Beauty and Cosmetics</option>
+                <option value="supermarket">Supermarkets and Groceries</option>
+              </select>
 
               {/* Google Autocomplete for Address */}
               <Autocomplete

@@ -303,3 +303,16 @@ export const submitBusinessDoc = async (data: any) => {
     handleApiError(error, "Failed to submit business document.");
   }
 };
+
+/**
+ * Update store opening hours.
+ * @param data - payload matching { openingHours: { ... } }
+ */
+export const updateOpeningHours = async (data: any) => {
+  try {
+    const response = await axiosInstance.patch(`/stores/opening-hours`, data);
+    return response.data;
+  } catch (error) {
+    handleApiError(error, "Failed to update opening hours.");
+  }
+};
