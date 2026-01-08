@@ -1,12 +1,15 @@
 "use client";
 import { saveCartToStorage } from "@/config/storage";
 import { IStore } from "@/lib/interfaces/store";
-import { useGetAllStores } from "@/services/shops/query";
+import {
+  useGetAllCollaborativeStores,
+  useGetAllStores,
+} from "@/services/shops/query";
 import { useRouter } from "next/navigation";
 export const SuperMarket = () => {
   const router = useRouter();
 
-  const { data: stores, isLoading, error } = useGetAllStores();
+  const { data: stores, isLoading, error } = useGetAllCollaborativeStores();
 
   const data = stores?.data ?? [];
 
