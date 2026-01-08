@@ -15,15 +15,21 @@ export const Youtube = () => {
       title: "Short Video",
       url: "https://youtube.com/shorts/34eLXb01aPs?si=GgsqpaKt7qkRQ00G",
     },
+    {
+      id: "ypDiiiEWGTM",
+      isShort: true,
+      title: "A Year of Growth",
+      url: "https://youtube.com/shorts/ypDiiiEWGTM?si=WRQQ4dI9EYC4mLMX",
+    },
   ];
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
+    <div className="max-w-screen-2xl mx-auto px-10 py-8">
       <h2 className="text-2xl font-bold text-center mb-8 text-gray-800">
         YouTube Videos
       </h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {videos.map((video) => (
           <div
             key={video.id}
