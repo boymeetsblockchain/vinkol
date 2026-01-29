@@ -130,10 +130,6 @@ const Layout = ({ children }: { children: ReactNode }) => {
 
   // Show KYC verification states only after data is loaded
   if (data?.data) {
-    if (!data?.data.name || !data?.data.address) {
-      router.push("/shop/setup-profile");
-    }
-
     if (!data.data.kyc) {
       return (
         <section className="max-w-screen-2xl min-h-screen w-full px-4 md:px-20 py-10 mx-auto">
@@ -157,6 +153,10 @@ const Layout = ({ children }: { children: ReactNode }) => {
           </div>
         </section>
       );
+    }
+
+    if (!data?.data.name || !data?.data.address) {
+      router.push("/shop/setup-profile");
     }
 
     // console.log(data.data);

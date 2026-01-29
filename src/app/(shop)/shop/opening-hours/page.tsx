@@ -93,14 +93,17 @@ export default function OpeningHours() {
   }
 
   function buildRequestBody() {
-    const openingHours = DAYS.reduce((acc, d) => {
-      const entry = state[d];
-      if (!entry) return acc;
-      if (entry.isClosed) acc[d] = { isClosed: true };
-      else if (entry.hours && entry.hours.length > 0)
-        acc[d] = { hours: entry.hours };
-      return acc;
-    }, {} as Record<string, any>);
+    const openingHours = DAYS.reduce(
+      (acc, d) => {
+        const entry = state[d];
+        if (!entry) return acc;
+        if (entry.isClosed) acc[d] = { isClosed: true };
+        else if (entry.hours && entry.hours.length > 0)
+          acc[d] = { hours: entry.hours };
+        return acc;
+      },
+      {} as Record<string, any>,
+    );
     return { openingHours };
   }
 
@@ -110,7 +113,7 @@ export default function OpeningHours() {
       onSuccess: (data) => {
         toast.success(data?.message || "Opening hours updated");
         try {
-          router.push("/shop/complete");
+          router.push("/shop/account");
         } catch (e) {
           // ignore navigation errors in non-router contexts
         }
