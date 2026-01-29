@@ -28,7 +28,7 @@ function Complete() {
     submitBusinessDoc(formData, {
       onSuccess: () => {
         toast.success("Business Document submitted successfully!");
-        router.push("/shop/account");
+        router.push("/shop/setup-profile");
       },
       onError: (error) => {
         console.error("Business document submission failed:", error);
@@ -120,6 +120,14 @@ function Complete() {
                 disabled={isPending}
               >
                 {isPending ? "Submitting..." : "Submit Business Document"}
+              </Button>
+
+              <Button
+                variant="outline"
+                className="w-full rounded-md"
+                onClick={() => router.push("/shop/setup-profile")}
+              >
+                Skip
               </Button>
             </form>
           </div>

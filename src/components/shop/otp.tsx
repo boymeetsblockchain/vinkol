@@ -80,7 +80,7 @@ export const VerifyOtpPage = ({}: VerifyOtpPageProps) => {
     if (isVerifySuccess) {
       toast.success("Email verified successfully!");
       // Redirect to a dashboard or login page after successful verification
-      router.push("/shop/setup-profile");
+      router.push("/shop/complete");
     }
     if (isVerifyError) {
       const errorMessage = verifyError?.message || "Email verification failed.";
@@ -192,8 +192,8 @@ export const VerifyOtpPage = ({}: VerifyOtpPageProps) => {
               {isResending
                 ? "Sending..."
                 : isResendDisabled
-                ? `Resend in ${resendTimer}s`
-                : "Resend Code"}
+                  ? `Resend in ${resendTimer}s`
+                  : "Resend Code"}
             </Button>
           </p>
           <p className="mt-2">
