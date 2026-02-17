@@ -27,7 +27,7 @@ export const ShopList = () => {
 
         <div className="w-full flex justify-center">
           <div className="flex flex-wrap justify-center gap-6 md:gap-8 mt-8">
-            {data.data.slice(0, 4).map((shop: any, idx: any) => (
+            {data.data.map((shop: any, idx: any) => (
               <Link
                 href={`/shops/${shop._id}`}
                 key={idx}
