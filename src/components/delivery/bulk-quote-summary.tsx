@@ -56,7 +56,7 @@ export const BulkQuoteSummary = ({ quote, onEdit }: Props) => {
   });
 
   const handlePayment = () => {
-    const url = new URL(`/orders/success`, window.location.origin).toString();
+    const url = new URL(`/order/success`, window.location.origin).toString();
     createOrder({
       quoteId: quote.quote,
       callbackUrl: url,
