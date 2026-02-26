@@ -39,3 +39,45 @@ export const deliverySchema = z.object({
   state: z.string(),
   orderType: z.enum(["Delivery", "Shopping"]),
 });
+
+export const bulkDeliverySchema = z.object({
+  firstname: z.string().min(2, "First name must be at least 2 characters"),
+  lastname: z.string().min(2, "Last name must be at least 2 characters"),
+  phonenumber: z
+    .string()
+    .min(11, "Phone number must be at least 11 characters"),
+  email: z.string().email("Invalid email address"),
+  pickup: z.string().min(1, "Pickup location is required"),
+  pickupLocation: z
+    .object({
+      lat: z.number(),
+      lng: z.number(),
+    })
+    .optional(),
+  pickupContact: z
+    .string()
+    .min(11, "Pickup contact phone must be at least 11 digits"),
+  dropoffs: z
+    .array(
+      z.object({
+        address: z.string().min(1, "Dropoff address is required"),
+        location: z
+          .object({
+            lat: z.number(),
+            lng: z.number(),
+          })
+          .optional(),
+        contact: z
+          .string()
+          .min(11, "Dropoff contact phone must be at least 11 digits"),
+      }),
+    )
+    .min(1, "At least one dropoff location is required"),
+  date: z.string().min(1, "Specify the date of delivery"),
+  vehicle: z.enum(["bike", "car", "truck"], {
+    errorMap: () => ({ message: "Please select a valid vehicle type" }),
+  }),
+  description: z.string().min(1, "Description is required"),
+  note: z.string().optional(),
+  state: z.string(),
+});

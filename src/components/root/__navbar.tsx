@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "../button";
 import { GiHamburgerMenu } from "react-icons/gi";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { BiX } from "react-icons/bi";
 import { cn } from "@/lib/utils"; // Assuming you have this utility from your previous code
@@ -38,6 +38,7 @@ const navbarArray = [
 
 export const Navbar: React.FC<{ shop?: boolean }> = ({ shop }) => {
   const [mobile, setMobile] = useState<boolean>(false);
+  const [showDeliveryDropdown, setShowDeliveryDropdown] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
 
@@ -54,6 +55,10 @@ export const Navbar: React.FC<{ shop?: boolean }> = ({ shop }) => {
   const closeMobileMenu = () => {
     setMobile(false);
   };
+
+  useEffect(() => {
+    setShowDeliveryDropdown(false);
+  }, [pathname]);
 
   return (
     // The `h-auto` and `w-full` are usually sufficient for a `nav` element.
@@ -76,7 +81,7 @@ export const Navbar: React.FC<{ shop?: boolean }> = ({ shop }) => {
               href={`${data.path}`}
               className={cn(
                 "text-sm font-medium transition-colors hover:text-blue-primary", // Added hover effect
-                pathname === data.path ? "text-blue-primary" : "text-gray-700" // Explicit default text color
+                pathname === data.path ? "text-blue-primary" : "text-gray-700", // Explicit default text color
               )}
             >
               {data.name}
@@ -85,10 +90,34 @@ export const Navbar: React.FC<{ shop?: boolean }> = ({ shop }) => {
         </div>
 
         {/* Desktop Button */}
-        <div className="hidden md:block">
-          <Button size="lg" onClick={navigate}>
-            {shop ? "Register Store on Vinkol" : "Book a Delivery"}
+        <div
+          className="hidden md:relative md:block"
+          onMouseEnter={() => setShowDeliveryDropdown(true)}
+          onMouseLeave={() => setShowDeliveryDropdown(false)}
+        >
+          <Button size="lg" className="flex items-center gap-2">
+            Book a Delivery
           </Button>
+
+          {showDeliveryDropdown && (
+            <div className="absolute right-0 mt-2 w-56 rounded-lg border bg-white shadow-lg z-50">
+              <Link
+                href="/book-a-delivery"
+                className="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-100"
+                onClick={() => setShowDeliveryDropdown(false)}
+              >
+                Book a Delivery
+              </Link>
+
+              <Link
+                href="/bulk-delivery"
+                className="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-100"
+                onClick={() => setShowDeliveryDropdown(false)}
+              >
+                Bulk Delivery
+              </Link>
+            </div>
+          )}
         </div>
 
         {/* Mobile Hamburger/Close Icon */}
@@ -114,12 +143,26 @@ export const Navbar: React.FC<{ shop?: boolean }> = ({ shop }) => {
                 onClick={closeMobileMenu} // <-- IMPORTANT: Close mobile menu on click
                 className={cn(
                   "text-base font-medium transition-colors hover:text-blue-primary w-full", // Increased font size, added w-full
-                  pathname === data.path ? "text-blue-primary" : "text-gray-800"
+                  pathname === data.path
+                    ? "text-blue-primary"
+                    : "text-gray-800",
                 )}
               >
                 {data.name}
               </Link>
             ))}
+            <Link
+              href="/bulk-delivery"
+              onClick={closeMobileMenu} // <-- IMPORTANT: Close mobile menu on click
+              className={cn(
+                "text-base font-medium transition-colors hover:text-blue-primary w-full", // Increased font size, added w-full
+                pathname === "/bulk-delivery"
+                  ? "text-blue-primary"
+                  : "text-gray-800",
+              )}
+            >
+              Bulk Delivery
+            </Link>
             <div className="flex items-center gap-4 md:hidden mt-6">
               {" "}
               {/* Added margin top for separation */}
