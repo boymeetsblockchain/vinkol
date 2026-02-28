@@ -113,7 +113,7 @@ export const Hero = () => {
               </Button>
 
               {showDeliveryDropdown && (
-                <div className="absolute right-0 top-10 w-56 rounded-lg border bg-white overflow-hidden shadow-lg z-50">
+                <div className="absolute -right-20 top-10 w-56 rounded-lg border bg-white overflow-hidden shadow-lg z-50">
                   <Link
                     href="/book-a-delivery"
                     className="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-100"
