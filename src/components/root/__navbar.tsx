@@ -11,10 +11,6 @@ import { cn } from "@/lib/utils"; // Assuming you have this utility from your pr
 
 const navbarArray = [
   {
-    name: "Home",
-    path: "/",
-  },
-  {
     name: "About",
     path: "/about",
   },
@@ -100,7 +96,7 @@ export const Navbar: React.FC<{ shop?: boolean }> = ({ shop }) => {
           </Button>
 
           {showDeliveryDropdown && (
-            <div className="absolute right-0 mt-2 w-56 rounded-lg border bg-white shadow-lg z-50">
+            <div className="absolute right-0 top-10 w-56 rounded-lg border bg-white overflow-hidden shadow-lg z-50">
               <Link
                 href="/book-a-delivery"
                 className="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-100"

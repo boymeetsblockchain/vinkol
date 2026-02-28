@@ -238,6 +238,16 @@ export const getBulkQuote = async (data: any) => {
     handleApiError(error, "Get Bulk Quote Failed");
   }
 };
+
+export const getMultiOrderQuote = async (data: any) => {
+  try {
+    const response = await axiosInstance.post("orders/multi-order-quote", data);
+    return response.data;
+  } catch (error) {
+    handleApiError(error, "Get Multi-Order Quote Failed");
+  }
+};
+
 export const createBulkOrder = async (payload: { quoteId: string }) => {
   try {
     const response = await axiosInstance.post(
@@ -247,5 +257,17 @@ export const createBulkOrder = async (payload: { quoteId: string }) => {
     return response.data;
   } catch (error) {
     handleApiError(error, "Create Bulk Order Failed");
+  }
+};
+
+export const createMultiOrder = async (payload: { quoteId: string }) => {
+  try {
+    const response = await axiosInstance.post(
+      "orders/create-multi-order",
+      payload,
+    );
+    return response.data;
+  } catch (error) {
+    handleApiError(error, "Create Multi-Order Failed");
   }
 };

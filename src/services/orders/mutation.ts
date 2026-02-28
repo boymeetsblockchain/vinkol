@@ -8,7 +8,9 @@ import {
   getQuote,
   getShoppingDeliveryFee,
   getBulkQuote,
+  getMultiOrderQuote,
   createBulkOrder,
+  createMultiOrder,
 } from "./api";
 import * as z from "zod";
 import {
@@ -65,6 +67,26 @@ export function useGetBulkQuoteMutation(options?: MutationOptions<any, Error>) {
   return { mutate, data, error, isPending, isSuccess, isError };
 }
 
+export function useGetMultiOrderQuoteMutation(
+  options?: MutationOptions<any, Error>,
+) {
+  const { mutate, data, error, isPending, isSuccess, isError } = useMutation({
+    mutationFn: async (payload: any) => {
+      return await getMultiOrderQuote(payload);
+    },
+    onSuccess: (responseData) => {
+      console.log("Get Multi-Order Quote successful:", responseData);
+      options?.onSuccess?.(responseData);
+    },
+    onError: (errorData: Error) => {
+      console.error("Get Multi-Order Quote failed:", errorData.message);
+      options?.onError?.(errorData);
+    },
+  });
+
+  return { mutate, data, error, isPending, isSuccess, isError };
+}
+
 export function useCreateBulkOrderMutation(
   options?: MutationOptions<any, Error>,
 ) {
@@ -84,6 +106,27 @@ export function useCreateBulkOrderMutation(
 
   return { mutate, data, error, isPending, isSuccess, isError };
 }
+
+export function useCreateMultiOrderMutation(
+  options?: MutationOptions<any, Error>,
+) {
+  const { mutate, data, error, isPending, isSuccess, isError } = useMutation({
+    mutationFn: async (payload: { quoteId: string; callbackUrl?: string }) => {
+      return await createMultiOrder(payload);
+    },
+    onSuccess: (responseData) => {
+      console.log("Create Multi-Order successful:", responseData);
+      options?.onSuccess?.(responseData);
+    },
+    onError: (errorData: Error) => {
+      console.error("Create Multi-Order failed:", errorData.message);
+      options?.onError?.(errorData);
+    },
+  });
+
+  return { mutate, data, error, isPending, isSuccess, isError };
+}
+
 export function useCreateGuestOrderMutation(
   options?: MutationOptions<any, Error>,
 ) {

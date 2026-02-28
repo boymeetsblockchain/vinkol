@@ -101,13 +101,15 @@ export const BulkQuoteSummary = ({ quote, onEdit }: Props) => {
         <div className="space-y-6">
           {quote.route.map((leg, index) => (
             <div key={index} className="space-y-3">
-              <div className="flex items-start gap-3">
-                <MapPin className="text-gray-500 mt-1" size={18} />
-                <div className="text-sm">
-                  <p className="font-medium">Pickup</p>
-                  <p className="text-gray-600">{leg.from.location.address}</p>
+              {index == 0 && (
+                <div className="flex items-start gap-3">
+                  <MapPin className="text-gray-500 mt-1" size={18} />
+                  <div className="text-sm">
+                    <p className="font-medium">Pickup</p>
+                    <p className="text-gray-600">{leg.from.location.address}</p>
+                  </div>
                 </div>
-              </div>
+              )}
 
               <div className="flex items-center gap-3 ml-6 text-gray-400">
                 <ArrowRight size={16} />
@@ -117,7 +119,7 @@ export const BulkQuoteSummary = ({ quote, onEdit }: Props) => {
               <div className="flex items-start gap-3">
                 <MapPin className="text-gray-500 mt-1" size={18} />
                 <div className="text-sm">
-                  <p className="font-medium">Drop-off</p>
+                  <p className="font-medium">Drop-off {index + 1}</p>
                   <p className="text-gray-600">{leg.to.location.address}</p>
                 </div>
               </div>
