@@ -104,7 +104,7 @@ export const Hero = () => {
               <Link href="/book-a-delivery">Book a Delivery</Link>
             </Button> */}
             <div
-              className="hidden md:relative md:block"
+              className="relative block"
               onMouseEnter={() => setShowDeliveryDropdown(true)}
               onMouseLeave={() => setShowDeliveryDropdown(false)}
             >
