@@ -63,12 +63,10 @@ export const MultiQuoteSummary = ({ quote, onEdit }: Props) => {
           <SummaryItem
             label="Total Amount"
             value={`₦${quote.totalAmount.toLocaleString()}`}
-            icon={<DollarSign size={24} />}
           />
           <SummaryItem
             label="Total Orders"
             value={`${quote.totalOrders} Orders`}
-            icon={<Package size={24} />}
           />
         </div>
       </div>

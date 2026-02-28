@@ -1,11 +1,5 @@
 import { Clock, Mail, MapPin, Phone } from "lucide-react";
-import {
-  FaFacebook,
-  FaInstagram,
-  FaLinkedin,
-  FaWhatsapp,
-  FaYoutube,
-} from "react-icons/fa6";
+import { FaInstagram, FaLinkedin, FaYoutube } from "react-icons/fa6";
 import { RiTwitterXLine } from "react-icons/ri";
 
 const infoArray = [
@@ -32,7 +26,7 @@ const infoArray = [
     name: "Email",
     desc: "info@vinkol.com",
     subdesc: "info@vinkolventures.onmicrosoft.com",
-    extra:"vinkollogistics@gmail.com",
+    extra: "vinkollogistics@gmail.com",
     icon: Mail,
     iconcolor: "#60D669",
   },
@@ -89,7 +83,7 @@ export const Socials = () => {
             <p className="text-gray-600  text-xs text-left ml-8 ">
               {item.subdesc}
             </p>
-               <p className="text-gray-600  text-xs text-left ml-8 ">
+            <p className="text-gray-600  text-xs text-left ml-8 ">
               {item.extra}
             </p>
           </div>
@@ -115,14 +109,11 @@ export const Socials = () => {
             href="https://www.instagram.com/vinkollogistics?igsh=cHFveTlnY2Fuc3Mw&utm_source=qr"
             target="_blank"
           >
-            <a href="https://www.instagram.com/vinkollogistics?igsh=cHFveTlnY2Fuc3Mw&utm_source=qr">
-              {" "}
-              <FaInstagram
-                color="#0E74D8"
-                size={20}
-                className="cursor-pointer hover:opacity-75 transition-opacity duration-200"
-              />
-            </a>
+            <FaInstagram
+              color="#0E74D8"
+              size={20}
+              className="cursor-pointer hover:opacity-75 transition-opacity duration-200"
+            />
           </a>
           <a
             href="https://youtube.com/@vinkollogistics?si=XaJO73rzoDq8Z1Sk"
