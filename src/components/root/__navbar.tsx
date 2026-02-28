@@ -87,7 +87,7 @@ export const Navbar: React.FC<{ shop?: boolean }> = ({ shop }) => {
 
         {/* Desktop Button */}
         <div
-          className="hidden md:relative md:block"
+          className="relative block"
           onMouseEnter={() => setShowDeliveryDropdown(true)}
           onMouseLeave={() => setShowDeliveryDropdown(false)}
         >
