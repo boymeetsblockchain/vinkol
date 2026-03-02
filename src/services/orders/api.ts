@@ -27,12 +27,12 @@ const handleApiError = (error: any, defaultMessage: string): never => {
   } else if (error.request) {
     // The request was made but no response was received.
     throw new Error(
-      "Network Error: No response received from the server. Please check your internet connection and try again."
+      "Network Error: No response received from the server. Please check your internet connection and try again.",
     );
   } else {
     // Something happened in setting up the request that triggered an Error.
     throw new Error(
-      `An unexpected error occurred: ${error.message || defaultMessage}`
+      `An unexpected error occurred: ${error.message || defaultMessage}`,
     );
   }
 };
@@ -47,12 +47,12 @@ export const getQuote = async (data: z.infer<typeof getQuoteSchema>) => {
 };
 
 export const createGuestOrder = async (
-  data: z.infer<typeof orderDataSchema>
+  data: z.infer<typeof orderDataSchema>,
 ) => {
   try {
     const response = await axiosInstance.post(
       "/orders/create-guest-order",
-      data
+      data,
     );
     return response.data;
   } catch (error) {
@@ -61,12 +61,12 @@ export const createGuestOrder = async (
 };
 
 export const createGuestOrderWithPaystack = async (
-  data: z.infer<typeof orderDataSchema>
+  data: z.infer<typeof orderDataSchema>,
 ) => {
   try {
     const response = await axiosInstance.post(
       "/orders/create-guest-order",
-      data
+      data,
     );
     return response.data;
   } catch (error) {
@@ -96,7 +96,7 @@ export const getAvailableOrders = async (params: GetOrdersParams = {}) => {
       if (value) query.append(key, value);
     });
     const response = await axiosInstance.get(
-      `/orders/available-orders?${query.toString()}`
+      `/orders/available-orders?${query.toString()}`,
     );
     return response.data;
   } catch (error) {
@@ -126,7 +126,7 @@ export const getStoreOrders = async (params?: {
     }
 
     const response = await axiosInstance.get(
-      `/stores/orders?${queryParams.toString()}`
+      `/stores/orders?${queryParams.toString()}`,
     );
     return response.data;
   } catch (error) {
@@ -138,7 +138,7 @@ export const getStoreOrders = async (params?: {
 export const trackOrders = async (trackingId: string) => {
   try {
     const response = await axiosInstance.get(
-      `/orders/track-order/${trackingId}`
+      `/orders/track-order/${trackingId}`,
     );
     console.log(response.data);
     return response.data;
@@ -180,12 +180,12 @@ export const confirmOrder = async (id: string): Promise<any> => {
 
 export const changeOrderStatus = async (
   id: string,
-  data: z.infer<typeof changeOrderStatusSchema>
+  data: z.infer<typeof changeOrderStatusSchema>,
 ) => {
   try {
     const response = await axiosInstance.patch(
       `/orders/${id}/change-status`,
-      data
+      data,
     );
     return response.data;
   } catch (error) {
@@ -205,12 +205,12 @@ export const getRiderOrders = async () => {
 };
 
 export const getShoppingDeliveryFee = async (
-  data: z.infer<typeof getShoppingDeliveryFeeSchema>
+  data: z.infer<typeof getShoppingDeliveryFeeSchema>,
 ) => {
   try {
     const response = await axiosInstance.post(
       "orders/shopping-delivery-fee",
-      data
+      data,
     );
     return response.data;
   } catch (error) {
@@ -220,7 +220,7 @@ export const getShoppingDeliveryFee = async (
 };
 
 export const createStoreOrder = async (
-  data: z.infer<typeof createStoreOrderSchema>
+  data: z.infer<typeof createStoreOrderSchema>,
 ) => {
   try {
     const response = await axiosInstance.post("orders/guest-store-order", data);
@@ -228,5 +228,46 @@ export const createStoreOrder = async (
   } catch (error) {
     handleApiError(error, " Error Creating Order from Store");
     throw error;
+  }
+};
+export const getBulkQuote = async (data: any) => {
+  try {
+    const response = await axiosInstance.post("orders/get-bulk-quote", data);
+    return response.data;
+  } catch (error) {
+    handleApiError(error, "Get Bulk Quote Failed");
+  }
+};
+
+export const getMultiOrderQuote = async (data: any) => {
+  try {
+    const response = await axiosInstance.post("orders/multi-order-quote", data);
+    return response.data;
+  } catch (error) {
+    handleApiError(error, "Get Multi-Order Quote Failed");
+  }
+};
+
+export const createBulkOrder = async (payload: { quoteId: string }) => {
+  try {
+    const response = await axiosInstance.post(
+      "orders/create-bulk-order",
+      payload,
+    );
+    return response.data;
+  } catch (error) {
+    handleApiError(error, "Create Bulk Order Failed");
+  }
+};
+
+export const createMultiOrder = async (payload: { quoteId: string }) => {
+  try {
+    const response = await axiosInstance.post(
+      "orders/create-multi-order",
+      payload,
+    );
+    return response.data;
+  } catch (error) {
+    handleApiError(error, "Create Multi-Order Failed");
   }
 };

@@ -29,7 +29,7 @@ const getStateFromAddressComponents = (addressComponents: any[]) => {
   if (!addressComponents) return null;
 
   const stateComponent = addressComponents.find((component) =>
-    component.types.includes("administrative_area_level_1")
+    component.types.includes("administrative_area_level_1"),
   );
 
   return stateComponent ? stateComponent.long_name.toLowerCase() : null;
@@ -129,10 +129,10 @@ export const BookADeliveryForm = () => {
         onError: (error: any) => {
           console.error("Get Quote failed:", error);
           toast.error(
-            error.message || "Failed to get quote. Please try again."
+            error.message || "Failed to get quote. Please try again.",
           );
         },
-      }
+      },
     );
   };
 
@@ -264,12 +264,12 @@ export const BookADeliveryForm = () => {
                       const lat = place.geometry?.location?.lat();
                       const lng = place.geometry?.location?.lng();
                       const state = getStateFromAddressComponents(
-                        place.address_components
+                        place.address_components,
                       );
 
                       form.setValue(
                         "pickup",
-                        place.formatted_address || place.name
+                        place.formatted_address || place.name,
                       );
                       form.setValue("pickupCoords", { lat, lng });
 
@@ -314,12 +314,12 @@ export const BookADeliveryForm = () => {
                       const lat = place.geometry?.location?.lat();
                       const lng = place.geometry?.location?.lng();
                       const state = getStateFromAddressComponents(
-                        place.address_components
+                        place.address_components,
                       );
 
                       form.setValue(
                         "dropoff",
-                        place.formatted_address || place.name
+                        place.formatted_address || place.name,
                       );
                       form.setValue("dropoffCoords", { lat, lng });
 

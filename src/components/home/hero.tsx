@@ -17,6 +17,8 @@ export const Hero = () => {
   const [enabled, setEnabled] = useState<boolean>(false); // Corrected typo
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false); // New state for modal
 
+  const [showDeliveryDropdown, setShowDeliveryDropdown] = useState(false);
+
   const { data, isPending, isSuccess } = useTrackOrders(trackingId, {
     enabled,
   });
@@ -98,9 +100,38 @@ export const Hero = () => {
           </div>
         ) : (
           <div className="mt-6 flex items-start sm:items-center gap-4">
-            <Button size="lg">
+            {/* <Button size="lg">
               <Link href="/book-a-delivery">Book a Delivery</Link>
-            </Button>
+            </Button> */}
+            <div
+              className="relative block"
+              onMouseEnter={() => setShowDeliveryDropdown(true)}
+              onMouseLeave={() => setShowDeliveryDropdown(false)}
+            >
+              <Button size="lg" className="flex items-center gap-2">
+                Book a Delivery
+              </Button>
+
+              {showDeliveryDropdown && (
+                <div className="absolute -right-20 top-10 w-56 rounded-lg border bg-white overflow-hidden shadow-lg z-50">
+                  <Link
+                    href="/book-a-delivery"
+                    className="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-100"
+                    onClick={() => setShowDeliveryDropdown(false)}
+                  >
+                    Book a Delivery
+                  </Link>
+
+                  <Link
+                    href="/bulk-delivery"
+                    className="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-100"
+                    onClick={() => setShowDeliveryDropdown(false)}
+                  >
+                    Bulk Delivery
+                  </Link>
+                </div>
+              )}
+            </div>
             <Button
               size="lg"
               variant="secondary"

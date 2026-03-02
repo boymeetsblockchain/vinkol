@@ -7,6 +7,10 @@ import {
   createStoreOrder,
   getQuote,
   getShoppingDeliveryFee,
+  getBulkQuote,
+  getMultiOrderQuote,
+  createBulkOrder,
+  createMultiOrder,
 } from "./api";
 import * as z from "zod";
 import {
@@ -44,8 +48,87 @@ export function useGetQuoteMutation(options?: MutationOptions<any, Error>) {
 
   return { mutate, data, error, isPending, isSuccess, isError };
 }
+
+export function useGetBulkQuoteMutation(options?: MutationOptions<any, Error>) {
+  const { mutate, data, error, isPending, isSuccess, isError } = useMutation({
+    mutationFn: async (payload: any) => {
+      return await getBulkQuote(payload);
+    },
+    onSuccess: (responseData) => {
+      console.log("Get Bulk Quote successful:", responseData);
+      options?.onSuccess?.(responseData);
+    },
+    onError: (errorData: Error) => {
+      console.error("Get Bulk Quote failed:", errorData.message);
+      options?.onError?.(errorData);
+    },
+  });
+
+  return { mutate, data, error, isPending, isSuccess, isError };
+}
+
+export function useGetMultiOrderQuoteMutation(
+  options?: MutationOptions<any, Error>,
+) {
+  const { mutate, data, error, isPending, isSuccess, isError } = useMutation({
+    mutationFn: async (payload: any) => {
+      return await getMultiOrderQuote(payload);
+    },
+    onSuccess: (responseData) => {
+      console.log("Get Multi-Order Quote successful:", responseData);
+      options?.onSuccess?.(responseData);
+    },
+    onError: (errorData: Error) => {
+      console.error("Get Multi-Order Quote failed:", errorData.message);
+      options?.onError?.(errorData);
+    },
+  });
+
+  return { mutate, data, error, isPending, isSuccess, isError };
+}
+
+export function useCreateBulkOrderMutation(
+  options?: MutationOptions<any, Error>,
+) {
+  const { mutate, data, error, isPending, isSuccess, isError } = useMutation({
+    mutationFn: async (payload: { quoteId: string; callbackUrl?: string }) => {
+      return await createBulkOrder(payload);
+    },
+    onSuccess: (responseData) => {
+      console.log("Create Bulk Order successful:", responseData);
+      options?.onSuccess?.(responseData);
+    },
+    onError: (errorData: Error) => {
+      console.error("Create Bulk Order failed:", errorData.message);
+      options?.onError?.(errorData);
+    },
+  });
+
+  return { mutate, data, error, isPending, isSuccess, isError };
+}
+
+export function useCreateMultiOrderMutation(
+  options?: MutationOptions<any, Error>,
+) {
+  const { mutate, data, error, isPending, isSuccess, isError } = useMutation({
+    mutationFn: async (payload: { quoteId: string; callbackUrl?: string }) => {
+      return await createMultiOrder(payload);
+    },
+    onSuccess: (responseData) => {
+      console.log("Create Multi-Order successful:", responseData);
+      options?.onSuccess?.(responseData);
+    },
+    onError: (errorData: Error) => {
+      console.error("Create Multi-Order failed:", errorData.message);
+      options?.onError?.(errorData);
+    },
+  });
+
+  return { mutate, data, error, isPending, isSuccess, isError };
+}
+
 export function useCreateGuestOrderMutation(
-  options?: MutationOptions<any, Error>
+  options?: MutationOptions<any, Error>,
 ) {
   const { mutate, data, error, isPending, isSuccess, isError } = useMutation({
     mutationFn: async (payload: z.infer<typeof orderDataSchema>) => {
@@ -114,7 +197,7 @@ export function useChangeOrderStatus(options?: MutationOptions<any, Error>) {
       mutationFn: async (mutationPayload): Promise<any> => {
         return await changeOrderStatus(
           mutationPayload.id,
-          mutationPayload.data
+          mutationPayload.data,
         );
       },
       onSuccess: (responseData) => {
@@ -130,7 +213,7 @@ export function useChangeOrderStatus(options?: MutationOptions<any, Error>) {
 }
 
 export function useGetShoppingDeliveryFee(
-  options?: MutationOptions<any, Error>
+  options?: MutationOptions<any, Error>,
 ) {
   const { mutate, data, error, isPending, isSuccess, isError } = useMutation({
     mutationFn: async (data: z.infer<typeof getShoppingDeliveryFeeSchema>) => {
