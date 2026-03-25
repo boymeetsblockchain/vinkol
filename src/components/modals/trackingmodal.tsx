@@ -69,9 +69,9 @@ export const TrackingModal = ({
           <p className="text-gray-400 capitalize">
             Package Number: <span className="text-black">{trackingId}</span>
           </p>
-          <p className="text-gray-400">
+          {/* <p className="text-gray-400">
             Owner: <span className="text-black">{userName}</span>
-          </p>
+          </p> */}
         </div>
 
         <div className="grid grid-cols-2 gap-10">
@@ -140,12 +140,12 @@ export const TrackingModal = ({
         </div>
 
         <div className="space-y-2">
-          <p className="text-gray-400 capitalize">
+          {/* <p className="text-gray-400 capitalize">
             Rider's Name: <span className="text-black">{riderName}</span>
           </p>
           <p className="text-gray-400 capitalize">
             Rider's Number: <span className="text-black">{riderNumber}</span>
-          </p>
+          </p> */}
           <p className="text-gray-400 capitalize">
             Vehicle: <span className="text-black">{vehicleRequest}</span>
           </p>
