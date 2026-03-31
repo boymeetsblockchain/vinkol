@@ -35,5 +35,5 @@ export const nigerianStates = [
   "Taraba",
   "Yobe",
   "Zamfara",
-  "Federal Capital Territory",
+  "FCT",
 ];
