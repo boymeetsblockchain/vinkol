@@ -7,8 +7,11 @@ export const waitlistSchema = z
     phone: z.string().min(11, "Phone number must be at least 11 characters"),
     stateOfResidence: z.string().min(1, "State of residence is required"),
     dateOfBirth: z.string().min(1, "Date of birth is required"),
-    gender: z.enum(["male", "female", "other"], {
+    gender: z.enum(["male", "female"], {
       errorMap: () => ({ message: "Please select a valid gender" }),
+    }),
+    vehicleType: z.enum(["Motorcycle", "Bicycle"], {
+      errorMap: () => ({ message: "Please select a valid vehicle type" }),
     }),
     isStudent: z.boolean(),
     university: z.string().optional(),
