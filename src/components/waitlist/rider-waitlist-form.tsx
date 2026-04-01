@@ -30,6 +30,7 @@ export const RiderWaitlistForm = () => {
       stateOfResidence: "",
       dateOfBirth: "",
       gender: "male",
+      vehicleType: "Motorcycle",
       isStudent: false,
       university: "",
       department: "",
@@ -221,6 +222,26 @@ export const RiderWaitlistForm = () => {
                   >
                     <option value="male">Male</option>
                     <option value="female">Female</option>
+                  </select>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          {/* Vehicle */}
+          <FormField
+            control={form.control}
+            name="vehicleType"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Vehicle</FormLabel>
+                <FormControl>
+                  <select
+                    {...field}
+                    className="w-full border border-blue-primary text-blue-primary py-4 px-3 rounded-md appearance-none bg-white pr-8"
+                  >
+                    <option value="Motorcycle">Motorcycle</option>
+                    <option value="Bicycle">Bicycle</option>
                   </select>
                 </FormControl>
                 <FormMessage />
