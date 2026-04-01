@@ -6,6 +6,7 @@ import { IoLogoApple } from "react-icons/io";
 import { Button } from "../button";
 import { AppStoreCard } from "../shared/appstore";
 import { RiderAuthModal } from "../modals/rider-auth-modal";
+import Link from "next/link";
 export const Hero = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
@@ -41,13 +42,18 @@ export const Hero = () => {
               <Button size="lg" onClick={() => openModal("register")}>
                 Become a Rider
               </Button>
-              <Button
+              {/* <Button
                 size="lg"
                 variant="secondary"
                 onClick={() => openModal("login")}
               >
                 Login to Rider Forum
-              </Button>
+              </Button> */}
+              <Link href={"/waitlist"}>
+                <Button size="lg" variant="secondary">
+                  Join the Waitlist
+                </Button>
+              </Link>
             </div>
           </div>
 
