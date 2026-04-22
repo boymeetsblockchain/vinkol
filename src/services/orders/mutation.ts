@@ -91,7 +91,7 @@ export function useCreateBulkOrderMutation(
   options?: MutationOptions<any, Error>,
 ) {
   const { mutate, data, error, isPending, isSuccess, isError } = useMutation({
-    mutationFn: async (payload: { quoteId: string; callbackUrl?: string }) => {
+    mutationFn: async (payload: { quoteId: string; callbackUrl?: string; paymentSource: string }) => {
       return await createBulkOrder(payload);
     },
     onSuccess: (responseData) => {
@@ -111,7 +111,7 @@ export function useCreateMultiOrderMutation(
   options?: MutationOptions<any, Error>,
 ) {
   const { mutate, data, error, isPending, isSuccess, isError } = useMutation({
-    mutationFn: async (payload: { quoteId: string; callbackUrl?: string }) => {
+    mutationFn: async (payload: { quoteId: string; callbackUrl?: string; paymentSource: string }) => {
       return await createMultiOrder(payload);
     },
     onSuccess: (responseData) => {
