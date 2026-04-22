@@ -1,25 +1,18 @@
 "use client";
-import dynamic from "next/dynamic"; // Import dynamic from next/dynamic
-
-import { useSearchParams } from "next/navigation";
+import { useState } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useCreateGuestOrderMutation } from "@/services/orders/mutation";
 import { CheckCircle2, Loader2 } from "lucide-react";
-
-const DynamicPaystackButton = dynamic(
-  () => import("react-paystack").then((mod) => mod.PaystackButton),
-  {
-    ssr: false,
-    loading: () => (
-      <button className="bg-gray-400 text-white font-bold py-3 px-6 rounded-md cursor-not-allowed">
-        Loading Payment...
-      </button>
-    ),
-  }
-);
+import { Button } from "@/components/ui/button";
 
 export const QuotePage = () => {
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const [paymentSource, setPaymentSource] = useState<"Paystack" | "Globus">(
+    "Paystack",
+  );
+
   const state = searchParams.get("state");
   const pickupLocation = searchParams.get("pickupLocation");
   const dropoffLocation = searchParams.get("dropoffLocation");
@@ -34,15 +27,26 @@ export const QuotePage = () => {
   const phone = searchParams.get("phonenumber");
   const firstname = searchParams.get("firstname");
   const lastname = searchParams.get("lastname");
-  const key = process.env.NEXT_PUBLIC_PAYSTACK_KEY as string;
 
-  const { mutate, isPending, isSuccess } = useCreateGuestOrderMutation();
+  const { mutate, isPending, isSuccess } = useCreateGuestOrderMutation({
+    onSuccess: (res) => {
+      const url = res.data?.authorization_url;
+      if (url) {
+        router.push(url);
+      } else {
+        toast.success("Order created successfully.");
+        setTimeout(() => {
+          router.push("/");
+        }, 3000);
+      }
+    },
+    onError: (err) => {
+      console.error("Create order error", err);
+      toast.error(err.message);
+    },
+  });
 
-  const handlePaymentSuccess = (response: any) => {
-    console.log("Paystack Success Response:", response);
-    console.log(date);
-    const transactionRef = response.reference;
-
+  const handleProceedToPayment = () => {
     // Check if all required data from searchParams is available before mutating
     if (
       !orderType ||
@@ -52,7 +56,7 @@ export const QuotePage = () => {
       !dropoffLocation ||
       !date ||
       !amount ||
-      !deliveryType || // Added deliveryType
+      !deliveryType ||
       !vehicleRequest ||
       !email ||
       !firstname ||
@@ -78,42 +82,29 @@ export const QuotePage = () => {
       return;
     }
 
-    // Trigger the mutation to create the order in your backend
-    mutate(
-      {
-        paystackReference: transactionRef,
-        orderType: "Delivery",
-        state: state,
-        date: date,
-        time: time,
-        pickupLocation: pickupLocation,
-        dropoffLocation: dropoffLocation,
-        deliveryFee: Number(amount), // Convert amount to a number
-        deliveryType: deliveryType as "regular" | "express",
-        vehicleRequest: vehicleRequest as "truck" | "car" | "bike",
-        guest: {
-          email: email,
-          firstname: firstname,
-          lastname: lastname,
-          phone: phone,
-        },
-        note: note || "",
-      },
-      {
-        onSuccess: () => {
-          toast.success("Order created successfully.");
-          setTimeout(() => {
-            window.location.href = "/";
-          }, 3000);
-        },
-      }
-    );
-  };
+    const url = new URL(`/order/success`, window.location.origin).toString();
 
-  // Handle payment window close
-  const handlePaymentClose = () => {
-    toast.info("Payment cancelled or window closed.");
-    console.log("Payment window closed.");
+    // Trigger the mutation to create the order in your backend
+    mutate({
+      orderType: "Delivery",
+      state: state,
+      date: date,
+      time: time,
+      pickupLocation: pickupLocation,
+      dropoffLocation: dropoffLocation,
+      deliveryFee: Number(amount),
+      deliveryType: deliveryType as "regular" | "express",
+      vehicleRequest: vehicleRequest as "truck" | "car" | "bike",
+      paymentSource: paymentSource,
+      callbackUrl: url,
+      guest: {
+        email: email,
+        firstname: firstname,
+        lastname: lastname,
+        phone: phone,
+      },
+      note: note || "",
+    });
   };
 
   return (
@@ -135,8 +126,7 @@ export const QuotePage = () => {
               strokeWidth={1}
               className="text-green-600"
             />
-            <p>Order created successfully...</p>
-            <p>Chcek your email for more details</p>
+            <p>Please wait...</p>
           </div>
         ) : (
           <>
@@ -188,15 +178,43 @@ export const QuotePage = () => {
               </p>
             </div>
 
+            {/* Payment Source Selection */}
+            <div className="mt-8 rounded-lg border bg-gray-50 p-6">
+              <h3 className="text-lg font-semibold mb-4">Payment Source</h3>
+              <div className="space-y-3">
+                <label className="flex items-center cursor-pointer">
+                  <input
+                    type="radio"
+                    name="paymentSource"
+                    value="Paystack"
+                    checked={paymentSource === "Paystack"}
+                    onChange={() => setPaymentSource("Paystack")}
+                    className="mr-3 w-4 h-4"
+                  />
+                  <span className="font-medium">Paystack</span>
+                </label>
+                <label className="flex items-center cursor-pointer">
+                  <input
+                    type="radio"
+                    name="paymentSource"
+                    value="Globus"
+                    checked={paymentSource === "Globus"}
+                    onChange={() => setPaymentSource("Globus")}
+                    className="mr-3 w-4 h-4"
+                  />
+                  <span className="font-medium">Globus</span>
+                </label>
+              </div>
+            </div>
+
             <div className="mt-8 text-center">
-              <DynamicPaystackButton
-                className="bg-blue-600 hover:bg-blue-700 cursor-pointer text-white font-bold py-3 px-6 rounded-md transition-colors duration-200"
-                text="Proceed To Payment"
-                email={email || ""}
-                amount={amount ? Number(amount) * 100 : 0}
-                publicKey={key}
-                onSuccess={handlePaymentSuccess}
-              />
+              <Button
+                onClick={handleProceedToPayment}
+                disabled={isPending}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-md transition-colors duration-200 text-lg"
+              >
+                {isPending ? "Processing..." : "Proceed To Payment"}
+              </Button>
             </div>
 
             <div className="md:col-span-2">

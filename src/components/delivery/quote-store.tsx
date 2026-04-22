@@ -1,26 +1,11 @@
 "use client";
-import dynamic from "next/dynamic"; // Import dynamic from next/dynamic
-
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
-import {
-  useCreateGuestOrderMutation,
-  useCreateOrderFromStore,
-} from "@/services/orders/mutation";
+import { useCreateOrderFromStore } from "@/services/orders/mutation";
 import { getCartFromStorage, clearCart } from "@/config/storage";
-import { useState, useEffect } from "react"; // Import useEffect
-
-const DynamicPaystackButton = dynamic(
-  () => import("react-paystack").then((mod) => mod.PaystackButton),
-  {
-    ssr: false,
-    loading: () => (
-      <button className="bg-gray-400 text-white font-bold py-3 px-6 rounded-md cursor-not-allowed">
-        Loading Payment...
-      </button>
-    ),
-  }
-);
+import { useState, useEffect } from "react";
+import { CheckCircle2, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface CartItem {
   id: string;
@@ -33,11 +18,15 @@ interface CartItem {
 
 export const QuotePage = () => {
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const [paymentSource, setPaymentSource] = useState<"Paystack" | "Globus">(
+    "Paystack",
+  );
   const state = searchParams.get("state");
   const pickupLocation = searchParams.get("pickupLocation");
   const dropoffLocation = searchParams.get("dropoffLocation");
   const [cartItems, setCartItems] = useState<CartItem[]>(() =>
-    getCartFromStorage()
+    getCartFromStorage(),
   );
 
   // Initialize totalAmount and deliveryFee with default numerical values
@@ -63,18 +52,31 @@ export const QuotePage = () => {
   const firstname = searchParams.get("firstname");
   const lastname = searchParams.get("lastname");
   const store = searchParams.get("store");
-  const key = process.env.NEXT_PUBLIC_PAYSTACK_KEY as string;
 
-  const { mutate, isPending, isSuccess } = useCreateOrderFromStore();
+  const { mutate, isPending, isSuccess } = useCreateOrderFromStore({
+    onSuccess: (res) => {
+      const url = res.data?.authorization_url;
+      if (url) {
+        router.push(url);
+      } else {
+        toast.success("Order created successfully.");
+        clearCart();
+        setTimeout(() => {
+          router.push("/");
+        }, 3000);
+      }
+    },
+    onError: (err) => {
+      console.error("Create order error", err);
+      toast.error(err.message);
+    },
+  });
 
-  const handlePaymentSuccess = (response: any) => {
-    // console.log("Paystack Success Response:", response);
-
-    const transactionRef = response.reference;
-
+  const handleProceedToPayment = () => {
+    // Check if all required data from searchParams is available before mutating
     if (
       !state ||
-      !store || // Assuming 'store' is a variable you're getting from somewhere
+      !store ||
       !dropoffLocation ||
       calculatedDeliveryFee === undefined ||
       !email ||
@@ -85,124 +87,160 @@ export const QuotePage = () => {
       toast.error("Missing order details. Please go back and try again.");
       console.error("Missing data for order creation:", {
         state,
-        pickupLocation, // Make sure pickupLocation is available if needed for the backend
+        pickupLocation,
         dropoffLocation,
         email,
         firstname,
         lastname,
         phone,
         calculatedDeliveryFee,
-        store, // Include store in your console.error for debugging
+        store,
       });
       return;
     }
 
-    // --- NEW CODE START ---
     // Transform cartItems into the desired products format for the backend
     const formattedProducts = cartItems.map((item) => ({
-      product: item.id, // Assuming item.id is the product ID expected by the backend
+      product: item.id,
       quantity: item.quantity,
     }));
-    // --- NEW CODE END ---
 
-    mutate(
-      {
-        paystackReference: transactionRef,
-        state,
-        guest: {
-          firstname,
-          lastname,
-          email,
-          phone,
-        },
-        amount: calculatedTotalAmount,
-        store: store,
-        products: formattedProducts,
-        deliveryFee: calculatedDeliveryFee,
-        dropoffLocation: dropoffLocation,
-        deliveryType: "regular",
-        orderType: "Shopping",
+    const url = new URL(`/order/success`, window.location.origin).toString();
+
+    mutate({
+      orderType: "Shopping",
+      state,
+      guest: {
+        firstname,
+        lastname,
+        email,
+        phone,
       },
-      {
-        onSuccess: () => {
-          toast.success("Order placed successfully!");
-          clearCart();
-          window.location.href = "/";
-        },
-        onError: (error) => {
-          console.error("Order creation failed:", error);
-          toast.error("Failed to create order. Please try again.");
-        },
-      }
-    );
+      amount: calculatedTotalAmount,
+      store: store,
+      products: formattedProducts,
+      deliveryFee: calculatedDeliveryFee,
+      dropoffLocation: dropoffLocation,
+      deliveryType: "regular",
+      paymentSource: paymentSource,
+      callbackUrl: url,
+    });
   };
 
   const serviceFee = Math.round(
-    0.025 * (calculatedTotalAmount + calculatedDeliveryFee)
+    0.025 * (calculatedTotalAmount + calculatedDeliveryFee),
   );
-  // Paystack amount must be in kobo (smallest currency unit), so multiply by 100
-  const amountInKobo =
-    (calculatedTotalAmount + calculatedDeliveryFee + serviceFee) * 100;
 
   return (
     <div className="min-h-screen bg-gray-50 py-10 px-4 sm:px-6 lg:px-8">
       <div className="max-w-2xl mx-auto bg-white rounded-lg p-8 border border-gray-100">
-        <h1 className="text-4xl font-extrabold text-gray-900 mb-2 text-left">
-          Quote
-        </h1>
-        <p>Here is a quote on what you filled</p>
+        {isPending ? (
+          <div className="flex flex-col gap-4 items-center justify-center py-6">
+            <Loader2
+              size={96}
+              strokeWidth={1}
+              className="text-blue-primary animate-spin"
+            />
+            <p>Creating order...</p>
+          </div>
+        ) : isSuccess ? (
+          <div className="flex flex-col gap-4 items-center justify-center py-6">
+            <CheckCircle2
+              size={96}
+              strokeWidth={1}
+              className="text-green-600"
+            />
+            <p>Please wait...</p>
+          </div>
+        ) : (
+          <>
+            <h1 className="text-4xl font-extrabold text-gray-900 mb-2 text-left">
+              Quote
+            </h1>
+            <p>Here is a quote on what you filled</p>
 
-        <div className="space-y-4 text-gray-800">
-          <p className="text-lg font-semibold">
-            <span className="font-normal">State:</span> {state || "N/A"}
-          </p>
+            <div className="space-y-4 text-gray-800">
+              <p className="text-lg font-semibold">
+                <span className="font-normal">State:</span> {state || "N/A"}
+              </p>
 
-          <p className="text-lg font-semibold">
-            <span className="font-normal">Drop-off Location:</span>{" "}
-            {dropoffLocation || "N/A"}
-          </p>
-          <p className="text-lg font-semibold">
-            <span className="font-normal">Item Total:</span> ₦
-            {calculatedTotalAmount.toLocaleString()}
-          </p>
-          <p className="text-lg font-semibold">
-            <span className="font-normal">Delivery Fee:</span> ₦
-            {calculatedDeliveryFee.toLocaleString()}
-          </p>
-          <p className="text-lg font-semibold">
-            <span className="font-normal">Service Fee:</span> ₦
-            {serviceFee.toLocaleString()}
-          </p>
-          <p className="text-2xl font-bold ">
-            <span className="font-semibold">Grand Total:</span>{" "}
-            <span className="text-blue-primary text-2xl">
-              ₦
-              {(
-                calculatedTotalAmount +
-                calculatedDeliveryFee +
-                serviceFee
-              ).toLocaleString()}
-            </span>
-          </p>
-        </div>
+              <p className="text-lg font-semibold">
+                <span className="font-normal">Drop-off Location:</span>{" "}
+                {dropoffLocation || "N/A"}
+              </p>
+              <p className="text-lg font-semibold">
+                <span className="font-normal">Item Total:</span> ₦
+                {calculatedTotalAmount.toLocaleString()}
+              </p>
+              <p className="text-lg font-semibold">
+                <span className="font-normal">Delivery Fee:</span> ₦
+                {calculatedDeliveryFee.toLocaleString()}
+              </p>
+              <p className="text-lg font-semibold">
+                <span className="font-normal">Service Fee:</span> ₦
+                {serviceFee.toLocaleString()}
+              </p>
+              <p className="text-2xl font-bold ">
+                <span className="font-semibold">Grand Total:</span>{" "}
+                <span className="text-blue-primary text-2xl">
+                  ₦
+                  {(
+                    calculatedTotalAmount +
+                    calculatedDeliveryFee +
+                    serviceFee
+                  ).toLocaleString()}
+                </span>
+              </p>
+            </div>
 
-        <div className="mt-8 text-center">
-          <DynamicPaystackButton
-            className="bg-blue-600 hover:bg-blue-700 cursor-pointer text-white font-bold py-3 px-6 rounded-md transition-colors duration-200"
-            text="Proceed To Payment"
-            email={email || ""}
-            amount={amountInKobo} // Pass the amount in kobo
-            publicKey={key}
-            onSuccess={handlePaymentSuccess}
-          />
-        </div>
+            {/* Payment Source Selection */}
+            <div className="mt-8 rounded-lg border bg-gray-50 p-6">
+              <h3 className="text-lg font-semibold mb-4">Payment Source</h3>
+              <div className="space-y-3">
+                <label className="flex items-center cursor-pointer">
+                  <input
+                    type="radio"
+                    name="paymentSource"
+                    value="Paystack"
+                    checked={paymentSource === "Paystack"}
+                    onChange={() => setPaymentSource("Paystack")}
+                    className="mr-3 w-4 h-4"
+                  />
+                  <span className="font-medium">Paystack</span>
+                </label>
+                <label className="flex items-center cursor-pointer">
+                  <input
+                    type="radio"
+                    name="paymentSource"
+                    value="Globus"
+                    checked={paymentSource === "Globus"}
+                    onChange={() => setPaymentSource("Globus")}
+                    className="mr-3 w-4 h-4"
+                  />
+                  <span className="font-medium">Globus</span>
+                </label>
+              </div>
+            </div>
 
-        <div className="md:col-span-2">
-          <p className="text-center my-2 text-red-600 text-sm font-medium">
-            NOTE: Vinkol will cover up to ₦50,000 of damage or stolen package.
-            Please specify in the note section if goods are fragile.
-          </p>
-        </div>
+            <div className="mt-8 text-center">
+              <Button
+                onClick={handleProceedToPayment}
+                disabled={isPending}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-md transition-colors duration-200 text-lg"
+              >
+                {isPending ? "Processing..." : "Proceed To Payment"}
+              </Button>
+            </div>
+
+            <div className="md:col-span-2">
+              <p className="text-center my-2 text-red-600 text-sm font-medium">
+                NOTE: Vinkol will cover up to ₦50,000 of damage or stolen
+                package. Please specify in the note section if goods are
+                fragile.
+              </p>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
