@@ -2,7 +2,7 @@
 const teamsArray = [
   {
     name: "Emmanuel Ediale",
-    position: "CEO & COO",
+    position: "Founder/CEO",
     img: "/assets/coo.jpg",
     info: `Emmanuel is an accomplished finance professional with over nine years of experience across diverse industries, including Banking, Insurance, Media, and Construction. He holds a master’s degree in International Business from the University of Sunderland, UK, a postgraduate diploma with honors in Business Management from Algonquin College, Canada, and a bachelor’s degree in Insurance. Emmanuel is also a Certified International Trade Professional (CITP) in Canada. In addition to his academic qualifications, he is an Associate of the Chartered Insurance Institute of Nigeria and a Chartered Financial Forecasting, Budgeting, and Modelling Professional (CFBM). He is also a Certified Management Consultant, among several other industry-recognized certifications. Leveraging his broad industry expertise and solid academic foundation, Emmanuel provides strategic financial insights and plays a key role in driving daily operational excellence.`,
   },
