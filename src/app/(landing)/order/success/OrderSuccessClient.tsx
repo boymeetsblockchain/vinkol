@@ -17,7 +17,7 @@ const OrderSuccessPage = () => {
 
   const { mutate: verify } = useVerifyPaymentMutation({
     onSuccess: (res) => {
-      console.log({ response: res });
+      // console.log({ response: res });
       if (res.success) {
         setStatus("success");
       } else {

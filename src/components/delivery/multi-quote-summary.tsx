@@ -5,6 +5,7 @@ import { Package, DollarSign } from "lucide-react";
 import { useCreateMultiOrderMutation } from "@/services/orders/mutation";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useState } from "react";
 
 interface IMultiQuoteData {
   guest: {
@@ -25,6 +26,9 @@ interface Props {
 
 export const MultiQuoteSummary = ({ quote, onEdit }: Props) => {
   const router = useRouter();
+  const [paymentSource, setPaymentSource] = useState<"Paystack" | "Globus">(
+    "Paystack",
+  );
   const { mutate: createOrder, isPending } = useCreateMultiOrderMutation({
     onSuccess: (res) => {
       // redirect to authorization url
@@ -44,6 +48,7 @@ export const MultiQuoteSummary = ({ quote, onEdit }: Props) => {
     createOrder({
       quoteId: quote.quote,
       callbackUrl: url,
+      paymentSource,
     });
   };
 
@@ -90,6 +95,35 @@ export const MultiQuoteSummary = ({ quote, onEdit }: Props) => {
             <p className="text-sm text-gray-500">Phone</p>
             <p className="font-medium">{quote.guest.phone}</p>
           </div>
+        </div>
+      </div>
+
+      {/* Payment Source */}
+      <div className="rounded-xl border bg-white p-6 shadow-sm">
+        <h3 className="text-xl font-semibold">Payment Source</h3>
+        <div className="space-y-2 mt-4">
+          <label className="flex items-center">
+            <input
+              type="radio"
+              name="paymentSource"
+              value="Paystack"
+              checked={paymentSource === "Paystack"}
+              onChange={() => setPaymentSource("Paystack")}
+              className="mr-2"
+            />
+            <span>Paystack</span>
+          </label>
+          {/* <label className="flex items-center">
+            <input
+              type="radio"
+              name="paymentSource"
+              value="Globus"
+              checked={paymentSource === 'Globus'}
+              onChange={() => setPaymentSource('Globus')}
+              className="mr-2"
+            />
+            <span>Globus</span>
+          </label> */}
         </div>
       </div>
 

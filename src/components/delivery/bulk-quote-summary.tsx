@@ -6,6 +6,7 @@ import { MapPin, Truck, ArrowRight } from "lucide-react";
 import { useCreateBulkOrderMutation } from "@/services/orders/mutation";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useState } from "react";
 
 type Location = {
   lat: number;
@@ -41,6 +42,9 @@ interface Props {
 
 export const BulkQuoteSummary = ({ quote, onEdit }: Props) => {
   const router = useRouter();
+  const [paymentSource, setPaymentSource] = useState<"Paystack" | "Globus">(
+    "Paystack",
+  );
   const { mutate: createOrder, isPending } = useCreateBulkOrderMutation({
     onSuccess: (res) => {
       // redirect to authorization url
@@ -60,6 +64,7 @@ export const BulkQuoteSummary = ({ quote, onEdit }: Props) => {
     createOrder({
       quoteId: quote.quote,
       callbackUrl: url,
+      paymentSource,
     });
   };
 
@@ -130,6 +135,35 @@ export const BulkQuoteSummary = ({ quote, onEdit }: Props) => {
               )}
             </div>
           ))}
+        </div>
+      </div>
+
+      {/* Payment Source */}
+      <div className="rounded-xl border bg-white p-6 shadow-sm">
+        <h3 className="text-xl font-semibold">Payment Source</h3>
+        <div className="space-y-2 mt-4">
+          <label className="flex items-center">
+            <input
+              type="radio"
+              name="paymentSource"
+              value="Paystack"
+              checked={paymentSource === "Paystack"}
+              onChange={() => setPaymentSource("Paystack")}
+              className="mr-2"
+            />
+            <span>Paystack</span>
+          </label>
+          {/* <label className="flex items-center">
+            <input
+              type="radio"
+              name="paymentSource"
+              value="Globus"
+              checked={paymentSource === "Globus"}
+              onChange={() => setPaymentSource("Globus")}
+              className="mr-2"
+            />
+            <span>Globus</span>
+          </label> */}
         </div>
       </div>
 

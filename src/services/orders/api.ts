@@ -248,7 +248,7 @@ export const getMultiOrderQuote = async (data: any) => {
   }
 };
 
-export const createBulkOrder = async (payload: { quoteId: string }) => {
+export const createBulkOrder = async (payload: { quoteId: string; callbackUrl?: string; paymentSource: string }) => {
   try {
     const response = await axiosInstance.post(
       "orders/create-bulk-order",
@@ -260,7 +260,7 @@ export const createBulkOrder = async (payload: { quoteId: string }) => {
   }
 };
 
-export const createMultiOrder = async (payload: { quoteId: string }) => {
+export const createMultiOrder = async (payload: { quoteId: string; callbackUrl?: string; paymentSource: string }) => {
   try {
     const response = await axiosInstance.post(
       "orders/create-multi-order",

@@ -38,28 +38,43 @@ export const createOrderSchema = z.object({
 });
 
 export const orderDataSchema = z.object({
-  paystackReference: z.string().min(1, "Paystack reference is required"),
+  paystackReference: z.string().optional(),
   orderType: z.enum(["Delivery"], {
     errorMap: () => ({ message: "Invalid order type" }),
   }),
   state: z.string().min(1, "State is required"),
-  date: z.string().min(1, "Date is required"), // Consider using z.date() if you're working with Date objects
+  date: z.string().min(1, "Date is required"),
   time: z.string().min(1, "Time is required"),
   note: z.string().optional(),
+  description: z.string().optional(),
   pickupLocation: z.string().min(1, "Pickup location is required"),
   dropoffLocation: z.string().min(1, "Dropoff location is required"),
-  deliveryFee: z.number().positive("Amount must be a positive number"), // Use .positive() for amounts
+  pickPoint: z
+    .object({
+      lat: z.number(),
+      lng: z.number(),
+    })
+    .optional(),
+  dropPoint: z
+    .object({
+      lat: z.number(),
+      lng: z.number(),
+    })
+    .optional(),
+  deliveryFee: z.number().positive("Amount must be a positive number"),
   deliveryType: z.enum(["regular", "express"], {
     errorMap: () => ({ message: "Invalid delivery type" }),
   }),
   vehicleRequest: z.enum(["truck", "car", "bike"], {
     errorMap: () => ({ message: "Invalid vehicle type" }),
   }),
+  paymentSource: z.enum(["Paystack", "Globus"]).optional(),
+  callbackUrl: z.string().optional(),
   guest: z.object({
     email: z.string().email("Invalid email address"),
     firstname: z.string().min(1, "First name is required"),
     lastname: z.string().min(1, "Last name is required"),
-    phone: z.string().min(10, "Phone number must be at least 10 characters"), // Adjust min length as per your requirement
+    phone: z.string().min(10, "Phone number must be at least 10 characters"),
   }),
 });
 
@@ -136,7 +151,7 @@ export const getShoppingDeliveryFeeSchema = z.object({
 });
 
 export const createStoreOrderSchema = z.object({
-  paystackReference: z.string(),
+  paystackReference: z.string().optional(),
   orderType: z.enum(["Shopping", "Other"]),
   state: z.string(),
   store: z.string().length(24),
@@ -144,12 +159,14 @@ export const createStoreOrderSchema = z.object({
     z.object({
       product: z.string().length(24),
       quantity: z.number().int().min(1),
-    })
+    }),
   ),
   amount: z.number().positive(),
   deliveryFee: z.number().nonnegative(),
   dropoffLocation: z.string(),
-  deliveryType: z.enum(["regular", "express", "scheduled"]).optional(),
+  deliveryType: z.enum(["regular", "express"]).optional(),
+  paymentSource: z.enum(["Paystack", "Globus"]).optional(),
+  callbackUrl: z.string().optional(),
   guest: z.object({
     email: z.string().email(),
     firstname: z.string(),
