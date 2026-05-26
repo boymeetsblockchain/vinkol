@@ -26,7 +26,9 @@ interface Props {
 
 export const MultiQuoteSummary = ({ quote, onEdit }: Props) => {
   const router = useRouter();
-  const [paymentSource, setPaymentSource] = useState<'Paystack' | 'Globus'>('Paystack');
+  const [paymentSource, setPaymentSource] = useState<"Paystack" | "Globus">(
+    "Paystack",
+  );
   const { mutate: createOrder, isPending } = useCreateMultiOrderMutation({
     onSuccess: (res) => {
       // redirect to authorization url
@@ -105,13 +107,13 @@ export const MultiQuoteSummary = ({ quote, onEdit }: Props) => {
               type="radio"
               name="paymentSource"
               value="Paystack"
-              checked={paymentSource === 'Paystack'}
-              onChange={() => setPaymentSource('Paystack')}
+              checked={paymentSource === "Paystack"}
+              onChange={() => setPaymentSource("Paystack")}
               className="mr-2"
             />
             <span>Paystack</span>
           </label>
-          <label className="flex items-center">
+          {/* <label className="flex items-center">
             <input
               type="radio"
               name="paymentSource"
@@ -121,7 +123,7 @@ export const MultiQuoteSummary = ({ quote, onEdit }: Props) => {
               className="mr-2"
             />
             <span>Globus</span>
-          </label>
+          </label> */}
         </div>
       </div>
 

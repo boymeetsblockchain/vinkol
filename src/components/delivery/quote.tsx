@@ -193,7 +193,7 @@ export const QuotePage = () => {
                   />
                   <span className="font-medium">Paystack</span>
                 </label>
-                <label className="flex items-center cursor-pointer">
+                {/* <label className="flex items-center cursor-pointer">
                   <input
                     type="radio"
                     name="paymentSource"
@@ -203,7 +203,7 @@ export const QuotePage = () => {
                     className="mr-3 w-4 h-4"
                   />
                   <span className="font-medium">Globus</span>
-                </label>
+                </label> */}
               </div>
             </div>
 

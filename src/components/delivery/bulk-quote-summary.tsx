@@ -153,7 +153,7 @@ export const BulkQuoteSummary = ({ quote, onEdit }: Props) => {
             />
             <span>Paystack</span>
           </label>
-          <label className="flex items-center">
+          {/* <label className="flex items-center">
             <input
               type="radio"
               name="paymentSource"
@@ -163,7 +163,7 @@ export const BulkQuoteSummary = ({ quote, onEdit }: Props) => {
               className="mr-2"
             />
             <span>Globus</span>
-          </label>
+          </label> */}
         </div>
       </div>
 
