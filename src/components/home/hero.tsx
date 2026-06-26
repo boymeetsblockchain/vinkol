@@ -1,163 +1,194 @@
 "use client";
-import React, { useState, useEffect } from "react"; // Import useEffect
-import { FaGooglePlay } from "react-icons/fa6";
-import { IoLogoApple } from "react-icons/io";
-
-import { Button } from "../button";
-import { AppStoreCard } from "../shared/appstore";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { useGetOrders, useTrackOrders } from "@/services/orders/query";
-
+import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
+import { MapPin, Search } from "lucide-react";
+import { Button } from "../button";
+import { useTrackOrders } from "@/services/orders/query";
 import { TrackingModal } from "../modals/trackingmodal";
 import { toast } from "sonner";
 
 export const Hero = () => {
-  const [trackDelivery, setTrackDelivery] = useState<boolean>(false);
-  const [trackingId, setTrackingId] = useState<string>("");
-  const [enabled, setEnabled] = useState<boolean>(false); // Corrected typo
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false); // New state for modal
+  const [from, setFrom] = useState("");
+  const [to, setTo] = useState("");
+  const [trackingId, setTrackingId] = useState("");
+  const [enabled, setEnabled] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const router = useRouter();
 
-  const [showDeliveryDropdown, setShowDeliveryDropdown] = useState(false);
+  const { data, isSuccess } = useTrackOrders(trackingId, { enabled });
 
-  const { data, isPending, isSuccess } = useTrackOrders(trackingId, {
-    enabled,
-  });
-
-  // Effect to open modal when data is successfully fetched
   useEffect(() => {
     if (isSuccess && data) {
       setIsModalOpen(true);
-      setEnabled(false); // Reset enabled to false after successful fetch to prevent re-fetching on subsequent renders
+      setEnabled(false);
     }
   }, [isSuccess, data]);
 
-  const fetchTrackingdata = () => {
-    if (!trackingId) {
-      toast.error("Please Input trackingId");
+  const handleBooking = (e: React.FormEvent) => {
+    e.preventDefault();
+    const params = new URLSearchParams();
+    if (from.trim()) params.set("from", from.trim());
+    if (to.trim()) params.set("to", to.trim());
+    router.push(`/book-a-delivery${params.toString() ? `?${params.toString()}` : ""}`);
+  };
+
+  const handleTrack = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!trackingId.trim()) {
+      toast.error("Please enter a tracking ID");
       return;
     }
-
     setEnabled(true);
   };
 
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setTrackingId(""); // Clear tracking ID when modal is closed
-  };
-
-  // console.log(data);
   return (
     <div
-      className="relative text-white bg-cover h-[600px] md:h-screen
-             bg-[url('/assets/mobile.png')] 
-             md:bg-[url('/assets/hero.jpg')]"
+      className="relative text-white bg-cover h-[620px] md:h-screen
+                 bg-[url('/assets/mobile.png')]
+                 md:bg-[url('/assets/hero.jpg')]"
     >
-      <div className="absolute inset-0 bg-black opacity-50"></div>
-      <div className="absolute bottom-10 left-4 md:left-20 px-4">
-        <div className="space-y-4 max-w-2xl sm:max-w-3xl">
-          <h1 className="font-bold text-3xl sm:text-5xl leading-tight">
-            Instant Delivery.
-          </h1>
-          <h1 className="font-bold text-3xl sm:text-5xl leading-tight">
-            Right When You Need It.
-          </h1>
-          <p className="text-base sm:text-xl font-medium">
-            Connect instantly with verified riders to deliver your goods or pick
-            up purchases from any store.
-          </p>
-        </div>
-        {trackDelivery ? (
-          <div className="relative my-4 flex flex-col sm:flex-row items-center justify-center w-full gap-3">
-            <div className="flex flex-grow w-full relative">
-              <input
-                type="text"
-                placeholder="Enter package number..."
-                value={trackingId}
-                onChange={(e) => setTrackingId(e.target.value)}
-                className="flex-grow py-3 px-6 pr-16 border border-gray-300 rounded-full text-gray-800 bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300 ease-in-out shadow-sm"
-              />
-              <div className="absolute right-0 mr-1.5 top-1/2 -translate-y-1/2">
+      {/* Gradient: strong left, fades right on desktop; top-to-bottom on mobile */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-black/20 md:bg-none" />
+      <div className="absolute inset-0 hidden md:block bg-gradient-to-r from-black/80 via-black/50 to-transparent" />
+
+      <div className="absolute inset-0 flex items-end md:items-center">
+        <div className="w-full max-w-screen-2xl mx-auto px-4 md:px-20 pb-10 md:pb-0">
+          <div className="max-w-xl">
+
+            {/* Headline */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
+              className="mb-8 space-y-3"
+            >
+              <h1 className="font-bold text-4xl sm:text-5xl md:text-6xl leading-tight">
+                Fast. Verified.
+                <br />
+                Delivered.
+              </h1>
+              <p className="text-base sm:text-lg font-medium text-white/85 max-w-sm">
+                On-demand logistics for every Nigerian — individuals, businesses, and stores.
+              </p>
+            </motion.div>
+
+            {/* Booking Widget */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
+            >
+              <form
+                onSubmit={handleBooking}
+                className="bg-white rounded-2xl p-4 shadow-2xl space-y-3 max-w-md"
+                aria-label="Book a delivery"
+              >
+                <div className="relative">
+                  <MapPin
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-blue-primary pointer-events-none"
+                    size={17}
+                    aria-hidden="true"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Pickup location"
+                    value={from}
+                    onChange={(e) => setFrom(e.target.value)}
+                    aria-label="Pickup location"
+                    className="w-full pl-9 pr-4 py-3 text-sm text-gray-800 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-primary placeholder-gray-400 transition"
+                  />
+                </div>
+                <div className="relative">
+                  <MapPin
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+                    size={17}
+                    aria-hidden="true"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Dropoff location"
+                    value={to}
+                    onChange={(e) => setTo(e.target.value)}
+                    aria-label="Dropoff location"
+                    className="w-full pl-9 pr-4 py-3 text-sm text-gray-800 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-primary placeholder-gray-400 transition"
+                  />
+                </div>
                 <Button
+                  type="submit"
                   size="lg"
-                  onClick={fetchTrackingdata}
-                  className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-6 rounded-full shadow-md transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                  className="w-full"
+                  aria-label="Get a delivery quote"
+                >
+                  Get a Quote →
+                </Button>
+              </form>
+
+              {/* Tracking row */}
+              <form
+                onSubmit={handleTrack}
+                className="mt-4 flex items-center gap-2 max-w-md"
+                aria-label="Track a delivery"
+              >
+                <div className="relative flex-1">
+                  <Search
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-white/60 pointer-events-none"
+                    size={15}
+                    aria-hidden="true"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Enter tracking ID"
+                    value={trackingId}
+                    onChange={(e) => setTrackingId(e.target.value)}
+                    aria-label="Tracking ID"
+                    className="w-full pl-9 pr-4 py-2.5 text-sm text-white bg-white/10 border border-white/30 rounded-full placeholder-white/60 focus:outline-none focus:border-white/60 backdrop-blur-sm transition"
+                  />
+                </div>
+                <Button
+                  type="submit"
+                  size="sm"
+                  variant="secondary"
+                  className="rounded-full shrink-0"
+                  aria-label="Track delivery"
                 >
                   Track
                 </Button>
-              </div>
-            </div>
-            <Button
-              size="lg"
-              variant="secondary"
-              className="mt-2 sm:mt-0"
-              onClick={() => {
-                setTrackDelivery(false);
-                setTrackingId("");
-              }}
-            >
-              Back
-            </Button>
-          </div>
-        ) : (
-          <div className="mt-6 flex items-start sm:items-center gap-4">
-            {/* <Button size="lg">
-              <Link href="/book-a-delivery">Book a Delivery</Link>
-            </Button> */}
-            <div
-              className="relative block"
-              onMouseEnter={() => setShowDeliveryDropdown(true)}
-              onMouseLeave={() => setShowDeliveryDropdown(false)}
-            >
-              <Button size="lg" className="flex items-center gap-2">
-                Book a Delivery
-              </Button>
+              </form>
+            </motion.div>
 
-              {showDeliveryDropdown && (
-                <div className="absolute -right-20 top-10 w-56 rounded-lg border bg-white overflow-hidden shadow-lg z-50">
-                  <Link
-                    href="/book-a-delivery"
-                    className="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-100"
-                    onClick={() => setShowDeliveryDropdown(false)}
-                  >
-                    Book a Delivery
-                  </Link>
-
-                  <Link
-                    href="/bulk-delivery"
-                    className="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-100"
-                    onClick={() => setShowDeliveryDropdown(false)}
-                  >
-                    Bulk Delivery
-                  </Link>
-                </div>
-              )}
-            </div>
-            <Button
-              size="lg"
-              variant="secondary"
-              onClick={() => setTrackDelivery(true)}
+            {/* Utility links */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.38, ease: "easeOut" }}
+              className="mt-5 flex items-center gap-4 text-sm text-white/65"
             >
-              Track a Delivery
-            </Button>
+              <Link
+                href="/bulk-delivery"
+                className="hover:text-white transition-colors underline underline-offset-2"
+              >
+                Need bulk delivery?
+              </Link>
+              <span aria-hidden="true">·</span>
+              <Link
+                href="/explore-shop"
+                className="hover:text-white transition-colors underline underline-offset-2"
+              >
+                Shop from stores →
+              </Link>
+            </motion.div>
           </div>
-        )}
-        <div className="mt-6 flex  items-start sm:items-center gap-4">
-          <AppStoreCard
-            platform="Google Play"
-            icon={<FaGooglePlay color="black" size={24} />}
-            link="https://play.google.com/store/apps/details?id=app.vinkol.user"
-          />
-          <AppStoreCard
-            platform="App Store"
-            icon={<IoLogoApple color="black" size={24} />}
-            link="https://apps.apple.com/ng/app/vinkol/id6751447117"
-          />
         </div>
       </div>
-      {/* Pass the data and control the modal's open state */}
+
       <TrackingModal
         isOpen={isModalOpen}
-        onClose={closeModal}
+        onClose={() => {
+          setIsModalOpen(false);
+          setTrackingId("");
+        }}
         data={data?.data}
       />
     </div>

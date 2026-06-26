@@ -1,24 +1,24 @@
 import { FaGooglePlay } from "react-icons/fa6";
-import { AppStoreCard } from "../shared/appstore";
 import { IoLogoApple } from "react-icons/io";
-import { GiLightningElectron } from "react-icons/gi";
+import { AppStoreCard } from "../shared/appstore";
+import { AnimateIn } from "../shared/animate-in";
 
 export const CTA = () => {
   return (
-    <section className="h-auto w-full bg-blue-primary pt-10 px-4  md:px-10  mx-auto">
-      <div className="grid grid-cols-1 md:grid-cols-3 w-full h-full gap-10 px-4 md:px-0">
-        <div className="md:col-span-2">
-          {/* call to action */}
-          <div className="flex flex-col m1-10 justify-center items-center md:items-start px-4 text-white space-y-4">
-            <p className="text-2xl md:text-4xl  md:max-w-2xl sm:w-full font-semibold text-center md:text-left">
-              Elevate Your Delivery Experience with Our Easy-to-Use Vinkol App
-              Today!
+    <section className="h-auto w-full bg-blue-primary pt-10 px-4 md:px-10 mx-auto overflow-hidden">
+      <div className="grid grid-cols-1 md:grid-cols-3 w-full h-full gap-10 max-w-screen-xl mx-auto">
+        <AnimateIn direction="left" className="md:col-span-2">
+          <div className="flex flex-col justify-center items-center md:items-start px-4 text-white space-y-4 py-8">
+            <span className="text-xs font-semibold uppercase tracking-widest text-blue-200">
+              Vinkol App
+            </span>
+            <h2 className="text-2xl md:text-4xl md:max-w-lg font-bold text-center md:text-left leading-snug">
+              Book in seconds. Track in real time. Delivered today.
+            </h2>
+            <p className="text-base md:text-lg font-medium text-center md:text-left text-blue-100 max-w-md">
+              The Vinkol app puts on-demand delivery, store browsing, and live tracking right in your pocket.
             </p>
-            <p className="text-base md:text-lg font-medium text-center md:text-left">
-              Connect instantly with verified riders to deliver your goods or
-              pick up purchases from any store.
-            </p>
-            <div className="mt-6 flex flex-col md:flex-row  items-start sm:items-center gap-4">
+            <div className="mt-4 flex flex-col sm:flex-row items-center gap-4">
               <AppStoreCard
                 platform="Google Play"
                 icon={<FaGooglePlay color="black" size={24} />}
@@ -31,14 +31,18 @@ export const CTA = () => {
               />
             </div>
           </div>
-        </div>
-        <div className="md:col-span-1 flex justify-center items-center">
+        </AnimateIn>
+        <AnimateIn
+          direction="right"
+          delay={0.15}
+          className="md:col-span-1 flex justify-center items-end"
+        >
           <img
             src="/assets/cta.png"
-            className="w-full h-auto max-h-[300px] md:max-h-[400px] object-contain"
-            alt="Call to Action"
+            className="w-full h-auto max-h-[320px] md:max-h-[420px] object-contain"
+            alt="Vinkol mobile app interface"
           />
-        </div>
+        </AnimateIn>
       </div>
     </section>
   );
