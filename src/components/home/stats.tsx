@@ -9,42 +9,38 @@ import { Skeleton } from "../ui/skeleton";
 import CountUp from "./countup";
 
 const Stats = () => {
-  // const { data, isLoading } = useGetStats();
-
   return (
-    <section className="max-w-screen-2xl w-full p-10 md:p-20 mx-auto min-h-[400px]">
-      <h1 className="text-2xl md:text-5xl text-center md:text-left text-black  font-bold mb-10">
-        Performance Highlights
-      </h1>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <>
-          <div className="flex items-center *: gap-y-4 flex-col bg-blue-50/30 p-8 rounded-xl">
-            <RiMotorbikeFill size={48} className="text-blue-600" />
-            <h1 className="font-bold text-primary text-4xl md:text-6xl text-center">
-              {/* {data?.data?.verifiedRiders} */}
+    <section className="w-full bg-[#0a0a0a] py-10 md:py-14">
+      <div className="max-w-7xl mx-auto px-6 md:px-20">
+        <div className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-white/10">
+          <div className="flex flex-col items-center sm:items-start gap-1 py-8 sm:py-0 sm:px-10 first:pl-0 last:pr-0">
+            <div className="flex items-center gap-3 mb-2">
+              <RiMotorbikeFill size={28} className="text-blue-primary" />
+            </div>
+            <p className="font-black text-5xl md:text-6xl text-white tracking-tight">
               <CountUp endValue={200} suffix="+" />
-            </h1>
-            <p className="text-xl text-center font-medium">Verified Riders</p>
+            </p>
+            <p className="text-sm font-medium text-white/50 mt-1">Verified riders on the road</p>
           </div>
-          <div className="flex items-center *: gap-y-4 flex-col bg-blue-50/30 p-8 rounded-xl">
-            <LuPackageCheck size={48} className="text-blue-600" />
-            <h1 className="font-bold text-primary text-4xl md:text-6xl text-center">
-              {/* {data?.data?.realUsers} */}
+          <div className="flex flex-col items-center sm:items-start gap-1 py-8 sm:py-0 sm:px-10">
+            <div className="flex items-center gap-3 mb-2">
+              <LuPackageCheck size={28} className="text-blue-primary" />
+            </div>
+            <p className="font-black text-5xl md:text-6xl text-white tracking-tight">
               <CountUp endValue={500} suffix="+" />
-            </h1>
-            <p className="text-xl text-center font-medium">Orders</p>
+            </p>
+            <p className="text-sm font-medium text-white/50 mt-1">Deliveries completed</p>
           </div>
-          <div className="flex items-center *: gap-y-4 flex-col bg-blue-50/30 p-8 rounded-xl">
-            {" "}
-            <FaUsers size={48} className="text-blue-600" />
-            <h1 className="font-bold text-primary text-4xl md:text-6xl text-center">
-              {/* {data?.data?.deliveredOrders} */}{" "}
-              <CountUp endValue={100} suffix="+" />
-            </h1>
-            <p className="text-xl text-center font-medium">Personal Shoppers</p>
+          <div className="flex flex-col items-center sm:items-start gap-1 py-8 sm:py-0 sm:px-10">
+            <div className="flex items-center gap-3 mb-2">
+              <FaUsers size={28} className="text-blue-primary" />
+            </div>
+            <p className="font-black text-5xl md:text-6xl text-white tracking-tight">
+              <CountUp endValue={50} suffix=",000+" />
+            </p>
+            <p className="text-sm font-medium text-white/50 mt-1">Naira in protected item value</p>
           </div>
-        </>
+        </div>
       </div>
     </section>
   );

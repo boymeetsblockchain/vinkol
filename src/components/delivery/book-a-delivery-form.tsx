@@ -11,14 +11,24 @@ import {
   FormMessage,
   FormLabel,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { deliverySchema } from "@/dto/delivery.form.schema";
 import { Button } from "../button";
 import Autocomplete from "react-google-autocomplete";
 import { useGetQuoteMutation } from "@/services/orders/mutation";
-import { toast } from "sonner"; // Assuming 'sonner' for toasts
+import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { TermsCheckbox } from "../shared/terms";
 import { useState } from "react";
+import { Package, MapPin, User, Clock, Info } from "lucide-react";
+
 // Helper to get current time in HH:MM format
 const getCurrentTime = () => {
   const now = new Date();
@@ -137,369 +147,373 @@ export const BookADeliveryForm = () => {
   };
 
   return (
-    <section className="py-12 max-w-screen-xl mx-auto px-4">
-      <div className="space-y-4 mb-6">
-        <h1 className="text-4xl md:text-5xl font-bold">Book a Delivery</h1>
-        <p className="font-medium text-gray-700 text-base">
-          Fill in the form to book a rider for delivery.
-        </p>
-      </div>
-
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="grid grid-cols-1 md:grid-cols-2 gap-6"
-        >
-          {/* Fullname Field */}
-          <FormField
-            control={form.control}
-            name="firstname"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>First Name</FormLabel>
-                <FormControl>
-                  <input
-                    {...field}
-                    type="text"
-                    placeholder="First Name"
-                    className="w-full border border-blue-primary placeholder:text-blue-primary py-4 px-3 rounded-md"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="lastname"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Last Name</FormLabel>
-                <FormControl>
-                  <input
-                    {...field}
-                    type="text"
-                    placeholder="Last Name"
-                    className="w-full border border-blue-primary placeholder:text-blue-primary py-4 px-3 rounded-md"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          {/* Email Field */}
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <input
-                    {...field}
-                    type="email"
-                    placeholder="Email"
-                    className="w-full border border-blue-primary placeholder:text-blue-primary py-4 px-3 rounded-md"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          {/* Email Field */}
-          <FormField
-            control={form.control}
-            name="phonenumber"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Phone Number</FormLabel>
-                <FormControl>
-                  <input
-                    {...field}
-                    type="tel"
-                    maxLength={11}
-                    minLength={11}
-                    placeholder="Phone Number"
-                    className="w-full border border-blue-primary placeholder:text-blue-primary py-4 px-3 rounded-md"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          {/* State Field - Now readOnly since it will be auto-populated */}
-          <FormField
-            control={form.control}
-            name="state"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>State</FormLabel>
-                <FormControl>
-                  <input
-                    {...field}
-                    readOnly
-                    className="w-full border border-blue-primary placeholder:text-blue-primary py-4 px-3 rounded-md bg-gray-100"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          {/* Pickup Location with Autocomplete */}
-          <FormField
-            control={form.control}
-            name="pickup"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Pickup Location</FormLabel>
-                <FormControl>
-                  <Autocomplete
-                    apiKey={process.env.NEXT_PUBLIC_Maps_API_KEY}
-                    onPlaceSelected={(place) => {
-                      const lat = place.geometry?.location?.lat();
-                      const lng = place.geometry?.location?.lng();
-                      const state = getStateFromAddressComponents(
-                        place.address_components,
-                      );
-
-                      form.setValue(
-                        "pickup",
-                        place.formatted_address || place.name,
-                      );
-                      form.setValue("pickupCoords", { lat, lng });
-
-                      // Update state if found
-                      if (state) {
-                        form.setValue("state", state);
-                      }
-                    }}
-                    options={{
-                      types: ["geocode", "establishment"],
-                      componentRestrictions: { country: ["ng"] },
-                      fields: [
-                        "formatted_address",
-                        "name",
-                        "geometry.location",
-                        "address_components",
-                      ],
-                    }}
-                    placeholder="Pickup Location"
-                    className="w-full border border-blue-primary placeholder:text-blue-primary py-4 px-3 rounded-md"
-                    defaultValue={field.value}
-                    onBlur={field.onBlur}
-                    onChange={field.onChange}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          {/* Dropoff Location with Autocomplete */}
-          <FormField
-            control={form.control}
-            name="dropoff"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Dropoff Location</FormLabel>
-                <FormControl>
-                  <Autocomplete
-                    apiKey={process.env.NEXT_PUBLIC_Maps_API_KEY}
-                    onPlaceSelected={(place) => {
-                      const lat = place.geometry?.location?.lat();
-                      const lng = place.geometry?.location?.lng();
-                      const state = getStateFromAddressComponents(
-                        place.address_components,
-                      );
-
-                      form.setValue(
-                        "dropoff",
-                        place.formatted_address || place.name,
-                      );
-                      form.setValue("dropoffCoords", { lat, lng });
-
-                      // Only update state if it's not already set from pickup
-                      if (state && !form.getValues("state")) {
-                        form.setValue("state", state);
-                      }
-                    }}
-                    options={{
-                      types: ["geocode", "establishment"],
-                      componentRestrictions: { country: ["ng"] },
-                      fields: [
-                        "formatted_address",
-                        "name",
-                        "geometry.location",
-                        "address_components",
-                      ],
-                    }}
-                    placeholder="Dropoff Location"
-                    className="w-full border border-blue-primary placeholder:text-blue-primary py-4 px-3 rounded-md"
-                    defaultValue={field.value}
-                    onBlur={field.onBlur}
-                    onChange={field.onChange}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          {/* Date Field */}
-          <FormField
-            control={form.control}
-            name="date"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Delivery Date</FormLabel>
-                <FormControl>
-                  <input
-                    type="date"
-                    {...field}
-                    className="w-full border border-blue-primary placeholder:text-blue-primary py-4 px-3 rounded-md"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          {/* Time Field */}
-          <FormField
-            control={form.control}
-            name="time"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Delivery Time</FormLabel>
-                <FormControl>
-                  <input
-                    type="time"
-                    {...field}
-                    className="w-full border border-blue-primary placeholder:text-blue-primary py-4 px-3 rounded-md"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          {/* Type Dropdown */}
-          <FormField
-            control={form.control}
-            name="type"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Delivery Type</FormLabel>
-                <FormControl>
-                  <select
-                    {...field}
-                    className="w-full border border-blue-primary text-blue-primary py-4 px-3 rounded-md appearance-none bg-white pr-8"
-                  >
-                    <option value="regular">Regular</option>
-                    <option value="express">Express</option>
-                  </select>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          {/* Type Dropdown */}
-          <FormField
-            control={form.control}
-            name="type"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Order Type</FormLabel>
-                <FormControl>
-                  <select
-                    {...field}
-                    className="w-full border border-blue-primary text-blue-primary py-4 px-3 rounded-md appearance-none bg-white pr-8"
-                  >
-                    <option value="Delivery ">Delivery</option>
-                  </select>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          {/* Vehicle Dropdown */}
-          <FormField
-            control={form.control}
-            name="vehicle"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Vehicle Type</FormLabel>
-                <FormControl>
-                  <select
-                    {...field}
-                    className="w-full border border-blue-primary text-blue-primary py-4 px-3 rounded-md appearance-none bg-white pr-8"
-                  >
-                    <option value="bike">Bike</option>
-                    <option value="car">Car</option>
-                    <option value="truck">Truck</option>
-                    <option value="bicycle">Bicycle</option>
-                  </select>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          {/* Note Textarea */}
-          <div className="md:col-span-2">
-            <FormField
-              control={form.control}
-              name="note"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    Note (e.g., fragile, specific instructions)
-                  </FormLabel>
-                  <FormControl>
-                    <textarea
-                      {...field}
-                      rows={4}
-                      placeholder="Note (e.g. fragile goods, delivery instruction)"
-                      className="w-full border border-blue-primary placeholder:text-blue-primary py-4 px-3 rounded-md"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-
-          <TermsCheckbox
-            isBooking={true}
-            isChecked={isChecked}
-            onChange={() => setIsChecked(!isChecked)}
-          />
-
-          <div className="md:col-span-2">
-            <p className="text-center my-2 text-red-600 text-sm font-medium">
-              NOTE: Vinkol will cover up to ₦50,000 of damage or stolen package.
-              Please specify in the note section if goods are fragile.
-            </p>
-          </div>
-
-          <div className="md:col-span-2 flex justify-center">
-            <Button
-              type="submit"
-              disabled={isPending} // Disable button while quote is being fetched
-              className="rounded-md py-4 px-6 w-full md:w-1/3 text-lg"
+    <section className="pt-8 w-full">
+      <div className="w-full">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 md:p-10">
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="space-y-10"
             >
-              {isPending ? "Getting Quote..." : "Get Quote"}
-            </Button>
-          </div>
-        </form>
-      </Form>
+              {/* Contact Information */}
+              <div className="space-y-6">
+                <div className="flex items-center gap-3 pb-3 border-b border-gray-100">
+                  <div className="bg-blue-50 p-2 rounded-lg">
+                    <User className="w-5 h-5 text-blue-600" />
+                  </div>
+                  <h2 className="text-xl font-semibold text-gray-800">Contact Information</h2>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <FormField
+                    control={form.control}
+                    name="firstname"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-gray-700">First Name</FormLabel>
+                        <FormControl>
+                          <Input {...field} className="h-12 bg-gray-50/50" placeholder="Enter your first name" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="lastname"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-gray-700">Last Name</FormLabel>
+                        <FormControl>
+                          <Input {...field} className="h-12 bg-gray-50/50" placeholder="Enter your last name" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-gray-700">Email Address</FormLabel>
+                        <FormControl>
+                          <Input {...field} type="email" className="h-12 bg-gray-50/50" placeholder="Enter your email" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="phonenumber"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-gray-700">Phone Number</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            type="tel"
+                            maxLength={11}
+                            minLength={11}
+                            className="h-12 bg-gray-50/50"
+                            placeholder="e.g. 08012345678"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+
+              {/* Delivery Locations */}
+              <div className="space-y-6">
+                <div className="flex items-center gap-3 pb-3 border-b border-gray-100">
+                  <div className="bg-blue-50 p-2 rounded-lg">
+                    <MapPin className="w-5 h-5 text-blue-600" />
+                  </div>
+                  <h2 className="text-xl font-semibold text-gray-800">Location Details</h2>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <FormField
+                    control={form.control}
+                    name="pickup"
+                    render={({ field }) => (
+                      <FormItem className="md:col-span-2">
+                        <FormLabel className="text-gray-700">Pickup Location</FormLabel>
+                        <FormControl>
+                          <Autocomplete
+                            apiKey={process.env.NEXT_PUBLIC_Maps_API_KEY}
+                            onPlaceSelected={(place) => {
+                              const lat = place.geometry?.location?.lat();
+                              const lng = place.geometry?.location?.lng();
+                              const state = getStateFromAddressComponents(
+                                place.address_components,
+                              );
+
+                              form.setValue(
+                                "pickup",
+                                place.formatted_address || place.name,
+                              );
+                              form.setValue("pickupCoords", { lat, lng });
+
+                              if (state) {
+                                form.setValue("state", state);
+                              }
+                            }}
+                            options={{
+                              types: ["geocode", "establishment"],
+                              componentRestrictions: { country: ["ng"] },
+                              fields: [
+                                "formatted_address",
+                                "name",
+                                "geometry.location",
+                                "address_components",
+                              ],
+                            }}
+                            placeholder="Enter pickup address"
+                            className="flex h-12 w-full rounded-md border border-input bg-gray-50/50 px-3 py-1 text-base shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+                            defaultValue={field.value}
+                            onBlur={field.onBlur}
+                            onChange={field.onChange}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="dropoff"
+                    render={({ field }) => (
+                      <FormItem className="md:col-span-2">
+                        <FormLabel className="text-gray-700">Dropoff Location</FormLabel>
+                        <FormControl>
+                          <Autocomplete
+                            apiKey={process.env.NEXT_PUBLIC_Maps_API_KEY}
+                            onPlaceSelected={(place) => {
+                              const lat = place.geometry?.location?.lat();
+                              const lng = place.geometry?.location?.lng();
+                              const state = getStateFromAddressComponents(
+                                place.address_components,
+                              );
+
+                              form.setValue(
+                                "dropoff",
+                                place.formatted_address || place.name,
+                              );
+                              form.setValue("dropoffCoords", { lat, lng });
+
+                              if (state && !form.getValues("state")) {
+                                form.setValue("state", state);
+                              }
+                            }}
+                            options={{
+                              types: ["geocode", "establishment"],
+                              componentRestrictions: { country: ["ng"] },
+                              fields: [
+                                "formatted_address",
+                                "name",
+                                "geometry.location",
+                                "address_components",
+                              ],
+                            }}
+                            placeholder="Enter dropoff address"
+                            className="flex h-12 w-full rounded-md border border-input bg-gray-50/50 px-3 py-1 text-base shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+                            defaultValue={field.value}
+                            onBlur={field.onBlur}
+                            onChange={field.onChange}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="state"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-gray-700">State (Auto-detected)</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            readOnly
+                            className="h-12 bg-gray-100 text-gray-500 cursor-not-allowed"
+                            placeholder="e.g. Lagos"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+
+              {/* Delivery Schedule & Type */}
+              <div className="space-y-6">
+                <div className="flex items-center gap-3 pb-3 border-b border-gray-100">
+                  <div className="bg-blue-50 p-2 rounded-lg">
+                    <Clock className="w-5 h-5 text-blue-600" />
+                  </div>
+                  <h2 className="text-xl font-semibold text-gray-800">Schedule & Type</h2>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <FormField
+                    control={form.control}
+                    name="date"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-gray-700">Delivery Date</FormLabel>
+                        <FormControl>
+                          <Input type="date" {...field} className="h-12 bg-gray-50/50 block w-full" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="time"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-gray-700">Delivery Time</FormLabel>
+                        <FormControl>
+                          <Input type="time" {...field} className="h-12 bg-gray-50/50 block w-full" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="type"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-gray-700">Delivery Type</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger className="h-12 bg-gray-50/50">
+                              <SelectValue placeholder="Select delivery type" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="regular">Regular</SelectItem>
+                            <SelectItem value="express">Express</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="orderType"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-gray-700">Order Type</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger className="h-12 bg-gray-50/50">
+                              <SelectValue placeholder="Select order type" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="Delivery">Delivery</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+
+              {/* Vehicle & Additional Details */}
+              <div className="space-y-6">
+                <div className="flex items-center gap-3 pb-3 border-b border-gray-100">
+                  <div className="bg-blue-50 p-2 rounded-lg">
+                    <Package className="w-5 h-5 text-blue-600" />
+                  </div>
+                  <h2 className="text-xl font-semibold text-gray-800">Vehicle & Package Details</h2>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <FormField
+                    control={form.control}
+                    name="vehicle"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-gray-700">Vehicle Type</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger className="h-12 bg-gray-50/50">
+                              <SelectValue placeholder="Select vehicle type" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="bike">Bike</SelectItem>
+                            <SelectItem value="car">Car</SelectItem>
+                            <SelectItem value="truck">Truck</SelectItem>
+                            <SelectItem value="bicycle">Bicycle</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <FormField
+                  control={form.control}
+                  name="note"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-gray-700">Additional Notes</FormLabel>
+                      <FormControl>
+                        <textarea
+                          {...field}
+                          rows={4}
+                          placeholder="e.g., fragile goods, specific delivery instructions"
+                          className="flex min-h-[100px] w-full rounded-md border border-input bg-gray-50/50 px-3 py-3 text-base shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              {/* Notice & Terms */}
+              <div className="space-y-6 pt-4">
+                <div className="bg-blue-50/50 p-4 rounded-xl border border-blue-100 flex gap-4 items-start">
+                  <Info className="w-6 h-6 text-blue-500 shrink-0 mt-0.5" />
+                  <p className="text-sm text-blue-900 leading-relaxed">
+                    <strong>Insurance Coverage:</strong> Vinkol will cover up to ₦50,000 of damage or stolen package. Please explicitly specify in the notes section if your goods are fragile.
+                  </p>
+                </div>
+
+                <div className="px-2">
+                  <TermsCheckbox
+                    isBooking={true}
+                    isChecked={isChecked}
+                    onChange={() => setIsChecked(!isChecked)}
+                  />
+                </div>
+              </div>
+
+              <div className="pt-6 border-t border-gray-100">
+                <Button
+                  type="submit"
+                  disabled={isPending}
+                  className="w-full md:w-auto h-14 md:min-w-[240px] text-lg rounded-full px-8 mx-auto flex items-center justify-center transition-transform active:scale-[0.98]"
+                >
+                  {isPending ? "Getting Quote..." : "Get Quote"}
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </div>
+      </div>
     </section>
   );
 };

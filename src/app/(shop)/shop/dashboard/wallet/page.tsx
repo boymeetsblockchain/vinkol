@@ -1,105 +1,89 @@
 "use client";
 
-import { WithdrawalModal } from "@/components/modals/withdraw";
-import { Button } from "@/components/button";
 import { useState } from "react";
+import { WithdrawalModal } from "@/components/modals/withdraw";
 import { useGetWallet } from "@/services/shops/query";
+import { Eye, EyeOff, ArrowUpRight, Wallet } from "lucide-react";
 
-interface WalletData {
-  balance: number;
-}
-
-interface ApiResponse {
-  success: boolean;
-  message: string;
-  data: WalletData;
-}
-
-function Orders() {
-  const [openModal, setOpenModal] = useState<boolean>(false);
-
+function WalletPage() {
+  const [openModal, setOpenModal] = useState(false);
+  const [balanceVisible, setBalanceVisible] = useState(true);
   const { data, isLoading, isError } = useGetWallet();
 
-  const handleOpenModal = () => setOpenModal(true);
-  const handleCloseModal = () => setOpenModal(false);
-
-  if (isLoading) {
-    return (
-      <section className="py-6 px-4 md:px-10 text-center text-gray-600">
-        Loading wallet balance...
-      </section>
-    );
-  }
-
-  if (isError) {
-    return (
-      <section className="py-6 px-4 md:px-10 text-center text-red-600">
-        Error loading wallet data. Please try again.
-      </section>
-    );
-  }
-
-  if (!data || !data.data) {
-    return (
-      <section className="py-6 px-4 md:px-10 text-center text-gray-600">
-        Wallet data not available.
-      </section>
-    );
-  }
-
-  const currentBalance = data.data.balance;
+  const currentBalance = data?.data?.balance ?? 0;
 
   return (
-    <section className="py-6 px-4 md:px-10">
-      {/* Balance Card */}
-      <div className="my-6 md:my-10">
-        <div className="w-full h-[234px] bg-blue-primary p-6 flex flex-col items-center justify-center rounded-2xl text-white shadow-md">
-          <h3 className="text-lg font-medium">Balance</h3>
-          <h1 className="text-3xl font-bold mt-2 mb-4">
-            ₦
-            {currentBalance.toLocaleString("en-NG", {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })}
-          </h1>
-          <Button variant="secondary" onClick={handleOpenModal}>
-            Withdraw
-          </Button>
+    <div className="p-5 md:p-8 min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold text-gray-900">Wallet</h1>
+        <p className="text-sm text-gray-400 mt-0.5">Manage your earnings and withdrawals</p>
+      </div>
+
+      {/* Balance card */}
+      {isLoading ? (
+        <div className="rounded-3xl bg-gray-200 animate-pulse h-52 mb-6" />
+      ) : isError ? (
+        <div className="rounded-3xl bg-red-50 border border-red-100 p-6 mb-6 text-red-500 text-sm text-center">
+          Failed to load wallet data. Please try again.
+        </div>
+      ) : (
+        <div className="relative rounded-3xl overflow-hidden mb-6 bg-[var(--color-blue-primary)] p-7 shadow-lg">
+          {/* Decorative circles */}
+          <div className="absolute -top-10 -right-10 w-44 h-44 rounded-full bg-white/5" />
+          <div className="absolute -bottom-8 -left-8 w-36 h-36 rounded-full bg-white/5" />
+
+          <div className="relative z-10">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-2 bg-white/15 rounded-full px-3 py-1.5">
+                <Wallet size={14} className="text-white" />
+                <span className="text-white text-xs font-medium">Store Wallet</span>
+              </div>
+              <button
+                onClick={() => setBalanceVisible((v) => !v)}
+                className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition"
+              >
+                {balanceVisible ? <EyeOff size={16} className="text-white" /> : <Eye size={16} className="text-white" />}
+              </button>
+            </div>
+
+            <p className="text-white/70 text-sm mb-1">Available Balance</p>
+            <p className="text-white font-bold text-4xl tracking-tight">
+              {balanceVisible
+                ? `₦${currentBalance.toLocaleString("en-NG", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+                : "₦ ••••••"}
+            </p>
+
+            <div className="mt-6">
+              <button
+                onClick={() => setOpenModal(true)}
+                className="flex items-center gap-2 bg-white text-[var(--color-blue-primary)] font-semibold px-5 py-2.5 rounded-xl hover:bg-blue-50 transition text-sm shadow-sm"
+              >
+                <ArrowUpRight size={16} />
+                Withdraw Funds
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Transaction history placeholder */}
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+        <h2 className="font-bold text-gray-900 mb-1">Transaction History</h2>
+        <p className="text-xs text-gray-400 mb-6">Your recent withdrawals and credits</p>
+
+        <div className="flex flex-col items-center justify-center py-12 text-center">
+          <div className="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center mb-4">
+            <Wallet size={24} className="text-[var(--color-blue-primary)]" />
+          </div>
+          <p className="font-semibold text-gray-800">No transactions yet</p>
+          <p className="text-gray-400 text-sm mt-1">Withdrawals and earnings will appear here.</p>
         </div>
       </div>
 
-      {/* Withdrawal History (your commented out section) */}
-      {/* You can uncomment this and populate with real data once you have it */}
-      {/* For example, if your wallet data includes a transactions array:
-      <div className="my-6 md:my-10">
-        <h1 className="text-lg font-semibold mb-4">Withdrawal History</h1>
-        {data.data.transactions && data.data.transactions.length > 0 ? (
-            data.data.transactions.map((transaction, i) => (
-                <div key={transaction.id || i} className="bg-[#FAFAFA] p-4 rounded-xl shadow-sm space-y-3 mt-3">
-                    <div className="flex items-center justify-between text-sm text-gray-800 font-medium">
-                        <h2>{transaction.reference} - {transaction.recipientName}</h2>
-                        <h2 className="text-blue-primary font-semibold">₦{transaction.amount.toLocaleString("en-NG", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</h2>
-                    </div>
-                    <div className="flex items-center justify-between text-sm text-gray-600">
-                        <h3>{transaction.bankName}</h3>
-                        <h3>{new Date(transaction.date).toLocaleString()}</h3>
-                    </div>
-                </div>
-            ))
-        ) : (
-            <p className="text-center text-gray-500">No withdrawal history available.</p>
-        )}
-      </div>
-      */}
-
-      {/* Modal */}
-      <WithdrawalModal
-        isOpen={openModal}
-        onClose={handleCloseModal}
-        isStore={true}
-      />
-    </section>
+      <WithdrawalModal isOpen={openModal} onClose={() => setOpenModal(false)} isStore={true} />
+    </div>
   );
 }
 
-export default Orders;
+export default WalletPage;

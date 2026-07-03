@@ -2,11 +2,11 @@
 import React, { useState } from "react";
 import { FaGooglePlay } from "react-icons/fa6";
 import { IoLogoApple } from "react-icons/io";
-
 import { Button } from "../button";
 import { AppStoreCard } from "../shared/appstore";
 import { RiderAuthModal } from "../modals/rider-auth-modal";
 import Link from "next/link";
+
 export const Hero = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
@@ -19,58 +19,57 @@ export const Hero = () => {
   return (
     <>
       <div
-        className="relative text-white bg-cover  md:h-[100vh] h-[600px]"
+        className="relative text-white bg-cover min-h-[620px] md:min-h-screen"
         style={{ backgroundImage: `url('/assets/rider.png')` }}
       >
-        <div className="inset-0 absolute bg-black/60 opacity-95" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/50 to-black/25" />
 
-        <div className="absolute bottom-10 left-4 md:left-20 px-4">
-          <div className="space-y-4 max-w-2xl sm:max-w-3xl">
-            <h1 className="font-bold text-3xl sm:text-5xl leading-tight">
-              Earn On Vinkol
+        <div className="relative z-10 flex flex-col justify-end min-h-[620px] md:min-h-screen pb-12 md:pb-20 px-6 md:px-20">
+          <div className="max-w-2xl space-y-5">
+            <div className="flex items-center gap-3">
+              <span className="h-px w-8 bg-blue-primary" />
+              <p className="text-xs font-semibold tracking-[0.2em] uppercase text-blue-300">
+                For riders
+              </p>
+            </div>
+
+            <h1 className="font-black text-4xl sm:text-5xl md:text-6xl lg:text-[68px] leading-[1.05] tracking-tight">
+              Ride with Vinkol.
+              <br />
+              <span className="text-blue-primary">Earn on your terms.</span>
             </h1>
-            <h1 className="font-bold text-3xl sm:text-5xl leading-tight">
-              Become a Rider
-            </h1>
-            <p className="text-base sm:text-xl font-medium">
-              Connect instantly with verified riders to deliver your goods or
-              pick up purchases from any store.
+
+            <p className="text-base sm:text-lg font-medium text-white/80 max-w-lg leading-relaxed">
+              Join 200+ verified riders delivering across Lagos. Set your own
+              hours, accept tasks near you, and get paid fast.
             </p>
-          </div>
-          <div>
-            <div className="mt-6 flex items-start sm:items-center gap-4">
-              <Button size="lg" onClick={() => openModal("register")}>
+
+            <div className="flex flex-wrap items-center gap-3 pt-1">
+              <Button size="lg" className="rounded-full px-8 font-semibold" onClick={() => openModal("register")}>
                 Become a Rider
               </Button>
-              {/* <Button
-                size="lg"
-                variant="secondary"
-                onClick={() => openModal("login")}
-              >
-                Login to Rider Forum
-              </Button> */}
-              <Link href={"/waitlist"}>
-                <Button size="lg" variant="secondary">
+              <Link href="/waitlist">
+                <button className="border border-white/40 text-white rounded-full px-8 py-3 text-sm font-semibold hover:bg-white/10 transition-colors">
                   Join the Waitlist
-                </Button>
+                </button>
               </Link>
             </div>
-          </div>
 
-          <div className="mt-6 flex  items-start sm:items-center gap-4">
-            <AppStoreCard
-              platform="Google Play"
-              icon={<FaGooglePlay color="black" size={24} />}
-              link="https://play.google.com/store/apps/details?id=app.vinkol.rider"
-            />
-            <AppStoreCard
-              platform="App Store"
-              icon={<IoLogoApple color="black" size={24} />}
-              link="https://apps.apple.com/ng/app/vinkol-go/id6751474425"
-            />
+            <div className="flex items-center gap-3 pt-1">
+              <AppStoreCard
+                platform="Google Play"
+                icon={<FaGooglePlay color="black" size={20} />}
+                link="https://play.google.com/store/apps/details?id=app.vinkol.rider"
+              />
+              <AppStoreCard
+                platform="App Store"
+                icon={<IoLogoApple color="black" size={20} />}
+                link="https://apps.apple.com/ng/app/vinkol-go/id6751474425"
+              />
+            </div>
           </div>
         </div>
-        {/* Auth Modal */}
+
         <RiderAuthModal
           isOpen={isOpen}
           onClose={() => setIsOpen(false)}

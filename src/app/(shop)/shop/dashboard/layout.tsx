@@ -198,9 +198,9 @@ const Layout = ({ children }: { children: ReactNode }) => {
   return (
     <div className="flex flex-col md:flex-row h-screen overflow-hidden">
       {/* Mobile hamburger */}
-      <div className="md:hidden fixed top-4 left-4 z-50">
-        <button onClick={() => setIsSidebarOpen(true)}>
-          <Menu size={28} />
+      <div className="md:hidden fixed top-5 right-5 z-50">
+        <button onClick={() => setIsSidebarOpen(true)} className="p-1.5 bg-white/80 backdrop-blur-sm rounded-lg shadow-sm border border-gray-200/50 hover:bg-gray-50 transition-colors">
+          <Menu size={24} className="text-gray-800" />
         </button>
       </div>
 

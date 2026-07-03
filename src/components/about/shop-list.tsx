@@ -17,25 +17,29 @@ export const ShopList = () => {
     );
   }
   return (
-    <section className="max-w-screen-2xl w-full px-4 py-10 md:px-20 md:py-20 mx-auto">
-      <div className="flex flex-col items-center text-center space-y-6">
-        <h2>COLLABORATIVE STORES</h2>
-        <h1 className="text-3xl md:text-4xl font-bold">
-          STORES ON <span className="text-blue-primary">VINKOL</span>
-        </h1>
-
-        <div className="w-full flex justify-center">
-          <div className="flex flex-wrap justify-center gap-6 md:gap-8 mt-8">
-            {data.data.slice(0, 4).map((shop: any, idx: any) => (
-              <div key={idx} className="flex justify-center">
-                <img
-                  src={shop.avatar?.imageUrl || "/assets/placeholder.png"}
-                  alt={`Shop ${idx + 1}`}
-                  className="h-20 w-20 md:h-32 md:w-32 rounded-full object-cover border shadow-sm hover:scale-105 transition-transform"
-                />
-              </div>
-            ))}
-          </div>
+    <section className="bg-[#0a0a0a]">
+      <div className="max-w-7xl w-full px-6 py-20 md:px-20 md:py-24 mx-auto">
+        <div className="mb-12 text-center">
+          <p className="text-xs font-semibold tracking-[0.2em] uppercase text-blue-primary mb-4">
+            Our partners
+          </p>
+          <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight">
+            Stores on Vinkol
+          </h2>
+        </div>
+        <div className="flex flex-wrap justify-center gap-6 md:gap-10">
+          {data.data.slice(0, 8).map((shop: any, idx: any) => (
+            <div key={idx} className="flex flex-col items-center gap-2">
+              <img
+                src={shop.avatar?.imageUrl || "/assets/placeholder.png"}
+                alt={shop.name || `Store ${idx + 1}`}
+                className="h-20 w-20 md:h-24 md:w-24 rounded-2xl object-cover border border-white/10 shadow-sm hover:scale-105 transition-transform"
+              />
+              {shop.name && (
+                <p className="text-xs text-white/50 text-center max-w-[80px] truncate">{shop.name}</p>
+              )}
+            </div>
+          ))}
         </div>
       </div>
     </section>

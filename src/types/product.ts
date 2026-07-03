@@ -26,6 +26,8 @@ const categoryEnum = z.enum(
 export const createProductSchema = z.object({
   title: z.string().min(1, "Title is required"),
   price: z.number().positive("Price must be a positive number"),
+  inventory: z.number().min(0, "Inventory cannot be negative"),
+  isAvailable: z.boolean().default(true),
   category: categoryEnum,
   image: z
     .instanceof(File, { message: "Avatar must be a file" })
@@ -42,6 +44,8 @@ export const updateProductSchema = z
   .object({
     title: z.string().min(1, "Title is required").optional(),
     price: z.number().positive("Price must be a positive number").optional(),
+    inventory: z.number().min(0, "Inventory cannot be negative").optional(),
+    isAvailable: z.boolean().optional(),
     category: categoryEnum.optional(),
     image: z
       .instanceof(File, { message: "Avatar must be a file" })

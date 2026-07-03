@@ -6,10 +6,13 @@ import {
   User,
   Wallet,
   Settings,
+  LogOut,
+  AlertTriangle
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { FaSignOutAlt } from "react-icons/fa";
+import { Dialog, DialogContent, DialogTrigger, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -56,8 +59,8 @@ export const ShopperDashBoardSidebBar = ({ isOpen, onClose }: SidebarProps) => {
 
   return (
     <aside
-      className={`fixed top-0 left-0 z-50 w-64 min-h-screen bg-[#FAFAFA] border-r border-gray-200 transform transition-transform duration-300 ease-in-out ${
-        isOpen ? "translate-x-0" : "-translate-x-full"
+      className={`fixed top-0 right-0 z-50 w-64 min-h-screen bg-[#FAFAFA] border-l border-gray-200 md:border-l-0 md:border-r transform transition-transform duration-300 ease-in-out ${
+        isOpen ? "translate-x-0" : "translate-x-full"
       } md:translate-x-0 md:static md:w-1/5`}
     >
       {/* Close button (mobile only) */}
@@ -88,6 +91,7 @@ export const ShopperDashBoardSidebBar = ({ isOpen, onClose }: SidebarProps) => {
           <Link
             href={route}
             key={route}
+            onClick={onClose}
             className={`w-full flex items-center gap-3 font-medium text-sm md:text-base p-3 rounded-md transition ${
               pathname === route
                 ? "bg-blue-50 text-blue-600"
@@ -102,13 +106,38 @@ export const ShopperDashBoardSidebBar = ({ isOpen, onClose }: SidebarProps) => {
             {label}
           </Link>
         ))}
-        <button
-          onClick={handleLogout}
-          className="w-full flex items-center gap-3 font-semibold text-sm md:text-base text-gray-700 hover:text-blue-primary transition"
-        >
-          <FaSignOutAlt size={18} />
-          Logout
-        </button>
+        <Dialog>
+          <DialogTrigger asChild>
+            <button className="w-full flex items-center gap-3 font-semibold text-sm md:text-base text-gray-700 hover:text-red-600 hover:bg-red-50 p-3 rounded-md transition mt-2">
+              <LogOut size={18} />
+              Logout
+            </button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-md p-6 border-none rounded-2xl shadow-2xl">
+            <div className="flex flex-col items-center justify-center text-center">
+              <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-4">
+                <AlertTriangle className="text-red-600" size={24} />
+              </div>
+              <DialogTitle className="text-xl font-bold text-gray-900 mb-2">Sign out of Vinkol?</DialogTitle>
+              <DialogDescription className="text-gray-500 text-sm mb-6 max-w-[260px] mx-auto">
+                Are you sure you want to sign out? You will need to log back in to manage your store.
+              </DialogDescription>
+            </div>
+            <DialogFooter className="flex gap-3 sm:justify-center">
+              <DialogClose asChild>
+                <button className="flex-1 px-4 py-2.5 rounded-xl border border-gray-200 text-gray-700 font-semibold text-sm hover:bg-gray-50 transition">
+                  Cancel
+                </button>
+              </DialogClose>
+              <button 
+                onClick={() => { onClose(); handleLogout(); }}
+                className="flex-1 px-4 py-2.5 rounded-xl bg-red-600 text-white font-semibold text-sm hover:bg-red-700 transition"
+              >
+                Yes, log out
+              </button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </aside>
   );

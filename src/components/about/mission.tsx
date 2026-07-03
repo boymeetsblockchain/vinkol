@@ -1,54 +1,48 @@
 const missionArray = [
-  "Ensuring Speed and Reliability",
-  "Leveraging Advanced Technology",
-  "Offering Cost-Effective Solutions",
-  "Championing Client-Centric Service",
+  "Speed and reliability in every delivery",
+  "Advanced technology for real-time tracking",
+  "Cost-effective solutions for customers and vendors",
+  "Client-centric service, every single time",
 ];
+
 export const Mission = () => {
   return (
-    <section className="flex flex-col-reverse lg:flex-row items-center gap-20 px-6 py-16 lg:py-20 lg:px-20 bg-white">
-      {/* Text content */}
-
-      {/* Image content */}
-      <div
-        style={{
-          backgroundImage: `url('/assets/mission.jpg')`,
-        }}
-        className="h-[400px] bg-cover relative w-full object-contain  rounded-3xl bg-center flex items-center justify-center"
-      >
-        <img
-          src="/assets/mission.jpg"
-          alt="About Vinkol"
-          className="md:block hidden w-64 h-48 object-contain z-10 border-4 absolute  right-[-40px] border-white
-           bg-black/60  rounded-3xl shadow-md"
-        />
-      </div>
-      <div className="lg:w-1/2 text-gray-800 shrink-0">
-        <h1 className="text-3xl lg:text-4xl font-bold mb-4">Our Mission</h1>
-        <p className="text-xs mb-4 md:text-sm leading-relaxed">
-          At Vinkol Logistics, our mission is to deliver world-class logistics
-          solutions that connect people, businesses, and markets with speed,
-          precision, and purpose. We are driven by a commitment to service
-          excellence, technological innovation, and social responsibility,
-          ensuring every delivery adds value and builds trust. We achieve this
-          by: Ensuring Speed and Reliability Leveraging Advanced Technology
-          Offering Cost-Effective Solutions Championing Client-Centric Service
-        </p>
-        <div>
-          <p className="text-xs mb-2 md:text-sm leading-relaxed">
-            We achieve this by:
-          </p>
-          <ul>
-            {missionArray.map((item, index) => (
-              <li
-                key={index}
-                className="flex items-center gap-x-2 text-xs mb-2 md:text-sm"
-              >
-                <img src="/assets/check.svg" className="h-5 w-5" alt="" />{" "}
-                {item}
-              </li>
-            ))}
-          </ul>
+    <section className="bg-[#F7F8FA]">
+      <div className="max-w-7xl mx-auto px-6 md:px-20 py-20 md:py-28">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 md:gap-20 items-center">
+          <div className="relative h-[340px] md:h-[460px] rounded-2xl overflow-hidden">
+            <img
+              src="/assets/mission.jpg"
+              alt="Vinkol mission"
+              className="w-full h-full object-cover"
+            />
+          </div>
+          <div>
+            <p className="text-xs font-semibold tracking-[0.2em] uppercase text-blue-primary mb-5">
+              What drives us
+            </p>
+            <h2 className="text-3xl lg:text-5xl font-bold text-gray-900 tracking-tight leading-tight mb-6">
+              Our Mission
+            </h2>
+            <p className="text-gray-500 text-base leading-relaxed mb-8">
+              At Vinkol Logistics, our mission is to deliver world-class logistics
+              solutions that connect people, businesses, and markets with speed,
+              precision, and purpose &mdash; ensuring every delivery adds value
+              and builds trust.
+            </p>
+            <ul className="space-y-4">
+              {missionArray.map((item, index) => (
+                <li key={index} className="flex items-start gap-4">
+                  <span className="mt-1 flex-shrink-0 h-5 w-5 rounded-full bg-blue-primary flex items-center justify-center">
+                    <svg className="h-3 w-3 text-white" fill="none" viewBox="0 0 12 12" stroke="currentColor" strokeWidth={2.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M2 6l3 3 5-5" />
+                    </svg>
+                  </span>
+                  <p className="text-gray-700 font-medium text-sm md:text-base">{item}</p>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </div>
     </section>

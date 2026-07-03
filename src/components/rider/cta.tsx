@@ -4,38 +4,37 @@ import { IoLogoApple } from "react-icons/io";
 
 export const CTA = () => {
   return (
-    <section className="h-auto w-full bg-blue-primary pt-10 px-4  md:px-10  mx-auto">
-      <div className="grid grid-cols-1 md:grid-cols-3 w-full h-full gap-10 px-4 md:px-0">
-        <div className="md:col-span-2">
-          {/* call to action */}
-          <div className="flex flex-col m1-10 justify-center items-center md:items-start px-4 text-white space-y-4">
-            <p className="text-2xl md:text-4xl  md:max-w-2xl sm:w-full font-semibold text-center md:text-left">
-              Drive Your Income Forward. Ride with Vinkol Today!
-            </p>
-            <p className="text-base md:text-lg font-medium text-center md:text-left">
-              Stop waiting for calls. Connect instantly to a wide network of
-              users needing reliable transport for their goods and purchases.
-              Download the Vinkol Go App and start accepting jobs immediately.
-            </p>
-            <div className="mt-6 flex flex-col md:flex-row  items-start sm:items-center gap-4">
-              <AppStoreCard
-                platform="Google Play"
-                icon={<FaGooglePlay color="black" size={24} />}
-                link="https://play.google.com/store/apps/details?id=app.vinkol.rider"
-              />
-              <AppStoreCard
-                platform="App Store"
-                icon={<IoLogoApple color="black" size={24} />}
-                link="https://apps.apple.com/ng/app/vinkol-go/id6751474425"
-              />
-            </div>
+    <section className="w-full bg-blue-primary">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center px-6 py-20 md:px-20 md:py-24">
+        <div className="flex flex-col gap-6 text-white">
+          <p className="text-xs font-semibold tracking-[0.2em] uppercase text-blue-200">
+            Ready to start?
+          </p>
+          <h2 className="text-3xl md:text-5xl font-black tracking-tight leading-tight">
+            Download the Vinkol Go app.
+          </h2>
+          <p className="text-white/70 text-base md:text-lg leading-relaxed max-w-md">
+            Accept delivery tasks, track your earnings, and get paid &mdash;
+            all from the Vinkol Go rider app on Android and iOS.
+          </p>
+          <div className="flex flex-col sm:flex-row items-start gap-3 pt-2">
+            <AppStoreCard
+              platform="Google Play"
+              icon={<FaGooglePlay color="black" size={20} />}
+              link="https://play.google.com/store/apps/details?id=app.vinkol.rider"
+            />
+            <AppStoreCard
+              platform="App Store"
+              icon={<IoLogoApple color="black" size={20} />}
+              link="https://apps.apple.com/ng/app/vinkol-go/id6751474425"
+            />
           </div>
         </div>
-        <div className="md:col-span-1 flex justify-center items-center">
+        <div className="flex justify-center md:justify-end">
           <img
             src="/assets/cta.png"
-            className="w-full h-auto max-h-[300px] md:max-h-[400px] object-contain"
-            alt="Call to Action"
+            className="w-full h-auto max-h-[320px] md:max-h-[440px] object-contain"
+            alt="Vinkol Go app"
           />
         </div>
       </div>

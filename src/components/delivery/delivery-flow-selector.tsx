@@ -12,29 +12,29 @@ interface Props {
 
 const DeliveryFlowSelector = ({ value, onChange }: Props) => {
   return (
-    <div className="flex gap-2 mb-8">
+    <div className="inline-flex gap-3 mb-2 p-1.5 bg-white border border-gray-200 rounded-2xl shadow-sm">
       <button
-        className={`px-4 py-2 rounded-md border ${
+        className={`px-6 py-3 rounded-xl text-sm font-semibold transition-all ${
           value === DeliveryFlowType.BULK
-            ? "bg-blue-600 text-white"
-            : "bg-white text-black"
+            ? "bg-[var(--color-blue-primary)] text-white shadow-sm"
+            : "text-gray-500 hover:text-gray-900"
         }`}
         onClick={() => onChange(DeliveryFlowType.BULK)}
       >
         Bulk delivery
-        <div className="text-xs opacity-70">One pickup, many dropoffs</div>
+        <div className="text-xs font-normal opacity-80 mt-0.5">One pickup, many dropoffs</div>
       </button>
 
       <button
-        className={`px-4 py-2 rounded-md border ${
+        className={`px-6 py-3 rounded-xl text-sm font-semibold transition-all ${
           value === DeliveryFlowType.MULTI
-            ? "bg-blue-600 text-white"
-            : "bg-white text-black"
+            ? "bg-[var(--color-blue-primary)] text-white shadow-sm"
+            : "text-gray-500 hover:text-gray-900"
         }`}
         onClick={() => onChange(DeliveryFlowType.MULTI)}
       >
         Multiple deliveries
-        <div className="text-xs opacity-70">Different pickups & dropoffs</div>
+        <div className="text-xs font-normal opacity-80 mt-0.5">Different pickups &amp; dropoffs</div>
       </button>
     </div>
   );
