@@ -108,8 +108,8 @@ export const QuotePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-10 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-2xl mx-auto bg-white rounded-lg p-8 border border-gray-100 min-h-[400px]">
+    <div className="min-h-screen bg-[#F7F8FA] py-10 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-2xl mx-auto bg-white rounded-2xl p-8 md:p-12 border border-gray-100 min-h-[400px]">
         {isPending ? (
           <div className="flex flex-col gap-4 items-center justify-center py-6">
             <Loader2
@@ -130,10 +130,9 @@ export const QuotePage = () => {
           </div>
         ) : (
           <>
-            <h1 className="text-4xl font-extrabold text-gray-900 mb-2 text-left">
-              Quote
-            </h1>
-            <p>Here is a quote on what you filled</p>
+            <p className="text-xs font-semibold tracking-[0.2em] uppercase text-[var(--color-blue-primary)] mb-3">Your quote</p>
+            <h1 className="text-3xl font-bold text-gray-900 mb-3 text-left">Delivery Quote</h1>
+            <p className="text-gray-500 text-sm mb-6">Review your delivery details before proceeding to payment.</p>
 
             <div className="space-y-4 text-gray-800">
               <p className="text-lg font-semibold">

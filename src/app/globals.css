@@ -127,6 +127,15 @@ body {
   }
 }
 
+@keyframes slide-right {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(6px); }
+}
+
+.animate-arrow-bounce {
+  animation: slide-right 1.5s infinite cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 .pac-container {
   background-color: #fff;
   border-radius: 8px;

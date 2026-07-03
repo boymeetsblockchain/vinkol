@@ -4,28 +4,28 @@ import ImagesSlider from "./slider";
 
 export const Shop = () => {
   return (
-    <section className="w-full bg-blue-primary h-auto md:h-[400px] py-8 md:py-0">
-      <div className="max-w-screen-xl grid w-full mx-auto h-full p-4 md:p-10 gap-8 md:gap-10 grid-cols-1 md:grid-cols-2">
+    <section className="w-full bg-blue-primary">
+      <div className="max-w-7xl grid w-full mx-auto px-6 py-16 md:px-20 md:py-20 gap-12 md:gap-16 grid-cols-1 md:grid-cols-2 items-center">
         <div className="flex justify-center items-center">
-          {/* <img
-            src="/assets/shop-from-home.png"
-            alt="A shopper browsing products in a supermarket"
-            className="w-full max-h-60 md:max-h-80 object-cover border-white border-2 rounded-3xl"
-          /> */}
           <ImagesSlider />
         </div>
-        <div className="flex justify-center gap-y-4 md:gap-y-6 flex-col">
-          <h1 className="font-bold text-2xl md:text-4xl text-white leading-tight md:leading-[100%]">
-            Shop from the comfort of your home from supermarkets around you
-          </h1>
-          <div className="flex flex-col md:flex-row gap-4">
+        <div className="flex justify-center gap-y-5 flex-col">
+          <p className="text-xs font-semibold tracking-[0.2em] uppercase text-blue-200">
+            Shop from home
+          </p>
+          <h2 className="font-bold text-3xl md:text-4xl text-white leading-snug tracking-tight">
+            Order from stores near you &mdash; without leaving home.
+          </h2>
+          <p className="text-blue-100 text-base leading-relaxed">
+            Browse supermarkets, grocery stores, and specialty shops around
+            you. A personal shopper picks up your order and delivers it fast.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3 pt-2">
             <Button variant="secondary" size="md">
-              <Link href={"/explore-shop"}>
-                Explore supermarkets and stores
-              </Link>
+              <Link href="/explore-shop">Browse stores near you</Link>
             </Button>
             <Button variant="secondary" size="md">
-              <Link href={"/shop"}>Register Store on Vinkol</Link>
+              <Link href="/shop">List your store &mdash; it&apos;s free</Link>
             </Button>
           </div>
         </div>

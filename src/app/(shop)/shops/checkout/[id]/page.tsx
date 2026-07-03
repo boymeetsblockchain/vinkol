@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import Autocomplete from "react-google-autocomplete";
 import { useGetShoppingDeliveryFee } from "@/services/orders/mutation";
 import { toast } from "sonner";
+import { ArrowLeft } from "lucide-react";
 
 function CheckoutPage() {
   const params = useParams();
@@ -69,53 +70,79 @@ function CheckoutPage() {
   };
 
   return (
-    <section className="py-12 max-w-screen-xl mx-auto px-4">
-      <form onSubmit={handleSubmit}>
-        <div className="space-y-4 mb-6">
-          <h1 className="text-4xl md:text-5xl font-bold">Complete Order</h1>
-          <p className="font-medium text-gray-700 text-base">
-            Fill in the form to complete your order.
+    <section className="min-h-screen bg-gray-50 py-12 px-4 flex justify-center items-start">
+      <form onSubmit={handleSubmit} className="bg-white p-6 md:p-10 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 max-w-3xl w-full">
+        <div className="mb-8 md:mb-10 border-b border-gray-100 pb-6">
+          <button
+            type="button"
+            onClick={() => router.back()}
+            className="flex items-center gap-1.5 text-gray-500 hover:text-gray-900 text-sm font-medium mb-4 transition-colors"
+          >
+            <ArrowLeft size={18} /> Back
+          </button>
+          <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-2">Checkout Details</h1>
+          <p className="font-medium text-gray-500 text-sm md:text-base">
+            Please fill in your information to complete your order.
           </p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <input
-            type="text"
-            placeholder="First Name"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-            className="w-full border border-blue-primary placeholder:text-blue-primary py-4 px-3 rounded-md"
-            required
-          />
-          <input
-            type="text"
-            placeholder="Last Name"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
-            className="w-full border border-blue-primary placeholder:text-blue-primary py-4 px-3 rounded-md"
-            required
-          />
-          <input
-            type="number"
-            placeholder="Phone Number"
-            value={phoneNumber}
-            onChange={(e) => setPhoneNumber(e.target.value)}
-            className="w-full border border-blue-primary placeholder:text-blue-primary py-4 px-3 rounded-md"
-            required
-          />
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full border border-blue-primary placeholder:text-blue-primary py-4 px-3 rounded-md"
-            required
-          />
-          <select
-            value={selectedState}
-            onChange={(e) => setSelectedState(e.target.value)}
-            className="w-full border border-blue-primary md:col-span-2 text-gray-700 py-4 px-3 rounded-md"
-            required
-          >
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
+          <div className="space-y-1.5">
+            <label className="text-sm font-semibold text-gray-700 ml-1">First Name</label>
+            <input
+              type="text"
+              placeholder="e.g. John"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              className="w-full bg-gray-50 border border-gray-200 text-gray-900 placeholder:text-gray-400 py-3.5 px-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--color-blue-primary)] focus:bg-white transition-all shadow-sm"
+              required
+            />
+          </div>
+          
+          <div className="space-y-1.5">
+            <label className="text-sm font-semibold text-gray-700 ml-1">Last Name</label>
+            <input
+              type="text"
+              placeholder="e.g. Doe"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              className="w-full bg-gray-50 border border-gray-200 text-gray-900 placeholder:text-gray-400 py-3.5 px-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--color-blue-primary)] focus:bg-white transition-all shadow-sm"
+              required
+            />
+          </div>
+          
+          <div className="space-y-1.5">
+            <label className="text-sm font-semibold text-gray-700 ml-1">Phone Number</label>
+            <input
+              type="number"
+              placeholder="e.g. 08012345678"
+              value={phoneNumber}
+              onChange={(e) => setPhoneNumber(e.target.value)}
+              className="w-full bg-gray-50 border border-gray-200 text-gray-900 placeholder:text-gray-400 py-3.5 px-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--color-blue-primary)] focus:bg-white transition-all shadow-sm"
+              required
+            />
+          </div>
+          
+          <div className="space-y-1.5">
+            <label className="text-sm font-semibold text-gray-700 ml-1">Email Address</label>
+            <input
+              type="email"
+              placeholder="e.g. john@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full bg-gray-50 border border-gray-200 text-gray-900 placeholder:text-gray-400 py-3.5 px-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--color-blue-primary)] focus:bg-white transition-all shadow-sm"
+              required
+            />
+          </div>
+          
+          <div className="space-y-1.5 md:col-span-2">
+            <label className="text-sm font-semibold text-gray-700 ml-1">State / Region</label>
+            <select
+              value={selectedState}
+              onChange={(e) => setSelectedState(e.target.value)}
+              className="w-full bg-gray-50 border border-gray-200 text-gray-900 py-3.5 px-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--color-blue-primary)] focus:bg-white transition-all shadow-sm"
+              required
+            >
             <option value="">Select your state</option>
             <option value="abia">Abia</option>
             <option value="adamawa">Adamawa</option>
@@ -155,7 +182,10 @@ function CheckoutPage() {
             <option value="zamfara">Zamfara</option>
             <option value="abuja">Federal Capital Territory (Abuja)</option>
           </select>
-          <div className="md:col-span-2">
+          </div>
+          
+          <div className="space-y-1.5 md:col-span-2">
+            <label className="text-sm font-semibold text-gray-700 ml-1">Delivery Address</label>
             <Autocomplete
               apiKey={process.env.NEXT_PUBLIC_Maps_API_KEY}
               onPlaceSelected={(place) => {
@@ -195,16 +225,17 @@ function CheckoutPage() {
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 setAddress(e.target.value)
               }
-              className="w-full py-4 px-3 focus:outline-none border border-blue-primary placeholder:text-blue-primary rounded-[5px] placeholder:text-base"
-              placeholder="Full Delivery Address"
+              className="w-full bg-gray-50 border border-gray-200 text-gray-900 placeholder:text-gray-400 py-3.5 px-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--color-blue-primary)] focus:bg-white transition-all shadow-sm"
+              placeholder="Search your delivery address"
               required
             />
           </div>
         </div>
-        <div className="mt-8">
+
+        <div className="mt-10">
           <button
             type="submit"
-            className="w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-md"
+            className="w-full bg-[var(--color-blue-primary)] hover:bg-blue-700 text-white font-bold text-lg py-4 rounded-xl transition-all flex justify-center items-center"
           >
             Place Order
           </button>

@@ -33,69 +33,70 @@ export const ContactForm = () => {
   };
 
   return (
-    <section className="bg-white rounded-lg p-8 shadow-lg border border-gray-200">
-      <h1 className="text-3xl font-bold text-gray-800 mb-6">
-        Leave us A Message
-      </h1>
-      <form onSubmit={handleSubmit}>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 mb-4">
-          <div>
-            <h2 className="text-lg font-semibold text-gray-700 mb-2">Name</h2>
+    <section className="bg-white rounded-2xl p-8 md:p-10 border border-gray-100 shadow-sm">
+      <p className="text-xs font-semibold tracking-[0.2em] uppercase text-[var(--color-blue-primary)] mb-3">
+        Contact form
+      </p>
+      <h2 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight leading-tight mb-8">
+        Send us a message.
+      </h2>
+      <form onSubmit={handleSubmit} className="space-y-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div className="space-y-1.5">
+            <label className="text-xs font-semibold uppercase tracking-widest text-gray-400">Name</label>
             <input
               type="text"
               name="name"
               value={formData.name}
               onChange={handleChange}
-              className="w-full bg-gray-100 p-3 rounded-md placeholder:text-gray-500 placeholder:text-base focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
-              placeholder="Your Name"
+              className="w-full bg-[#F7F8FA] border border-transparent px-4 py-3 rounded-xl text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[var(--color-blue-primary)]/30 focus:border-[var(--color-blue-primary)] transition"
+              placeholder="Your full name"
               required
             />
           </div>
-          <div>
-            <h2 className="text-lg font-semibold text-gray-700 mb-2">Email</h2>
+          <div className="space-y-1.5">
+            <label className="text-xs font-semibold uppercase tracking-widest text-gray-400">Email</label>
             <input
               type="email"
               name="email"
               value={formData.email}
               onChange={handleChange}
-              className="w-full bg-gray-100 p-3 rounded-md placeholder:text-gray-500 placeholder:text-base focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
-              placeholder="Your Email"
+              className="w-full bg-[#F7F8FA] border border-transparent px-4 py-3 rounded-xl text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[var(--color-blue-primary)]/30 focus:border-[var(--color-blue-primary)] transition"
+              placeholder="your@email.com"
               required
             />
           </div>
         </div>
-        <div className="mb-4">
-          <h2 className="text-lg font-semibold text-gray-700 mb-2">Address</h2>
+        <div className="space-y-1.5">
+          <label className="text-xs font-semibold uppercase tracking-widest text-gray-400">Address</label>
           <input
             type="text"
             name="address"
             value={formData.address}
             onChange={handleChange}
-            className="w-full bg-gray-100 p-3 rounded-md placeholder:text-gray-500 placeholder:text-base focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
-            placeholder="Your Address"
+            className="w-full bg-[#F7F8FA] border border-transparent px-4 py-3 rounded-xl text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[var(--color-blue-primary)]/30 focus:border-[var(--color-blue-primary)] transition"
+            placeholder="Your address (optional)"
           />
         </div>
-        <div className="mb-6">
-          <h2 className="text-lg font-semibold text-gray-700 mb-2">Message</h2>
+        <div className="space-y-1.5">
+          <label className="text-xs font-semibold uppercase tracking-widest text-gray-400">Message</label>
           <textarea
             rows={5}
             name="message"
             value={formData.message}
             onChange={handleChange}
-            className="w-full bg-gray-100 p-3 rounded-md placeholder:text-gray-500 placeholder:text-base focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200 resize-y"
-            placeholder="Type your message here..."
+            className="w-full bg-[#F7F8FA] border border-transparent px-4 py-3 rounded-xl text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[var(--color-blue-primary)]/30 focus:border-[var(--color-blue-primary)] transition resize-none"
+            placeholder="How can we help you?"
             required
           />
         </div>
-        <div className="flex justify-end">
-          <Button
-            type="submit"
-            className="px-8 py-3 text-lg font-medium"
-            disabled={isPending}
-          >
-            {isPending ? "Sending" : "   Send Message"}
-          </Button>
-        </div>
+        <Button
+          type="submit"
+          className="w-full rounded-full font-semibold py-3"
+          disabled={isPending}
+        >
+          {isPending ? "Sending…" : "Send Message"}
+        </Button>
       </form>
     </section>
   );

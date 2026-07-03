@@ -18,7 +18,7 @@ export const SuperMarket = () => {
   }
 
   return (
-    <section className="max-w-screen-2xl w-full px-4 py-10 md:px-20 md:py-20 mx-auto">
+    <section className="max-w-screen-2xl w-full px-4 py-4 md:px-20 md:py-8 mx-auto">
       <div className="mb-8 text-left">
         <h1 className="text-3xl md:text-4xl font-bold">Available Stores</h1>
       </div>

@@ -1,57 +1,72 @@
+const steps = [
+  {
+    number: "01",
+    icon: "/assets/request.svg",
+    title: "Request",
+    description:
+      "Tell us what you need — pickup, delivery, or a personal shopper. Add the details, location, and time.",
+  },
+  {
+    number: "02",
+    icon: "/assets/match.svg",
+    title: "Match",
+    description:
+      "We match you with a nearby verified rider or shopper in under 5 minutes.",
+  },
+  {
+    number: "03",
+    icon: "/assets/delivered.svg",
+    title: "Delivered",
+    description:
+      "Your item arrives at your door. Fast, safe, and tracked in real-time every step of the way.",
+  },
+];
+
 export const HowitWorks = () => {
   return (
-    <section className="max-w-screen-2xl w-full p-10 md:p-20 mx-auto">
-      <div>
-        <h1 className="text-2xl md:text-5xl text-center md:text-left text-black  font-bold mb-10">
-          How Vinkol Works
-        </h1>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
-        <div className="flex md:items-start items-center *: gap-y-4 flex-col">
-          <img
-            src="/assets/request.svg"
-            alt="Request Icon"
-            className="md:w-[68px] w-[40px] md:h-[68px] h-[40px]"
-          />
-          <h1 className="font-bold text-2xl text-center md:text-left">
-            Request
-          </h1>
-          <p className="text-sm text-center md:text-left font-medium">
-            Tell us what you need—pickup, delivery, or a personal shopper. Add
-            the details, location, and time.
+    <section className="bg-[#0a0a0a] w-full py-20 md:py-28">
+      <div className="max-w-7xl mx-auto px-6 md:px-20">
+
+        {/* Header */}
+        <div className="mb-16">
+          <p className="text-xs font-semibold tracking-[0.2em] uppercase text-[var(--color-blue-primary)] mb-4">
+            How it works
           </p>
+          <h2 className="text-3xl md:text-5xl font-bold text-white tracking-tight leading-tight">
+            Three steps. No stress.
+          </h2>
         </div>
 
-        <div className="hidden md:block w-[2px] h-full bg-gradient-to-b from-white via-blue-600 to-white mx-auto" />
+        {/* Steps grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          {steps.map((step) => (
+            <div
+              key={step.number}
+              className="relative bg-white/[0.04] border border-white/10 rounded-2xl p-8 overflow-hidden group hover:border-white/20 transition-colors"
+            >
+              {/* Watermark number */}
+              <span className="absolute -top-5 -right-3 text-[100px] font-black text-white/[0.04] leading-none select-none pointer-events-none">
+                {step.number}
+              </span>
 
-        <div className="flex md:items-start items-center *: gap-y-4 flex-col">
-          <img
-            src="/assets/match.svg"
-            alt="Match Icon"
-            className="md:w-[68px] w-[40px] md:h-[68px] h-[40px]"
-          />
-          <h1 className="font-bold text-2xl text-center md:text-left">Match</h1>
-          <p className="text-sm text-center md:text-left font-medium">
-            We instantly match you with a nearby verified rider or shopper ready
-            to help.
-          </p>
-        </div>
+              {/* Step label */}
+              <p className="text-[var(--color-blue-primary)] text-xs font-bold tracking-[0.2em] uppercase mb-6">
+                Step {step.number}
+              </p>
 
-        <div className="hidden md:block w-[2px] h-full bg-gradient-to-b from-white via-blue-600 to-white mx-auto" />
+              {/* Icon */}
+              <div className="w-14 h-14 rounded-2xl bg-[var(--color-blue-primary)]/15 flex items-center justify-center mb-6 group-hover:bg-[var(--color-blue-primary)]/25 transition-colors">
+                <img src={step.icon} alt={step.title} className="w-7 h-7" />
+              </div>
 
-        <div className="flex md:items-start items-center *: gap-y-4 flex-col">
-          <img
-            src="/assets/delivered.svg"
-            alt="Delivered Icon"
-            className="md:w-[68px] w-[40px] md:h-[68px] h-[40px]"
-          />
-          <h1 className="font-bold text-2xl text-center md:text-left">
-            Delivered
-          </h1>
-          <p className="text-sm text-center md:text-left font-medium">
-            Your item is picked up and delivered right to your door. Fast, safe,
-            and tracked in real-time.
-          </p>
+              {/* Text */}
+              <h3 className="text-xl font-bold text-white mb-3">{step.title}</h3>
+              <p className="text-white/45 text-sm leading-relaxed">{step.description}</p>
+
+              {/* Bottom accent line */}
+              <div className="absolute bottom-0 left-0 h-[2px] w-0 group-hover:w-full bg-[var(--color-blue-primary)] transition-all duration-500 rounded-b-2xl" />
+            </div>
+          ))}
         </div>
       </div>
     </section>

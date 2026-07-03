@@ -9,7 +9,7 @@ function BecomeARider() {
     <section>
       <Hero />
       <Steps />
-      <Benefits />
+      <Benefits title="What you get as a Vinkol personal shopper." />
       <Question />
       <CTA />
     </section>

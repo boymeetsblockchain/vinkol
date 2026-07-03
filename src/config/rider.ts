@@ -2,7 +2,7 @@ import axios from "axios";
 
 const BASE_URL =
   process.env.NEXT_PUBLIC_BASE_URL ||
-  "https://vinkol-server.onrender.com/api/v1";
+  "https://vinkol-server-staging.vercel.app/api/v1";
 const axiosInstance = axios.create({
   baseURL: BASE_URL,
   headers: {

@@ -1,64 +1,63 @@
 "use client";
+
 const teamsArray = [
   {
     name: "Emmanuel Ediale",
-    position: "Founder/CEO",
+    position: "Founder & CEO",
     img: "/assets/coo.jpg",
-    info: `Emmanuel is an accomplished finance professional with over nine years of experience across diverse industries, including Banking, Insurance, Media, and Construction. He holds a master’s degree in International Business from the University of Sunderland, UK, a postgraduate diploma with honors in Business Management from Algonquin College, Canada, and a bachelor’s degree in Insurance. Emmanuel is also a Certified International Trade Professional (CITP) in Canada. In addition to his academic qualifications, he is an Associate of the Chartered Insurance Institute of Nigeria and a Chartered Financial Forecasting, Budgeting, and Modelling Professional (CFBM). He is also a Certified Management Consultant, among several other industry-recognized certifications. Leveraging his broad industry expertise and solid academic foundation, Emmanuel provides strategic financial insights and plays a key role in driving daily operational excellence.`,
+    bio: "Finance professional with 9+ years across Banking, Insurance, Media, and Construction. Holds an MSc in International Business (University of Sunderland, UK) and is a Certified International Trade Professional (CITP). He drives Vinkol's strategic direction and daily operational excellence.",
   },
   {
     name: "Francis Ediale",
     position: "Executive Director",
     img: "/assets/ed.jpg",
-    info: `Francis is a highly skilled operations manager with over 10 years of experience in maintaining organizational quality and safety standards. He holds a Bachelor’s degree in petroleum engineering from the University of Benin, Nigeria, and a Postgraduate diploma in International Business Management from Seneca College, Canada. With a strong leadership, human resources, and project management background, Francis is adept at driving efficiency and achieving organizational objectives. He brings exceptional communication, interpersonal, and conflict resolution skills, consistently exceeding performance expectations and fostering a collaborative work environment..`,
+    bio: "Operations manager with 10+ years experience maintaining quality and safety standards. Holds a degree in Petroleum Engineering (University of Benin) and a Postgraduate Diploma in International Business Management (Seneca College, Canada). Francis leads efficiency and people operations.",
   },
   {
     name: "Vincent Ediale",
     position: "Chairman",
     img: "/assets/daddy.jpg",
-    info: `Vincent  is a seasoned professional with over two decades of experience in the Oil & Gas, Construction, and International Trade sectors A graduate of the prestigious University of Ibadan, he began his career in the 1980s with Julius Berger and later contributed to the growth of Zenon Oil and Gas in Victoria Island, Lagos, Nigeria. Throughout his career, Vincent has demonstrated a proven ability to build and scale successful businesses, leveraging his expertise to deliver sustainable growth and operational excellence.`,
+    bio: "Seasoned professional with 20+ years across Oil & Gas, Construction, and International Trade. A University of Ibadan graduate who began his career with Julius Berger and later contributed to Zenon Oil and Gas, Lagos. Vincent provides strategic oversight and governance.",
   },
 ];
 
 export const Teams = () => {
   return (
-    <section className="max-w-screen-xs mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
-      <h1 className="text-center my-8 text-3xl font-extrabold text-gray-900">
-        Our Team
-      </h1>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {teamsArray.map((teamMember) => (
-          <div
-            key={teamMember.name}
-            className="bg-white shadow-lg rounded-xl overflow-hidden flex flex-col h-full"
-          >
-            <div className="relative h-60 lg:h-120 w-full overflow-hidden rounded-t-xl">
-              {" "}
-              {/* Fixed height and overflow-hidden for image */}
-              <img
-                className="absolute inset-0 w-full h-full object-contain "
-                src={teamMember.img}
-                alt={teamMember.name}
-                onError={(e) => {
-                  e.currentTarget.src = `https://placehold.co/400x240/CCCCCC/333333?text=${
-                    teamMember.name.split(" ")[0]
-                  }`;
-                }} // Placeholder on error
-              />
+    <section className="w-full py-20 md:py-24">
+      <div className="max-w-7xl mx-auto px-6 md:px-20">
+        <p className="text-xs font-semibold tracking-[0.2em] uppercase text-[var(--color-blue-primary)] mb-4">
+          The people behind Vinkol
+        </p>
+        <h2 className="text-3xl md:text-5xl font-bold text-gray-900 tracking-tight leading-tight mb-14">
+          Meet our team.
+        </h2>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {teamsArray.map((member) => (
+            <div
+              key={member.name}
+              className="bg-[#F7F8FA] rounded-2xl overflow-hidden flex flex-col"
+            >
+              <div className="relative h-64 w-full overflow-hidden bg-gray-200">
+                <img
+                  src={member.img}
+                  alt={member.name}
+                  className="w-full h-full object-cover object-top"
+                  onError={(e) => {
+                    e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(member.name)}&background=0e74d8&color=fff&size=256`;
+                  }}
+                />
+              </div>
+              <div className="p-8 flex flex-col flex-1">
+                <h3 className="text-lg font-bold text-gray-900 mb-1">{member.name}</h3>
+                <p className="text-xs font-semibold tracking-widest uppercase text-[var(--color-blue-primary)] mb-4">
+                  {member.position}
+                </p>
+                <p className="text-sm text-gray-500 leading-relaxed">{member.bio}</p>
+              </div>
             </div>
-            <div className="p-5 flex flex-col flex-1">
-              <h2 className="text-xl font-bold text-blue-600 mb-1 text-center">
-                {teamMember.name}
-              </h2>
-              <p className="text-sm text-gray-600 text-center mb-3">
-                {teamMember.position}
-              </p>
-              <p className="text-sm text-gray-700 text-left whitespace-pre-line">
-                {teamMember.info}
-              </p>
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </section>
   );

@@ -1,12 +1,15 @@
 "use client";
-import React, { useState, useEffect } from "react"; // Import useEffect
-import { FaGooglePlay } from "react-icons/fa6";
+import React, { useState, useEffect } from "react";
+import { FaGooglePlay, FaStar } from "react-icons/fa6";
 import { IoLogoApple } from "react-icons/io";
+import { RiMotorbikeFill } from "react-icons/ri";
+import { LuPackageCheck } from "react-icons/lu";
+import { ArrowRight } from "lucide-react";
 
 import { Button } from "../button";
 import { AppStoreCard } from "../shared/appstore";
 import Link from "next/link";
-import { useGetOrders, useTrackOrders } from "@/services/orders/query";
+import { useTrackOrders } from "@/services/orders/query";
 
 import { TrackingModal } from "../modals/trackingmodal";
 import { toast } from "sonner";
@@ -14,152 +17,156 @@ import { toast } from "sonner";
 export const Hero = () => {
   const [trackDelivery, setTrackDelivery] = useState<boolean>(false);
   const [trackingId, setTrackingId] = useState<string>("");
-  const [enabled, setEnabled] = useState<boolean>(false); // Corrected typo
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false); // New state for modal
+  const [enabled, setEnabled] = useState<boolean>(false);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
-  const [showDeliveryDropdown, setShowDeliveryDropdown] = useState(false);
-
-  const { data, isPending, isSuccess } = useTrackOrders(trackingId, {
+  const { data, isFetching, isSuccess } = useTrackOrders(trackingId, {
     enabled,
   });
 
-  // Effect to open modal when data is successfully fetched
   useEffect(() => {
     if (isSuccess && data) {
       setIsModalOpen(true);
-      setEnabled(false); // Reset enabled to false after successful fetch to prevent re-fetching on subsequent renders
+      setEnabled(false);
     }
   }, [isSuccess, data]);
 
   const fetchTrackingdata = () => {
     if (!trackingId) {
-      toast.error("Please Input trackingId");
+      toast.error("Please enter a tracking ID");
       return;
     }
-
     setEnabled(true);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
-    setTrackingId(""); // Clear tracking ID when modal is closed
+    setTrackingId("");
   };
 
-  // console.log(data);
   return (
     <div
-      className="relative text-white bg-cover h-[600px] md:h-screen
+      className="relative text-white bg-cover min-h-[620px] md:min-h-screen
              bg-[url('/assets/mobile.png')] 
              md:bg-[url('/assets/hero.jpg')]"
     >
-      <div className="absolute inset-0 bg-black opacity-50"></div>
-      <div className="absolute bottom-10 left-4 md:left-20 px-4">
-        <div className="space-y-4 max-w-2xl sm:max-w-3xl">
-          <h1 className="font-bold text-3xl sm:text-5xl leading-tight">
-            Instant Delivery.
+      {/* Gradient overlay — darker at bottom for text legibility, lighter at top */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/98 via-black/80 to-black/55" />
+
+      <div className="relative z-10 flex flex-col justify-end min-h-[620px] md:min-h-screen pb-12 md:pb-20 px-6 md:px-20">
+        <div className="max-w-2xl space-y-5">
+
+          {/* Eyebrow */}
+          <div className="flex items-center gap-3">
+            <span className="h-px w-8 bg-blue-primary" />
+            <p className="text-xs font-semibold tracking-[0.2em] uppercase text-[var(--color-blue-primary)]">
+              Fast · Verified · Insured
+            </p>
+          </div>
+
+          {/* Headline */}
+          <h1 className="font-black text-4xl sm:text-5xl md:text-6xl lg:text-[68px] leading-[1.05] tracking-tight">
+            Your delivery,<br />
+            <span className="text-blue-primary">done right.</span>
           </h1>
-          <h1 className="font-bold text-3xl sm:text-5xl leading-tight">
-            Right When You Need It.
-          </h1>
-          <p className="text-base sm:text-xl font-medium">
-            Connect instantly with verified riders to deliver your goods or pick
-            up purchases from any store.
+
+          {/* Subheadline */}
+          <p className="text-base sm:text-lg font-medium text-white/80 max-w-lg leading-relaxed">
+            Book a verified rider for instant pickup and delivery — or send a
+            personal shopper to buy from any store near you.
           </p>
-        </div>
-        {trackDelivery ? (
-          <div className="relative my-4 flex flex-col sm:flex-row items-center justify-center w-full gap-3">
-            <div className="flex flex-grow w-full relative">
-              <input
-                type="text"
-                placeholder="Enter package number..."
-                value={trackingId}
-                onChange={(e) => setTrackingId(e.target.value)}
-                className="flex-grow py-3 px-6 pr-16 border border-gray-300 rounded-full text-gray-800 bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300 ease-in-out shadow-sm"
-              />
-              <div className="absolute right-0 mr-1.5 top-1/2 -translate-y-1/2">
+
+          {/* CTAs */}
+          {trackDelivery ? (
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 w-full max-w-xl">
+              <div className="flex-grow relative w-full">
+                <input
+                  type="text"
+                  placeholder="Enter your tracking ID..."
+                  value={trackingId}
+                  onChange={(e) => setTrackingId(e.target.value)}
+                  className="w-full py-3.5 px-5 pr-28 rounded-full text-gray-900 bg-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-primary text-sm"
+                />
                 <Button
                   size="lg"
                   onClick={fetchTrackingdata}
-                  className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-6 rounded-full shadow-md transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                  className="absolute right-1 top-1/2 -translate-y-1/2 rounded-full py-2 px-5 text-sm h-auto"
                 >
-                  Track
+                  {isFetching ? "..." : "Track"}
                 </Button>
               </div>
-            </div>
-            <Button
-              size="lg"
-              variant="secondary"
-              className="mt-2 sm:mt-0"
-              onClick={() => {
-                setTrackDelivery(false);
-                setTrackingId("");
-              }}
-            >
-              Back
-            </Button>
-          </div>
-        ) : (
-          <div className="mt-6 flex items-start sm:items-center gap-4">
-            {/* <Button size="lg">
-              <Link href="/book-a-delivery">Book a Delivery</Link>
-            </Button> */}
-            <div
-              className="relative block"
-              onMouseEnter={() => setShowDeliveryDropdown(true)}
-              onMouseLeave={() => setShowDeliveryDropdown(false)}
-            >
-              <Button size="lg" className="flex items-center gap-2">
-                Book a Delivery
+              <Button
+                size="lg"
+                variant="secondary"
+                className="shrink-0"
+                onClick={() => {
+                  setTrackDelivery(false);
+                  setTrackingId("");
+                }}
+              >
+                Cancel
               </Button>
-
-              {showDeliveryDropdown && (
-                <div className="absolute -right-20 top-10 w-56 rounded-lg border bg-white overflow-hidden shadow-lg z-50">
-                  <Link
-                    href="/book-a-delivery"
-                    className="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-100"
-                    onClick={() => setShowDeliveryDropdown(false)}
-                  >
-                    Book a Delivery
-                  </Link>
-
-                  <Link
-                    href="/bulk-delivery"
-                    className="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-100"
-                    onClick={() => setShowDeliveryDropdown(false)}
-                  >
-                    Bulk Delivery
-                  </Link>
-                </div>
-              )}
             </div>
-            <Button
-              size="lg"
-              variant="secondary"
-              onClick={() => setTrackDelivery(true)}
-            >
-              Track a Delivery
-            </Button>
+          ) : (
+            <div className="flex flex-wrap items-center gap-3 pt-1">
+              <Link href="/book-a-delivery">
+                <Button size="lg" className="rounded-full px-8 font-semibold">
+                  Book a Delivery
+                </Button>
+              </Link>
+              <button
+                onClick={() => setTrackDelivery(true)}
+                className="border border-white/40 text-white rounded-full px-8 py-3 text-sm font-semibold hover:bg-white/10 transition-colors"
+              >
+                Track a Package
+              </button>
+              <Link
+                href="/bulk-delivery"
+                className="text-white/70 text-sm font-semibold hover:text-white transition-colors flex items-center gap-2 px-2 py-1"
+              >
+                Bulk delivery 
+                <ArrowRight size={16} className="animate-arrow-bounce text-[var(--color-blue-primary)]" />
+              </Link>
+            </div>
+          )}
+
+          {/* Social proof row */}
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 pt-1 text-sm text-white/65 border-t border-white/15 mt-1 pt-4">
+            <span className="flex items-center gap-1.5">
+              <FaStar className="text-yellow-400" size={14} />
+              4.8 App Rating
+            </span>
+            <span className="w-px h-4 bg-white/20 hidden sm:block" />
+            <span className="flex items-center gap-1.5">
+              <RiMotorbikeFill className="text-blue-primary" size={15} />
+              200+ Verified Riders
+            </span>
+            <span className="w-px h-4 bg-white/20 hidden sm:block" />
+            <span className="flex items-center gap-1.5">
+              <LuPackageCheck className="text-blue-primary" size={15} />
+              500+ Deliveries Completed
+            </span>
           </div>
-        )}
-        <div className="mt-6 flex  items-start sm:items-center gap-4">
-          <AppStoreCard
-            platform="Google Play"
-            icon={<FaGooglePlay color="black" size={24} />}
-            link="https://play.google.com/store/apps/details?id=app.vinkol.user"
-          />
-          <AppStoreCard
-            platform="App Store"
-            icon={<IoLogoApple color="black" size={24} />}
-            link="https://apps.apple.com/ng/app/vinkol/id6751447117"
-          />
+
+          {/* App store badges */}
+          <div className="flex items-center gap-3 pt-1">
+            <AppStoreCard
+              platform="Google Play"
+              icon={<FaGooglePlay color="black" size={20} />}
+              link="https://play.google.com/store/apps/details?id=app.vinkol.user"
+            />
+            <AppStoreCard
+              platform="App Store"
+              icon={<IoLogoApple color="black" size={20} />}
+              link="https://apps.apple.com/ng/app/vinkol/id6751447117"
+            />
+          </div>
         </div>
       </div>
-      {/* Pass the data and control the modal's open state */}
-      <TrackingModal
-        isOpen={isModalOpen}
-        onClose={closeModal}
-        data={data?.data}
-      />
+
+      <TrackingModal isOpen={isModalOpen} onClose={closeModal} data={data?.data} />
     </div>
   );
 };
+
+

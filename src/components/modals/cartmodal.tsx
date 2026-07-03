@@ -2,9 +2,8 @@
 "use client";
 
 import { useState } from "react";
-import { FaTrash, FaTimes } from "react-icons/fa";
 import { useRouter } from "next/navigation";
-import { Router } from "lucide-react";
+import { X, Trash2, ShoppingCart, Minus, Plus } from "lucide-react";
 
 interface CartItem {
   id: string;
@@ -13,6 +12,7 @@ interface CartItem {
   price: number;
   description: string;
   quantity: number;
+  inventory?: number;
 }
 
 interface CartModalProps {
@@ -34,151 +34,143 @@ export const CartModal = ({
   total,
   shopId,
 }: CartModalProps) => {
-  const [openContactModal, setOpenContactModal] = useState<boolean>(false);
   const router = useRouter();
 
   if (!isOpen) return null;
 
-  const handleCloseContactModal = () => {
-    setOpenContactModal(false);
-  };
-
-  console.log(shopId);
   const handleProceed = () => {
     router.push(`/shops/checkout/${shopId}`);
   };
+
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("en-NG", {
       style: "currency",
       currency: "NGN",
+      maximumFractionDigits: 0
     }).format(price);
   };
 
   return (
-    <>
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80">
-        <div className="bg-white rounded-xl w-[90%] max-w-screen-sm p-6 space-y-6 shadow-lg max-h-[90vh] overflow-y-auto relative">
+    <div className="fixed inset-0 z-50 overflow-hidden flex justify-end">
+      {/* Overlay */}
+      <div 
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity" 
+        onClick={onClose}
+        aria-hidden="true"
+      />
+      
+      {/* Slide-over panel */}
+      <div className="relative w-full md:w-[450px] max-w-full bg-gray-50 h-full flex flex-col shadow-2xl animate-in slide-in-from-right duration-300">
+        
+        {/* Header */}
+        <div className="px-6 py-5 bg-white border-b border-gray-100 flex items-center justify-between shrink-0">
+          <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+            <ShoppingCart size={22} className="text-[var(--color-blue-primary)]" />
+            Your Cart
+          </h1>
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 transition-colors"
-            aria-label="Close cart"
+            className="p-2 rounded-full hover:bg-gray-100 text-gray-500 transition-colors"
           >
-            <FaTimes size={24} />
+            <X size={20} />
           </button>
-          <h1 className="text-2xl font-bold text-center text-gray-900 mt-2">
-            {" "}
-            {/* Added mt-2 for spacing */}
-            Cart Details
-          </h1>
-          <div className="space-y-4">
-            {/* Product Items */}
-            {cartItems.length === 0 ? (
-              <div className="text-center py-8">
-                {" "}
-                {/* Increased padding */}
-                <p className="text-gray-500 mb-4">Your cart is empty</p>
-                <button
-                  onClick={onClose}
-                  className="bg-blue-primary text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
-                >
-                  Continue Shopping
-                </button>
-              </div>
-            ) : (
-              <>
-                {cartItems.map((item) => (
-                  <div
-                    key={item.id}
-                    className="flex justify-between bg-[#FAFAFA] items-start p-3 rounded-lg hover:bg-gray-50 transition-colors"
-                  >
-                    <div className="flex items-start gap-2 sm:gap-4 flex-1">
-                      <img
-                        src={item.imageUrl}
-                        className="h-12 w-12 sm:h-16 sm:w-16 object-cover rounded-md bg-white p-1 border border-gray-200"
-                        alt={item.title}
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src =
-                            "/assets/placeholder.png";
-                        }}
-                      />
-                      <div className="space-y-1 sm:space-y-2">
-                        <p className="text-blue-primary text-xs sm:text-base font-medium">
-                          {item.title}
-                        </p>
-                        <p className="text-xs sm:text-sm text-gray-600 line-clamp-1">
-                          {item.description}
-                        </p>
-                        <div className="flex items-center gap-4">
-                          <div className="flex items-center gap-2 bg-white px-2 py-1 rounded border">
-                            <button
-                              className="px-1 text-gray-500 hover:text-gray-700 text-xs md:text-base disabled:opacity-30"
-                              onClick={() =>
-                                onUpdateQuantity(item.id, item.quantity - 1)
-                              }
-                              disabled={item.quantity <= 1}
-                            >
-                              -
-                            </button>
-                            <span className="font-medium w-6 text-center">
-                              {" "}
-                              {item.quantity}
-                            </span>
-                            <button
-                              className="px-1 text-gray-500 hover:text-gray-700"
-                              onClick={() =>
-                                onUpdateQuantity(item.id, item.quantity + 1)
-                              }
-                            >
-                              +
-                            </button>
-                          </div>
-                          <button
-                            className="text-red-500 hover:text-red-700 p-1 transition-colors"
-                            onClick={() => onRemoveItem(item.id)}
-                            aria-label="Remove item"
-                          >
-                            <FaTrash size={14} />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="text-right space-y-1 mt-2 sm:mt-0">
-                      <p className="text-gray-600 text-xs sm:text-base">
-                        {formatPrice(item.price)}
-                      </p>
-                      <h2 className="text-blue-primary font-bold text-base sm:text-lg">
-                        {formatPrice(item.price * item.quantity)}
-                      </h2>
-                    </div>
-                  </div>
-                ))}
+        </div>
 
-                {/* Order Summary */}
-                <div className="space-y-3 border-t border-gray-200 pt-4">
-                  {/* <div className="flex justify-between items-center">
-                    <p className="text-gray-600">Delivery fee</p>
-                    <p className="font-medium">{formatPrice(deliveryFee)}</p>
-                  </div> */}
-                  <div className="flex justify-between items-center pt-3 border-t border-gray-200">
-                    <p className="font-bold text-gray-900">Total</p>
-                    <p className="font-bold text-blue-primary text-lg">
-                      {formatPrice(total)}
-                    </p>
+        {/* Body */}
+        <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4">
+          {cartItems.length === 0 ? (
+            <div className="h-full flex flex-col items-center justify-center text-center space-y-4 pb-20">
+              <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center text-gray-300">
+                <ShoppingCart size={40} />
+              </div>
+              <p className="text-gray-500 font-medium text-lg">Your cart is empty.</p>
+              <button
+                onClick={onClose}
+                className="bg-[var(--color-blue-primary)] text-white font-semibold px-6 py-3 rounded-xl hover:bg-blue-700 transition"
+              >
+                Start Shopping
+              </button>
+            </div>
+          ) : (
+            cartItems.map((item) => (
+              <div
+                key={item.id}
+                className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex gap-4 relative group hover:border-blue-100 transition-colors"
+              >
+                <div className="w-20 h-20 shrink-0 bg-gray-50 rounded-xl overflow-hidden border border-gray-100 p-0.5">
+                  <img
+                    src={item.imageUrl}
+                    className="w-full h-full object-cover rounded-lg"
+                    alt={item.title}
+                    onError={(e) => { (e.target as HTMLImageElement).src = "/assets/placeholder.png"; }}
+                  />
+                </div>
+                
+                <div className="flex-1 flex flex-col justify-between">
+                  <div>
+                    <div className="flex justify-between items-start gap-2">
+                      <h3 className="font-bold text-gray-900 text-[15px] leading-tight line-clamp-2">{item.title}</h3>
+                      <button
+                        className="text-gray-300 hover:text-red-500 transition shrink-0"
+                        onClick={() => onRemoveItem(item.id)}
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                    <p className="text-gray-400 text-[13px] mt-1 line-clamp-1">{item.description}</p>
+                  </div>
+                  
+                  <div className="flex justify-between items-end mt-3">
+                    <div className="font-extrabold text-[var(--color-blue-primary)] text-base">
+                      {formatPrice(item.price)}
+                    </div>
+                    
+                    {/* Quantity Selector */}
+                    <div className="flex items-center gap-3 bg-gray-50 px-2 py-1.5 rounded-xl border border-gray-100 shadow-sm">
+                      <button
+                        className="w-7 h-7 flex items-center justify-center bg-white rounded-lg shadow-sm text-gray-600 hover:text-gray-900 disabled:opacity-50 transition"
+                        onClick={() => onUpdateQuantity(item.id, item.quantity - 1)}
+                        disabled={item.quantity <= 1}
+                      >
+                        <Minus size={14} />
+                      </button>
+                      <span className="font-bold text-sm w-4 text-center text-gray-900">
+                        {item.quantity}
+                      </span>
+                      <button
+                        className="w-7 h-7 flex items-center justify-center bg-white rounded-lg shadow-sm text-gray-600 hover:text-[var(--color-blue-primary)] disabled:opacity-50 transition"
+                        onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
+                        disabled={item.inventory !== undefined && item.quantity >= item.inventory}
+                      >
+                        <Plus size={14} />
+                      </button>
+                    </div>
                   </div>
                 </div>
-
-                <button
-                  className="w-full bg-blue-primary hover:bg-blue-700 text-white py-3 px-4 rounded-md text-base font-medium transition-colors duration-200 mt-4 disabled:opacity-50"
-                  onClick={handleProceed}
-                  disabled={cartItems.length === 0}
-                >
-                  Proceed to Checkout
-                </button>
-              </>
-            )}
-          </div>
+              </div>
+            ))
+          )}
         </div>
+
+        {/* Footer (Sticky Checkout) */}
+        {cartItems.length > 0 && (
+          <div className="bg-white border-t border-gray-100 p-6 shrink-0 shadow-[0_-10px_40px_rgb(0,0,0,0.04)] z-10">
+            <div className="flex justify-between items-center mb-4">
+              <span className="text-gray-500 font-medium">Subtotal</span>
+              <span className="text-xl font-extrabold text-gray-900">
+                {formatPrice(total)}
+              </span>
+            </div>
+            <button
+              className="w-full bg-[var(--color-blue-primary)] hover:bg-blue-700 text-white py-4 rounded-xl text-base font-bold transition flex justify-between items-center px-6"
+              onClick={handleProceed}
+            >
+              <span>Checkout</span>
+              <span className="bg-white/20 px-2.5 py-1 rounded-lg text-sm">{formatPrice(total)}</span>
+            </button>
+          </div>
+        )}
       </div>
-    </>
+    </div>
   );
 };

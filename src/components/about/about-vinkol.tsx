@@ -1,32 +1,36 @@
 export const AboutVinkol = () => {
   return (
-    <section className="flex flex-col-reverse lg:flex-row items-center gap-10 px-6 py-16 lg:py-20 lg:px-20 bg-white">
-      {/* Text content */}
-      <div className="lg:w-1/2 text-gray-800">
-        <h1 className="text-3xl lg:text-4xl font-bold mb-4">Vinkol </h1>
-        <p className="text-xs md:text-sm leading-relaxed">
-          Vinkol Material and Commercial Ventures Limited is a Nigerian-founded
-          company, officially incorporated on June 17, 2012. Operating at the
-          intersection of service and commerce, Vinkol is driven by a mission to
-          create jobs and deliver value through strategic ventures. In response
-          to global logistics challenges—especially highlighted during the
-          COVID-19 pandemic—Vinkol launched its specialized arm, Vinkol
-          Logistics, in 2020. With a focus on efficiency, cost-effectiveness,
-          and client satisfaction, Vinkol Logistics provides both domestic and
-          international shipping solutions rooted in advanced technology,
-          regulatory expertise, and a broad global network. From warehousing to
-          customs compliance, Vinkol ensures every shipment arrives safely, on
-          time, and with full transparency.
-        </p>
-      </div>
-
-      {/* Image content */}
-      <div className="lg:w-1/2 w-full">
-        <img
-          src="/assets/about.jpg"
-          alt="About Vinkol"
-          className="w-full h-full object-cover rounded-3xl shadow-md"
-        />
+    <section className="max-w-7xl mx-auto px-6 md:px-20 py-20 md:py-28">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 md:gap-20 items-center">
+        <div className="order-2 lg:order-1">
+          <p className="text-xs font-semibold tracking-[0.2em] uppercase text-blue-primary mb-5">
+            Who we are
+          </p>
+          <h2 className="text-3xl lg:text-5xl font-bold text-gray-900 tracking-tight leading-tight mb-6">
+            Vinkol
+          </h2>
+          <p className="text-gray-500 text-base leading-relaxed mb-6">
+            Vinkol Material and Commercial Ventures Limited is a Nigerian-founded
+            company, officially incorporated on June 17, 2012. Operating at the
+            intersection of service and commerce, Vinkol is driven by a mission
+            to create jobs and deliver value through strategic ventures.
+          </p>
+          <p className="text-gray-500 text-base leading-relaxed">
+            In response to global logistics challenges &mdash; especially
+            highlighted during the COVID-19 pandemic &mdash; Vinkol launched its
+            specialized arm, Vinkol Logistics, in 2020. With a focus on
+            efficiency, cost-effectiveness, and client satisfaction, we provide
+            on-demand delivery solutions rooted in technology, accountability,
+            and genuine care for every customer.
+          </p>
+        </div>
+        <div className="order-1 lg:order-2">
+          <img
+            src="/assets/about.jpg"
+            alt="About Vinkol"
+            className="w-full h-[320px] md:h-[460px] object-cover rounded-2xl shadow-lg"
+          />
+        </div>
       </div>
     </section>
   );

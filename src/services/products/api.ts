@@ -29,7 +29,18 @@ export const createProduct = async (
   data: z.infer<typeof createProductSchema>
 ) => {
   try {
-    const response = await axiosInstance.post("/products/create", data, {
+    const formData = new FormData();
+    formData.append("title", data.title);
+    formData.append("price", data.price.toString());
+    formData.append("inventory", data.inventory.toString());
+    formData.append("isAvailable", data.isAvailable.toString());
+    formData.append("category", data.category);
+    formData.append("description", data.description);
+    if (data.image) {
+      formData.append("image", data.image);
+    }
+
+    const response = await axiosInstance.post("/products/create", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
@@ -45,7 +56,18 @@ export const updateProduct = async (
   data: z.infer<typeof updateProductSchema>
 ) => {
   try {
-    const response = await axiosInstance.patch(`/products/${id}`, data, {
+    const formData = new FormData();
+    if (data.title !== undefined) formData.append("title", data.title);
+    if (data.price !== undefined) formData.append("price", data.price.toString());
+    if (data.inventory !== undefined) formData.append("inventory", data.inventory.toString());
+    if (data.isAvailable !== undefined) formData.append("isAvailable", data.isAvailable.toString());
+    if (data.category !== undefined) formData.append("category", data.category);
+    if (data.description !== undefined) formData.append("description", data.description);
+    if (data.image) {
+      formData.append("image", data.image);
+    }
+
+    const response = await axiosInstance.patch(`/products/${id}`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },

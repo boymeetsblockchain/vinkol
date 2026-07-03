@@ -17,13 +17,18 @@ export const Deliver = () => {
   return (
     <section className="w-full relative">
       {/* Black section */}
-      <div className="bg-black w-full py-16 md:py-0">
-        <div className="flex flex-col md:flex-row justify-between items-center max-w-6xl mx-auto px-4 h-auto md:h-[80vh]">
+      <div className="bg-[#0a0a0a] w-full py-16 md:py-0">
+        <div className="flex flex-col md:flex-row justify-between items-center max-w-7xl mx-auto px-6 md:px-20 h-auto md:h-[75vh] gap-10 md:gap-0">
           {/* Text section */}
           <div className="max-w-2xl text-center md:text-left">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-[90px] text-white font-bold leading-tight">
-              Deliver your every product with Vinkol
-            </h1>
+            <p className="text-xs font-semibold tracking-[0.2em] uppercase text-blue-primary mb-5">
+              Stay in the loop
+            </p>
+            <h2 className="text-4xl sm:text-5xl md:text-6xl text-white font-black leading-tight tracking-tight">
+              Vinkol updates,
+              <br />
+              straight to you.
+            </h2>
 
             <div className="w-full md:w-3/4 space-y-4 my-6 mx-auto md:mx-0">
               <p className="font-bold text-white text-base sm:text-lg">

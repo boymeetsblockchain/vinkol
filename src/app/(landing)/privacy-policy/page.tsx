@@ -21,20 +21,16 @@ const PrivacyPolicy = () => {
   const effectiveDate = "01 01 2025"; // Placeholder for effective date
 
   return (
-    <div className="min-h-screen  text-black p-4 sm:p-6 lg:p-8">
-      {/* Header Section */}
-      <header className="mb-10 text-center">
-        <h1 className="text-4xl sm:text-5xl font-extrabold text-blue-primary mb-2 tracking-tight">
-          VINKOL PLATFORM
-        </h1>
-        <h2 className="text-xl sm:text-2xl font-semibold text-blue-primary mb-4">
-          LEGAL & POLICY DOCUMENTATION
-        </h2>
-      </header>
-
-      {/* Main Content Container */}
-      <main className="max-w-4xl mx-auto  overflow-hidden">
-        <div className="p-6 sm:p-8 lg:p-10">
+    <main className="min-h-screen bg-[#F7F8FA]">
+      <section className="bg-white border-b border-gray-100">
+        <div className="max-w-4xl mx-auto px-6 md:px-20 py-14">
+          <p className="text-xs font-semibold tracking-[0.2em] uppercase text-[var(--color-blue-primary)] mb-3">Legal</p>
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 tracking-tight leading-tight mb-3">Privacy Policy</h1>
+          <p className="text-gray-500 text-sm">Effective date: January 1, 2025</p>
+        </div>
+      </section>
+      <div className="max-w-4xl mx-auto px-6 md:px-20 py-12">
+        <div className="bg-white rounded-2xl border border-gray-100 p-8 md:p-12">
           {/* Section 1: TERMS & POLICY */}
           <section className="mb-8 border-b pb-6 border-gray-200">
             <h3 className="text-2xl sm:text-3xl font-bold text-blue-700 mb-5 flex items-center">
@@ -447,16 +443,12 @@ const PrivacyPolicy = () => {
             </div>
           </section>
         </div>
-      </main>
+      </div>
 
-      {/* Footer Section */}
-      <footer className="mt-10 text-center text-gray-600 text-sm">
-        <p>
-          &copy; {new Date().getFullYear()} Vinkol Platform. All rights
-          reserved.
-        </p>
+      <footer className="max-w-4xl mx-auto px-6 md:px-20 mt-6 mb-12 text-center text-gray-400 text-sm">
+        <p>&copy; {new Date().getFullYear()} Vinkol Platform. All rights reserved.</p>
       </footer>
-    </div>
+    </main>
   );
 };
 

@@ -11,6 +11,14 @@ import {
   FormMessage,
   FormLabel,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { multiDeliverySchema } from "@/dto/delivery.form.schema";
 import { Button } from "../button";
 import Autocomplete from "react-google-autocomplete";
@@ -19,7 +27,7 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { TermsCheckbox } from "../shared/terms";
 import { useState } from "react";
-import { X, Plus } from "lucide-react";
+import { X, Plus, User, Info, MapPin, Package, FileText } from "lucide-react";
 
 const getStateFromAddressComponents = (addressComponents: any[]) => {
   if (!addressComponents) return null;
@@ -132,442 +140,418 @@ export const MultiDeliveryForm = ({
   };
 
   return (
-    <section className="py-12 max-w-screen-xl mx-auto px-4">
-      <div className="space-y-4 mb-6">
-        <h1 className="text-4xl md:text-5xl font-bold">
-          Book Multi-Deliveries
-        </h1>
-        <p className="font-medium text-gray-700 text-base">
-          Create multiple delivery orders with different pickup and dropoff
-          locations. Each order can have its own vehicle type and delivery date.
-        </p>
-      </div>
-
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          {/* Guest Information Section */}
-          <div className="border border-gray-200 rounded-lg p-6 bg-white">
-            <h2 className="text-2xl font-bold mb-6">Your Information</h2>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* First Name */}
-              <FormField
-                control={form.control}
-                name="firstname"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>First Name</FormLabel>
-                    <FormControl>
-                      <input
-                        {...field}
-                        type="text"
-                        placeholder="First Name"
-                        className="w-full border border-blue-primary placeholder:text-blue-primary py-4 px-3 rounded-md"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* Last Name */}
-              <FormField
-                control={form.control}
-                name="lastname"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Last Name</FormLabel>
-                    <FormControl>
-                      <input
-                        {...field}
-                        type="text"
-                        placeholder="Last Name"
-                        className="w-full border border-blue-primary placeholder:text-blue-primary py-4 px-3 rounded-md"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* Email */}
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <input
-                        {...field}
-                        type="email"
-                        placeholder="Email"
-                        className="w-full border border-blue-primary placeholder:text-blue-primary py-4 px-3 rounded-md"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* Phone Number */}
-              <FormField
-                control={form.control}
-                name="phonenumber"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Phone Number</FormLabel>
-                    <FormControl>
-                      <input
-                        {...field}
-                        type="tel"
-                        maxLength={11}
-                        minLength={11}
-                        placeholder="Phone Number"
-                        className="w-full border border-blue-primary placeholder:text-blue-primary py-4 px-3 rounded-md"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-          </div>
-
-          {/* Orders Section */}
-          <div className="space-y-6">
-            <h2 className="text-2xl font-bold">Delivery Orders</h2>
-            <p className="text-gray-600 text-sm">
-              Add one or more delivery orders. Each order has its own pickup
-              location, dropoff location, and delivery details.
-            </p>
-
-            {fields.map((field, index) => (
-              <div
-                key={field.id}
-                className="border border-gray-200 rounded-lg p-6 bg-gray-50"
-              >
-                {/* Order Header with Delete Button */}
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-xl font-semibold">Order {index + 1}</h3>
-                  {fields.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => remove(index)}
-                      className="text-red-600 hover:text-red-800 transition"
-                    >
-                      <X size={24} />
-                    </button>
-                  )}
+    <section className="pt-8 w-full">
+      <div className="w-full">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 md:p-10">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
+              
+              {/* Contact Information */}
+              <div className="space-y-6">
+                <div className="flex items-center gap-3 pb-3 border-b border-gray-100">
+                  <div className="bg-blue-50 p-2 rounded-lg">
+                    <User className="w-5 h-5 text-blue-600" />
+                  </div>
+                  <h2 className="text-xl font-semibold text-gray-800">Your Information</h2>
                 </div>
-
-                <div className="space-y-6">
-                  {/* Pickup Information */}
-                  <div>
-                    <h4 className="font-semibold text-lg mb-3">
-                      Pickup Location
-                    </h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {/* Pickup Location Autocomplete */}
-                      <FormField
-                        control={form.control}
-                        name={`orders.${index}.pickupLocation`}
-                        render={({ field: locationField }) => (
-                          <FormItem className="md:col-span-2">
-                            <FormLabel>Pickup Address</FormLabel>
-                            <FormControl>
-                              <Autocomplete
-                                apiKey={process.env.NEXT_PUBLIC_Maps_API_KEY}
-                                onPlaceSelected={(place) => {
-                                  const lat = place.geometry?.location?.lat();
-                                  const lng = place.geometry?.location?.lng();
-                                  const state = getStateFromAddressComponents(
-                                    place.address_components,
-                                  );
-
-                                  form.setValue(
-                                    `orders.${index}.pickupLocation`,
-                                    { lat, lng },
-                                  );
-
-                                  if (state) {
-                                    form.setValue(
-                                      `orders.${index}.state`,
-                                      state,
-                                    );
-                                  }
-                                }}
-                                options={{
-                                  types: ["geocode", "establishment"],
-                                  componentRestrictions: { country: ["ng"] },
-                                  fields: [
-                                    "formatted_address",
-                                    "name",
-                                    "geometry.location",
-                                    "address_components",
-                                  ],
-                                }}
-                                placeholder="Pickup Address"
-                                className="w-full border border-blue-primary placeholder:text-blue-primary py-4 px-3 rounded-md"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Dropoff Information */}
-                  <div>
-                    <h4 className="font-semibold text-lg mb-3">
-                      Dropoff Location
-                    </h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {/* Dropoff Location Autocomplete */}
-                      <FormField
-                        control={form.control}
-                        name={`orders.${index}.dropoffLocation`}
-                        render={({ field: locationField }) => (
-                          <FormItem className="md:col-span-2">
-                            <FormLabel>Dropoff Address</FormLabel>
-                            <FormControl>
-                              <Autocomplete
-                                apiKey={process.env.NEXT_PUBLIC_Maps_API_KEY}
-                                onPlaceSelected={(place) => {
-                                  const lat = place.geometry?.location?.lat();
-                                  const lng = place.geometry?.location?.lng();
-
-                                  form.setValue(
-                                    `orders.${index}.dropoffLocation`,
-                                    { lat, lng },
-                                  );
-                                }}
-                                options={{
-                                  types: ["geocode", "establishment"],
-                                  componentRestrictions: { country: ["ng"] },
-                                  fields: [
-                                    "formatted_address",
-                                    "name",
-                                    "geometry.location",
-                                    "address_components",
-                                  ],
-                                }}
-                                placeholder="Dropoff Address"
-                                className="w-full border border-blue-primary placeholder:text-blue-primary py-4 px-3 rounded-md"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Receiver Information */}
-                  <div>
-                    <h4 className="font-semibold text-lg mb-3">
-                      Receiver Contact
-                    </h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {/* Receiver Name */}
-                      <FormField
-                        control={form.control}
-                        name={`orders.${index}.receiverContact.name`}
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Receiver Name</FormLabel>
-                            <FormControl>
-                              <input
-                                {...field}
-                                type="text"
-                                placeholder="Receiver Name"
-                                className="w-full border border-blue-primary placeholder:text-blue-primary py-4 px-3 rounded-md"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      {/* Receiver Phone */}
-                      <FormField
-                        control={form.control}
-                        name={`orders.${index}.receiverContact.phone`}
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Receiver Phone</FormLabel>
-                            <FormControl>
-                              <input
-                                {...field}
-                                type="tel"
-                                maxLength={11}
-                                minLength={11}
-                                placeholder="Phone Number"
-                                className="w-full border border-blue-primary placeholder:text-blue-primary py-4 px-3 rounded-md"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Delivery Details */}
-                  <div>
-                    <h4 className="font-semibold text-lg mb-3">
-                      Delivery Details
-                    </h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {/* State */}
-                      <FormField
-                        control={form.control}
-                        name={`orders.${index}.state`}
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>State</FormLabel>
-                            <FormControl>
-                              <input
-                                {...field}
-                                readOnly
-                                className="w-full border border-blue-primary placeholder:text-blue-primary py-4 px-3 rounded-md bg-gray-100"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      {/* Vehicle Type */}
-                      <FormField
-                        control={form.control}
-                        name={`orders.${index}.vehicleRequest`}
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Vehicle Type</FormLabel>
-                            <FormControl>
-                              <select
-                                {...field}
-                                className="w-full border border-blue-primary text-blue-primary py-4 px-3 rounded-md appearance-none bg-white pr-8"
-                              >
-                                <option value="bike">Bike</option>
-                                <option value="car">Car</option>
-                                <option value="truck">Truck</option>
-                              </select>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      {/* Date */}
-                      <FormField
-                        control={form.control}
-                        name={`orders.${index}.date`}
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Delivery Date</FormLabel>
-                            <FormControl>
-                              <input
-                                {...field}
-                                type="date"
-                                className="w-full border border-blue-primary placeholder:text-blue-primary py-4 px-3 rounded-md"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      {/* Description */}
-                      <FormField
-                        control={form.control}
-                        name={`orders.${index}.description`}
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Description (Items)</FormLabel>
-                            <FormControl>
-                              <input
-                                {...field}
-                                type="text"
-                                placeholder="e.g., Electronics, Documents"
-                                className="w-full border border-blue-primary placeholder:text-blue-primary py-4 px-3 rounded-md"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      {/* Note */}
-                      <div className="md:col-span-2">
-                        <FormField
-                          control={form.control}
-                          name={`orders.${index}.note`}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>
-                                Note (e.g., fragile, instructions)
-                              </FormLabel>
-                              <FormControl>
-                                <textarea
-                                  {...field}
-                                  rows={3}
-                                  placeholder="Any special instructions or notes"
-                                  className="w-full border border-blue-primary placeholder:text-blue-primary py-4 px-3 rounded-md"
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-                    </div>
-                  </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <FormField
+                    control={form.control}
+                    name="firstname"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-gray-700">First Name</FormLabel>
+                        <FormControl>
+                          <Input {...field} className="h-12 bg-gray-50/50" placeholder="Enter your first name" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="lastname"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-gray-700">Last Name</FormLabel>
+                        <FormControl>
+                          <Input {...field} className="h-12 bg-gray-50/50" placeholder="Enter your last name" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-gray-700">Email Address</FormLabel>
+                        <FormControl>
+                          <Input {...field} type="email" className="h-12 bg-gray-50/50" placeholder="Enter your email" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="phonenumber"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-gray-700">Phone Number</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            type="tel"
+                            maxLength={11}
+                            minLength={11}
+                            className="h-12 bg-gray-50/50"
+                            placeholder="e.g. 08012345678"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 </div>
               </div>
-            ))}
 
-            {/* Add Order Button */}
-            <button
-              type="button"
-              onClick={addOrder}
-              className="flex items-center gap-2 px-6 py-3 border-2 border-blue-primary text-blue-primary rounded-md font-semibold hover:bg-blue-50 transition"
-            >
-              <Plus size={20} />
-              Add Another Order
-            </button>
-          </div>
+              {/* Delivery Orders */}
+              <div className="space-y-6">
+                <div className="flex items-center gap-3 pb-3 border-b border-gray-100">
+                  <div className="bg-blue-50 p-2 rounded-lg">
+                    <MapPin className="w-5 h-5 text-blue-600" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-semibold text-gray-800">Delivery Orders</h2>
+                    <p className="text-gray-500 text-sm mt-1">Add one or more independent delivery orders.</p>
+                  </div>
+                </div>
 
-          {/* Terms and Conditions */}
-          <TermsCheckbox
-            isBooking={true}
-            isChecked={isChecked}
-            onChange={() => setIsChecked(!isChecked)}
-          />
+                <div className="space-y-8">
+                  {fields.map((field, index) => (
+                    <div
+                      key={field.id}
+                      className="border border-gray-100 rounded-xl p-5 sm:p-7 bg-gray-50/50 transition-all hover:border-blue-100 hover:shadow-sm relative"
+                    >
+                      {fields.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => remove(index)}
+                          className="absolute right-4 top-4 text-gray-400 hover:text-red-500 transition-colors bg-white rounded-full p-1.5 shadow-sm border border-gray-100"
+                        >
+                          <X size={18} />
+                        </button>
+                      )}
 
-          {/* Insurance Note */}
-          <div className="bg-blue-50 border border-blue-200 rounded-md p-4">
-            <p className="text-center text-sm font-medium text-gray-700">
-              NOTE: Vinkol will cover up to ₦50,000 of damage or stolen package
-              per order. Please specify in the note section if goods are
-              fragile.
-            </p>
-          </div>
+                      <div className="mb-6 flex items-center gap-3 border-b border-gray-200/60 pb-4">
+                        <span className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-600 text-white font-bold">
+                          {index + 1}
+                        </span>
+                        <h3 className="text-lg font-bold text-gray-800">Order Details</h3>
+                      </div>
 
-          {/* Submit Button */}
-          <div className="flex justify-center">
-            <Button
-              type="submit"
-              disabled={isPending}
-              className="rounded-md py-4 px-8 w-full md:w-1/3 text-lg"
-            >
-              {isPending ? "Getting Quote..." : "Get Quote"}
-            </Button>
-          </div>
-        </form>
-      </Form>
+                      <div className="space-y-8">
+                        {/* Locations */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <FormField
+                            control={form.control}
+                            name={`orders.${index}.pickupLocation`}
+                            render={({ field: locationField }) => (
+                              <FormItem>
+                                <FormLabel className="text-gray-700 font-semibold flex items-center gap-2">
+                                  <MapPin size={16} className="text-blue-500" />
+                                  Pickup Address
+                                </FormLabel>
+                                <FormControl>
+                                  <Autocomplete
+                                    apiKey={process.env.NEXT_PUBLIC_Maps_API_KEY}
+                                    onPlaceSelected={(place) => {
+                                      const lat = place.geometry?.location?.lat();
+                                      const lng = place.geometry?.location?.lng();
+                                      const state = getStateFromAddressComponents(
+                                        place.address_components,
+                                      );
+
+                                      form.setValue(
+                                        `orders.${index}.pickupLocation`,
+                                        { lat, lng },
+                                      );
+
+                                      if (state) {
+                                        form.setValue(
+                                          `orders.${index}.state`,
+                                          state,
+                                        );
+                                      }
+                                    }}
+                                    options={{
+                                      types: ["geocode", "establishment"],
+                                      componentRestrictions: { country: ["ng"] },
+                                      fields: [
+                                        "formatted_address",
+                                        "name",
+                                        "geometry.location",
+                                        "address_components",
+                                      ],
+                                    }}
+                                    placeholder="Enter pickup address"
+                                    className="flex h-12 w-full rounded-md border border-input bg-white px-3 py-1 text-base shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <FormField
+                            control={form.control}
+                            name={`orders.${index}.dropoffLocation`}
+                            render={({ field: locationField }) => (
+                              <FormItem>
+                                <FormLabel className="text-gray-700 font-semibold flex items-center gap-2">
+                                  <MapPin size={16} className="text-green-500" />
+                                  Dropoff Address
+                                </FormLabel>
+                                <FormControl>
+                                  <Autocomplete
+                                    apiKey={process.env.NEXT_PUBLIC_Maps_API_KEY}
+                                    onPlaceSelected={(place) => {
+                                      const lat = place.geometry?.location?.lat();
+                                      const lng = place.geometry?.location?.lng();
+
+                                      form.setValue(
+                                        `orders.${index}.dropoffLocation`,
+                                        { lat, lng },
+                                      );
+                                    }}
+                                    options={{
+                                      types: ["geocode", "establishment"],
+                                      componentRestrictions: { country: ["ng"] },
+                                      fields: [
+                                        "formatted_address",
+                                        "name",
+                                        "geometry.location",
+                                        "address_components",
+                                      ],
+                                    }}
+                                    placeholder="Enter dropoff address"
+                                    className="flex h-12 w-full rounded-md border border-input bg-white px-3 py-1 text-base shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+
+                        {/* Receiver Contact */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-5 bg-white rounded-xl border border-gray-100 shadow-sm">
+                          <div className="md:col-span-2 mb-2">
+                            <h4 className="font-semibold text-gray-800 flex items-center gap-2">
+                              <User size={18} className="text-gray-400" />
+                              Receiver Contact
+                            </h4>
+                          </div>
+                          <FormField
+                            control={form.control}
+                            name={`orders.${index}.receiverContact.name`}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-gray-600">Receiver Name</FormLabel>
+                                <FormControl>
+                                  <Input
+                                    {...field}
+                                    type="text"
+                                    placeholder="e.g. Jane Doe"
+                                    className="h-12 bg-gray-50/50"
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <FormField
+                            control={form.control}
+                            name={`orders.${index}.receiverContact.phone`}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-gray-600">Receiver Phone</FormLabel>
+                                <FormControl>
+                                  <Input
+                                    {...field}
+                                    type="tel"
+                                    maxLength={11}
+                                    minLength={11}
+                                    placeholder="e.g. 08012345678"
+                                    className="h-12 bg-gray-50/50"
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+
+                        {/* Delivery Specs */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-5 bg-white rounded-xl border border-gray-100 shadow-sm">
+                          <div className="md:col-span-2 mb-2">
+                            <h4 className="font-semibold text-gray-800 flex items-center gap-2">
+                              <Package size={18} className="text-gray-400" />
+                              Delivery Specs
+                            </h4>
+                          </div>
+
+                          <FormField
+                            control={form.control}
+                            name={`orders.${index}.state`}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-gray-600">State (Auto-detected)</FormLabel>
+                                <FormControl>
+                                  <Input
+                                    {...field}
+                                    readOnly
+                                    className="h-12 bg-gray-100 text-gray-500 cursor-not-allowed"
+                                    placeholder="e.g. Lagos"
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <FormField
+                            control={form.control}
+                            name={`orders.${index}.date`}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-gray-600">Delivery Date</FormLabel>
+                                <FormControl>
+                                  <Input
+                                    {...field}
+                                    type="date"
+                                    className="h-12 bg-gray-50/50 block w-full"
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <FormField
+                            control={form.control}
+                            name={`orders.${index}.vehicleRequest`}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-gray-600">Vehicle Type</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                  <FormControl>
+                                    <SelectTrigger className="h-12 bg-gray-50/50">
+                                      <SelectValue placeholder="Select vehicle type" />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent>
+                                    <SelectItem value="bike">Bike</SelectItem>
+                                    <SelectItem value="car">Car</SelectItem>
+                                    <SelectItem value="truck">Truck</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <FormField
+                            control={form.control}
+                            name={`orders.${index}.description`}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-gray-600">Description (Items)</FormLabel>
+                                <FormControl>
+                                  <Input
+                                    {...field}
+                                    type="text"
+                                    placeholder="e.g., Electronics, Documents"
+                                    className="h-12 bg-gray-50/50"
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <div className="md:col-span-2">
+                            <FormField
+                              control={form.control}
+                              name={`orders.${index}.note`}
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-gray-600">
+                                    Additional Notes
+                                  </FormLabel>
+                                  <FormControl>
+                                    <textarea
+                                      {...field}
+                                      rows={3}
+                                      placeholder="e.g. fragile goods, specific delivery instructions"
+                                      className="flex w-full rounded-md border border-input bg-gray-50/50 px-3 py-3 text-base shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+
+                  <button
+                    type="button"
+                    onClick={addOrder}
+                    className="w-full flex items-center justify-center gap-2 mt-4 px-6 py-5 border-2 border-dashed border-blue-200 text-blue-600 rounded-xl font-semibold hover:bg-blue-50 hover:border-blue-300 transition-colors bg-blue-50/30"
+                  >
+                    <Plus size={20} />
+                    Add Another Order
+                  </button>
+                </div>
+              </div>
+
+              {/* Notice & Terms */}
+              <div className="space-y-6 pt-4">
+                <div className="bg-blue-50/50 p-4 rounded-xl border border-blue-100 flex gap-4 items-start">
+                  <Info className="w-6 h-6 text-blue-500 shrink-0 mt-0.5" />
+                  <p className="text-sm text-blue-900 leading-relaxed">
+                    <strong>Insurance Coverage:</strong> Vinkol will cover up to ₦50,000 of damage or stolen package per order. Please explicitly specify in the notes section if your goods are fragile.
+                  </p>
+                </div>
+
+                <div className="px-2">
+                  <TermsCheckbox
+                    isBooking={true}
+                    isChecked={isChecked}
+                    onChange={() => setIsChecked(!isChecked)}
+                  />
+                </div>
+              </div>
+
+              <div className="pt-6 border-t border-gray-100">
+                <Button
+                  type="submit"
+                  disabled={isPending}
+                  className="w-full md:w-auto h-14 md:min-w-[240px] text-lg rounded-full px-8 mx-auto flex items-center justify-center transition-transform active:scale-[0.98]"
+                >
+                  {isPending ? "Getting Quote..." : "Get Quote"}
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </div>
+      </div>
     </section>
   );
 };
