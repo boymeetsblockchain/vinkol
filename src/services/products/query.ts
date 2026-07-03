@@ -30,6 +30,8 @@ type Product = {
   image: ProductImage;
   category: string;
   slug: string;
+  isAvailable?: boolean;
+  inventory?: number;
 };
 
 interface QueryOptions<TData = unknown, TError = Error> {
@@ -64,7 +66,7 @@ interface ProductQueryParams {
 
 export function useGetAllProductsQuery(
   options?: QueryOptions<Product[], Error>,
-  params?: ProductQueryParams
+  params?: ProductQueryParams,
 ) {
   return useQuery<ApiResponse, Error>({
     queryKey: ["products", params],
@@ -87,7 +89,7 @@ export function useGetAllProductsQuery(
 
 export function useGetStoreProductsQuery(
   options?: QueryOptions<Product[], Error>,
-  params?: ProductQueryParams
+  params?: ProductQueryParams,
 ) {
   return useQuery<ApiResponse, Error>({
     queryKey: ["products", params],
@@ -110,7 +112,7 @@ export function useGetStoreProductsQuery(
 
 export function useGetSingleProductQuery(
   productId: string | undefined,
-  options?: QueryOptions<Product, Error>
+  options?: QueryOptions<Product, Error>,
 ) {
   return useQuery({
     queryKey: ["product", productId],
@@ -129,7 +131,7 @@ export function useGetSingleProductQuery(
     onError: (error: Error) => {
       console.error(
         `Failed to fetch product with ID ${productId}:`,
-        error.message
+        error.message,
       );
       options?.onError?.(error);
     },
