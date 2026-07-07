@@ -5,19 +5,19 @@ const teamsArray = [
     name: "Emmanuel Ediale",
     position: "Founder & CEO",
     img: "/assets/coo.jpg",
-    bio: "Finance professional with 9+ years across Banking, Insurance, Media, and Construction. Holds an MSc in International Business (University of Sunderland, UK) and is a Certified International Trade Professional (CITP). He drives Vinkol's strategic direction and daily operational excellence.",
+    bio: "Emmanuel is a finance professional with over 9 years of experience spanning across the Banking, Insurance, Media, and Construction industries. He holds an MSc in International Business from the University of Sunderland, UK, and is a Certified International Trade Professional (CITP).\n\nWith a unique blend of practical experience and academic foundation, Emmanuel provides strategic financial insights and plays a key role in driving daily operational excellence.",
   },
   {
     name: "Francis Ediale",
     position: "Executive Director",
     img: "/assets/ed.jpg",
-    bio: "Operations manager with 10+ years experience maintaining quality and safety standards. Holds a degree in Petroleum Engineering (University of Benin) and a Postgraduate Diploma in International Business Management (Seneca College, Canada). Francis leads efficiency and people operations.",
+    bio: "Francis is a highly skilled Operations Manager with over 10 years of experience in maintaining organizational quality and safety standards. He holds a bachelor’s degree in Petroleum Engineering from the University of Benin, Nigeria and a Postgraduate Diploma in International Business Management from Seneca College, Canada.\n\nWith a strong background in leadership, process management, human resource management, and project management, Francis is adept at driving efficiency and achieving organizational objectives. He brings exceptional communication, interpersonal, and conflict resolution skills, consistently exceeding performance expectations and fostering a collaborative work environment.",
   },
   {
     name: "Vincent Ediale",
     position: "Chairman",
     img: "/assets/daddy.jpg",
-    bio: "Seasoned professional with 20+ years across Oil & Gas, Construction, and International Trade. A University of Ibadan graduate who began his career with Julius Berger and later contributed to Zenon Oil and Gas, Lagos. Vincent provides strategic oversight and governance.",
+    bio: "Vincent is a seasoned professional with over two decades of experience in the Oil & Gas, Construction, and International Trade business. A graduate of the prestigious University of Ibadan, he began his career upon graduation in the 1980’s with Julius Berger and later on contributed to the growth of Zenon Oil and Gas in Victoria Island, Lagos, Nigeria.\n\nThroughout the course of his career, Vincent has demonstrated a proven ability to build and scale successful businesses, leveraging his expertise to deliver sustainable growth and operational excellence.",
   },
 ];
 
@@ -38,11 +38,11 @@ export const Teams = () => {
               key={member.name}
               className="bg-[#F7F8FA] rounded-2xl overflow-hidden flex flex-col"
             >
-              <div className="relative h-64 w-full overflow-hidden bg-gray-200">
+              <div className="relative h-[350px] w-full overflow-hidden bg-gray-100">
                 <img
                   src={member.img}
                   alt={member.name}
-                  className="w-full h-full object-cover object-top"
+                  className="w-full h-full object-contain"
                   onError={(e) => {
                     e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(member.name)}&background=0e74d8&color=fff&size=256`;
                   }}
@@ -53,7 +53,7 @@ export const Teams = () => {
                 <p className="text-xs font-semibold tracking-widest uppercase text-[var(--color-blue-primary)] mb-4">
                   {member.position}
                 </p>
-                <p className="text-sm text-gray-500 leading-relaxed">{member.bio}</p>
+                <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-line">{member.bio}</p>
               </div>
             </div>
           ))}
@@ -62,3 +62,4 @@ export const Teams = () => {
     </section>
   );
 };
+
