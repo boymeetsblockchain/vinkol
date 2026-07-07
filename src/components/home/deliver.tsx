@@ -17,7 +17,7 @@ export const Deliver = () => {
   return (
     <section className="w-full relative">
       {/* Black section */}
-      <div className="bg-[#0a0a0a] w-full py-16 md:py-0">
+      <div className="bg-[#0a0a0a] w-full pt-16 pb-0 md:py-0">
         <div className="flex flex-col md:flex-row justify-between items-center max-w-7xl mx-auto px-6 md:px-20 h-auto md:h-[75vh] gap-10 md:gap-0">
           {/* Text section */}
           <div className="max-w-2xl text-center md:text-left">
@@ -84,8 +84,8 @@ export const Deliver = () => {
       </div>
 
       {/* White section */}
-      <div className="w-full py-8 mt-[-100px]">
-        <img src="/assets/deliver.png" className="h-[150px] w-full" />
+      <div className="w-full pb-0 pt-0 mt-[-50px] md:mt-[-100px]">
+        <img src="/assets/deliver.png" className="h-[80px] md:h-[150px] w-full object-cover md:object-fill" />
       </div>
     </section>
   );
