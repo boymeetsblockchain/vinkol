@@ -5,7 +5,9 @@ import { RiTwitterXLine } from "react-icons/ri";
 const infoArray = [
   {
     name: "Office",
-    lines: ["No 1 Sea Shopping Complex, Oko Afo along Badagry Express Way, Lagos"],
+    lines: [
+      "No 1 Sea Shopping Complex, Oko Afo along Badagry Express Way, Lagos",
+    ],
     icon: MapPin,
   },
   {
@@ -62,10 +64,13 @@ export const Socials = () => {
         {infoArray.map((item) => (
           <div
             key={item.name}
-            className="bg-white rounded-2xl p-5 border border-gray-100 flex gap-4"
+            className="bg-white rounded-2xl p-5 border border-gray-100 flex flex-col gap-4"
           >
             <span className="flex-shrink-0 h-9 w-9 rounded-xl bg-[var(--color-blue-primary)]/10 flex items-center justify-center mt-0.5">
-              <item.icon size={16} className="text-[var(--color-blue-primary)]" />
+              <item.icon
+                size={16}
+                className="text-[var(--color-blue-primary)]"
+              />
             </span>
             <div>
               <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-1">
