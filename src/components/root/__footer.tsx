@@ -43,8 +43,8 @@ export const Footer = () => {
             </p>
             <div className="flex items-center gap-2 text-sm text-white/50">
               <IoMdMail size={16} />
-              <a href="mailto:support@vinkol.ng" className="hover:text-white transition-colors">
-                support@vinkol.ng
+              <a href="mailto:vinkollogistics@gmail.com" className="hover:text-white transition-colors">
+                vinkollogistics@gmail.com
               </a>
             </div>
             <div className="flex items-center gap-3 pt-1">

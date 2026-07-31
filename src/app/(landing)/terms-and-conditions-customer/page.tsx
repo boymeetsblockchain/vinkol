@@ -112,11 +112,11 @@ const CustomerTermsAndConditions: React.FC = () => {
             </div>
           </section>
 
-          {/* Section 4: Insurance Coverage */}
+          {/* Section 4: Vinkol Self-Retention Coverage */}
           <section className="mb-8 border-b pb-6 border-gray-200">
             <h3 className="text-2xl sm:text-3xl font-bold text-blue-700 mb-5 flex items-center">
               <ShieldCheck className="w-7 h-7 mr-3 text-blue-500" />
-              4. Insurance Coverage
+              4. Vinkol Self-Retention Coverage
             </h3>
             <div className="space-y-4">
               <PolicyPoint
@@ -124,7 +124,7 @@ const CustomerTermsAndConditions: React.FC = () => {
                 title=""
                 content={
                   <>
-                    Vinkol provides standard insurance coverage of up to
+                    Vinkol provides standard Self-Retention Coverage of up to
                     &#x20A6;50,000.00 for theft or damage of goods during
                     delivery, provided the loss is verified and occurred without
                     negligence by the rider or logistics company.

@@ -86,8 +86,8 @@ const SupportAndPrivacyPage = () => {
           <div className="pt-8 border-t border-gray-100 text-center">
             <p className="text-sm text-gray-500">
               Questions?{" "}
-              <a href="mailto:support@vinkol.ng" className="text-[var(--color-blue-primary)] font-semibold hover:underline">
-                support@vinkol.ng
+              <a href="mailto:vinkollogistics@gmail.com" className="text-[var(--color-blue-primary)] font-semibold hover:underline">
+                vinkollogistics@gmail.com
               </a>
             </p>
           </div>

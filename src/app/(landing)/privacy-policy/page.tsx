@@ -404,10 +404,10 @@ const PrivacyPolicy = () => {
                   <Mail className="w-5 h-5 mr-3 text-blue-primary" />
                   <span className="font-medium">Email:</span>
                   <a
-                    href="mailto:support@vinkol.ng"
+                    href="mailto:vinkollogistics@gmail.com"
                     className="ml-2 text-blue-600 hover:underline"
                   >
-                    support@vinkol.ng
+                    vinkollogistics@gmail.com
                   </a>
                   ,
                   <a
