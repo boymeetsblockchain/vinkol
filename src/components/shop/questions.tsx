@@ -43,10 +43,10 @@ export const Question = () => {
               Can't find what you're looking for? Reach us directly.
             </p>
             <a
-              href="mailto:support@vinkol.ng"
+              href="mailto:vinkollogistics@gmail.com"
               className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--color-blue-primary)] hover:underline"
             >
-              support@vinkol.ng →
+              vinkollogistics@gmail.com →
             </a>
           </div>
 

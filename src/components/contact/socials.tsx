@@ -20,7 +20,7 @@ const infoArray = [
   },
   {
     name: "Email",
-    lines: ["support@vinkol.ng", "info@vinkol.com"],
+    lines: ["vinkollogistics@gmail.com"],
     icon: Mail,
   },
 ];
