@@ -5,138 +5,104 @@ import { RiTwitterXLine } from "react-icons/ri";
 const infoArray = [
   {
     name: "Office",
-    desc: "No 1 Sea Shopping Complex, Oko Afo along badagry express way, Lagos",
+    lines: [
+      "No 1 Sea Shopping Complex, Oko Afo along Badagry Express Way, Lagos",
+    ],
     icon: MapPin,
-    iconcolor: "#0E74D8",
   },
   {
     name: "Phone",
-    desc: "+234807972231",
-    subdesc: "+23433670745",
+    lines: ["+234 807 972 231", "+234 336 707 45"],
     icon: Phone,
-    iconcolor: "#F8BD00",
   },
   {
     name: "Work Hours",
-    desc: "Everyday 9am - 7pm",
+    lines: ["Everyday, 9am – 7pm"],
     icon: Clock,
-    iconcolor: "#DD00FF",
   },
   {
     name: "Email",
-    desc: "info@vinkol.com",
-    subdesc: "info@vinkolventures.onmicrosoft.com",
-    extra: "vinkollogistics@gmail.com",
+    lines: ["vinkollogistics@gmail.com"],
     icon: Mail,
-    iconcolor: "#60D669",
+  },
+];
+
+const socials = [
+  {
+    label: "LinkedIn",
+    icon: FaLinkedin,
+    href: "https://www.linkedin.com/in/vinkol-materials-and-commercial-ventures-ltd-8224441b6",
+  },
+  {
+    label: "Instagram",
+    icon: FaInstagram,
+    href: "https://www.instagram.com/vinkoldelivery?igsi=cnlwcDdoMGQ5bTgz",
+  },
+  {
+    label: "YouTube",
+    icon: FaYoutube,
+    href: "https://youtube.com/@vinkollogistics?si=XaJO73rzoDq8Z1Sk",
+  },
+  {
+    label: "X / Twitter",
+    icon: RiTwitterXLine,
+    href: "https://x.com/vinkolltd?s=21&t=fwDDLMrWPBCeOetcu1W7Gw",
   },
 ];
 
 export const Socials = () => {
-  const hexToRgba = (hex: string, alpha: number) => {
-    let r = 0,
-      g = 0,
-      b = 0;
-    // Handle 3-digit hex
-    if (hex.length === 4) {
-      r = parseInt(hex[1] + hex[1], 16);
-      g = parseInt(hex[2] + hex[2], 16);
-      b = parseInt(hex[3] + hex[3], 16);
-    }
-    // Handle 6-digit hex
-    else if (hex.length === 7) {
-      r = parseInt(hex.substring(1, 3), 16);
-      g = parseInt(hex.substring(3, 5), 16);
-      b = parseInt(hex.substring(5, 7), 16);
-    }
-    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-  };
   return (
-    <section className="container mx-auto px-4 py-12 md:py-20">
-      <div className="text-left mb-10">
-        <h2 className="text-4xl font-bold text-gray-800 mb-3">
-          Don’t hesitate to contact us
-        </h2>
-        <p className="text-lg text-gray-600">
-          Contact us for any issue. We reply under 5 Minutes.
-        </p>
-      </div>
+    <section className="py-2">
+      <p className="text-xs font-semibold tracking-[0.2em] uppercase text-[var(--color-blue-primary)] mb-3">
+        Get in touch
+      </p>
+      <h2 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight leading-tight mb-8">
+        We're always here to help.
+      </h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {infoArray.map((item, index) => (
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+        {infoArray.map((item) => (
           <div
-            key={index}
-            className="flex flex-col py-4 px-2  bg-white rounded-lg shadow-lg borderboder-[#DFDEDA] h-[100px] transform transition duration-300 hover:scale-105 hover:shadow-xl"
+            key={item.name}
+            className="bg-white rounded-2xl p-5 border border-gray-100 flex flex-col gap-4"
           >
-            <div className="flex gap-x-3 items-">
-              <div
-                className="p-2 rounded-full  flex flex-col "
-                style={{ backgroundColor: hexToRgba(item.iconcolor, 0.2) }}
-              >
-                <item.icon color={item.iconcolor} size={10} />
-              </div>
-              <h3 className="text-sm font-semibold text-gray-800 ">
+            <span className="flex-shrink-0 h-9 w-9 rounded-xl bg-[var(--color-blue-primary)]/10 flex items-center justify-center mt-0.5">
+              <item.icon
+                size={16}
+                className="text-[var(--color-blue-primary)]"
+              />
+            </span>
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-1">
                 {item.name}
-              </h3>
+              </p>
+              {item.lines.map((line, i) => (
+                <p key={i} className="text-sm text-gray-700 leading-relaxed">
+                  {line}
+                </p>
+              ))}
             </div>
-            <p className="text-gray-600  text-xs text-left ml-8">{item.desc}</p>
-            <p className="text-gray-600  text-xs text-left ml-8 ">
-              {item.subdesc}
-            </p>
-            <p className="text-gray-600  text-xs text-left ml-8 ">
-              {item.extra}
-            </p>
           </div>
         ))}
       </div>
-      <div className="flex justify-between items-center my-3">
-        <p className="text-lg text-black font-bold">Social Media:</p>
-        <div className="flex gap-x-5 my-4  items-center">
-          {" "}
-          {/* Increased gap-x for better spacing */}
-          <a
-            href="https://www.linkedin.com/in/vinkol-materials-and-commercial-ventures-ltd-8224441b6?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app"
-            target="_blank"
-          >
-            {" "}
-            <FaLinkedin
-              color="#0E74D8"
-              size={20}
-              className="cursor-pointer hover:opacity-75 transition-opacity duration-200"
-            />
-          </a>
-          <a
-            href="https://www.instagram.com/vinkollogistics?igsh=cHFveTlnY2Fuc3Mw&utm_source=qr"
-            target="_blank"
-          >
-            <FaInstagram
-              color="#0E74D8"
-              size={20}
-              className="cursor-pointer hover:opacity-75 transition-opacity duration-200"
-            />
-          </a>
-          <a
-            href="https://youtube.com/@vinkollogistics?si=XaJO73rzoDq8Z1Sk"
-            target="_blank"
-          >
-            {" "}
-            <FaYoutube
-              color="#0E74D8"
-              size={20}
-              className="cursor-pointer hover:opacity-75 transition-opacity duration-200"
-            />
-          </a>
-          <a
-            href="https://x.com/vinkolltd?s=21&t=fwDDLMrWPBCeOetcu1W7Gw"
-            target="_blank"
-          >
-            {" "}
-            <RiTwitterXLine
-              color="#0E74D8"
-              size={20}
-              className="cursor-pointer hover:opacity-75 transition-opacity duration-200"
-            />
-          </a>
+
+      <div>
+        <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-4">
+          Follow us
+        </p>
+        <div className="flex items-center gap-3">
+          {socials.map(({ label, icon: Icon, href }) => (
+            <a
+              key={label}
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={label}
+              className="h-10 w-10 rounded-xl border border-gray-200 flex items-center justify-center text-gray-500 hover:border-[var(--color-blue-primary)] hover:text-[var(--color-blue-primary)] transition-colors"
+            >
+              <Icon size={17} />
+            </a>
+          ))}
         </div>
       </div>
     </section>

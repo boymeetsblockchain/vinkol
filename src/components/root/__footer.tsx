@@ -92,7 +92,7 @@ export const Footer = () => {
             <RiTwitterXLine color="black" />
           </a>
           <a
-            href="https://www.instagram.com/vinkollogistics?igsh=cHFveTlnY2Fuc3Mw&utm_source=qr"
+            href="https://www.instagram.com/vinkoldelivery?igsi=cnlwcDdoMGQ5bTgz"
             target="_blank"
           >
             {" "}
