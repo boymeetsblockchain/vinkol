@@ -36,7 +36,7 @@ const socials = [
   {
     label: "Instagram",
     icon: FaInstagram,
-    href: "https://www.instagram.com/vinkollogistics?igsh=cHFveTlnY2Fuc3Mw&utm_source=qr",
+    href: "https://www.instagram.com/vinkoldelivery?igsi=cnlwcDdoMGQ5bTgz",
   },
   {
     label: "YouTube",
