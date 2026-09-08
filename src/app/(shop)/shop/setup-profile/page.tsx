@@ -1,4 +1,7 @@
 "use client";
+import { placesCountry, regionLabel, resolveRegionFromPlace } from "@/lib/markets";
+import { useMarket } from "@/lib/markets/useMarket";
+import { phonePlaceholder } from "@/lib/phone";
 
 import { useState } from "react";
 import { Button } from "@/components/button";
@@ -15,6 +18,7 @@ function SetUpProfile() {
   // Local state for form inputs
   const [name, setName] = useState("");
   const [bio, setBio] = useState("");
+  const market = useMarket();
   const [address, setAddress] = useState("");
   const [lga, setLga] = useState("");
   const [state, setState] = useState("");
@@ -143,19 +147,21 @@ function SetUpProfile() {
                       // This is often the county or LGA
                       foundLga = component.long_name;
                     }
-                    if (
-                      component.types.includes("administrative_area_level_1")
-                    ) {
-                      // This is the state
-                      foundState = component.long_name;
-                    }
                   }
                   setLga(foundLga);
-                  setState(foundState);
+
+                  // Google's long_name gives "Lagos State" and "Ontario";
+                  // store search matches the exact stored value, so the
+                  // canonical one is what has to be saved.
+                  const region = resolveRegionFromPlace(
+                    place.address_components,
+                    market.country,
+                  );
+                  setState(region?.value ?? "");
                 }}
                 options={{
                   types: ["address"], // Restrict to addresses
-                  componentRestrictions: { country: "ng" }, // Restrict to Nigeria
+                  componentRestrictions: { country: placesCountry(market.country) },
                 }}
                 defaultValue={address} // Set default value to reflect current address state
                 className="w-full py-2 px-3 focus:outline-none border border-[#A5A4A0] rounded-[5px] placeholder:text-blue-primary placeholder:text-base"
@@ -172,15 +178,18 @@ function SetUpProfile() {
                 />
                 <input
                   type="text"
-                  placeholder="State"
-                  value={state}
-                  onChange={(e) => setState(e.target.value)}
-                  className="w-full py-2 px-3 focus:outline-none border border-[#A5A4A0] rounded-[5px] placeholder:text-blue-primary placeholder:text-base"
+                  readOnly
+                  placeholder={
+                    market.country === "CA" ? "Province" : "State"
+                  }
+                  value={state ? regionLabel(state, market.country) : ""}
+                  title="Set from your shop address"
+                  className="w-full py-2 px-3 bg-gray-100 text-gray-600 focus:outline-none border border-[#A5A4A0] rounded-[5px] placeholder:text-blue-primary placeholder:text-base cursor-default"
                 />
               </div>
               <input
                 type="tel"
-                placeholder="Phone number"
+                placeholder={phonePlaceholder(market.country)}
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 className="w-full py-2 px-3 focus:outline-none border border-[#A5A4A0] rounded-[5px] placeholder:text-blue-primary placeholder:text-base"

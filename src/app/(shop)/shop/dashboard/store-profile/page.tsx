@@ -1,7 +1,9 @@
 "use client";
+import { phonePlaceholder } from "@/lib/phone";
 
 import { useEffect, useRef, useState } from "react";
 import { useGetStoreProfile } from "@/services/shops/query";
+import { useMarket } from "@/lib/markets/useMarket";
 import { useUpdateOpeningHours, useUpdateStoreProfile } from "@/services/shops/mutation";
 import { toast } from "sonner";
 import { Camera, Clock, MapPin, Phone, Store, User, X, Plus, Check, Pencil } from "lucide-react";
@@ -57,6 +59,7 @@ const ProfileSkeleton = () => (
 
 function StoreProfile() {
   const { data: profile, isLoading, isError } = useGetStoreProfile();
+  const market = useMarket(profile?.data?.country);
   const { mutate: updateProfile, isPending: isPendingProfile } = useUpdateStoreProfile();
   const { mutate: updateOpeningHoursMutate, isPending: isPendingHours } = useUpdateOpeningHours();
   const [isEditing, setIsEditing] = useState(false);
@@ -207,7 +210,7 @@ function StoreProfile() {
                 </Field>
               </div>
               <Field label="Phone">
-                <input type="tel" value={formData.phone} onChange={(e) => set("phone", e.target.value)} placeholder="+234…" className={inputCls} />
+                <input type="tel" value={formData.phone} onChange={(e) => set("phone", e.target.value)} placeholder={phonePlaceholder(market.country)} className={inputCls} />
               </Field>
             </div>
           ) : (

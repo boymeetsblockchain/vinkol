@@ -1,4 +1,5 @@
 "use client";
+import { phonePlaceholder } from "@/lib/phone";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -26,7 +27,7 @@ import { useGetQuoteMutation } from "@/services/orders/mutation";
 import { toast } from "sonner";
 
 import { useMarket } from "@/lib/markets/useMarket";
-import { contentFor } from "@/lib/markets";
+import { contentFor, placesCountry, resolveRegionFromPlace } from "@/lib/markets";
 import { useRouter } from "next/navigation";
 import { TermsCheckbox } from "../shared/terms";
 import { useState } from "react";
@@ -41,15 +42,7 @@ const getCurrentTime = () => {
   return now.toTimeString().slice(0, 5);
 };
 
-const getStateFromAddressComponents = (addressComponents: any[]) => {
-  if (!addressComponents) return null;
 
-  const stateComponent = addressComponents.find((component) =>
-    component.types.includes("administrative_area_level_1"),
-  );
-
-  return stateComponent ? stateComponent.long_name.toLowerCase() : null;
-};
 
 export const BookADeliveryForm = () => {
   const router = useRouter();
@@ -245,10 +238,8 @@ export const BookADeliveryForm = () => {
                           <Input
                             {...field}
                             type="tel"
-                            maxLength={11}
-                            minLength={11}
                             className="h-12 bg-gray-50/50"
-                            placeholder="e.g. 08012345678"
+                            placeholder={phonePlaceholder(market.country)}
                           />
                         </FormControl>
                         <FormMessage />
@@ -279,8 +270,9 @@ export const BookADeliveryForm = () => {
                             onPlaceSelected={(place) => {
                               const lat = place.geometry?.location?.lat();
                               const lng = place.geometry?.location?.lng();
-                              const state = getStateFromAddressComponents(
+                              const region = resolveRegionFromPlace(
                                 place.address_components,
+                                market.country,
                               );
 
                               form.setValue(
@@ -289,13 +281,15 @@ export const BookADeliveryForm = () => {
                               );
                               form.setValue("pickupCoords", { lat, lng });
 
-                              if (state) {
-                                form.setValue("state", state);
+                              if (region) {
+                                form.setValue("state", region.value);
                               }
                             }}
                             options={{
                               types: ["geocode", "establishment"],
-                              componentRestrictions: { country: ["ng"] },
+                              componentRestrictions: {
+                                country: [placesCountry(market.country)],
+                              },
                               fields: [
                                 "formatted_address",
                                 "name",
@@ -326,8 +320,9 @@ export const BookADeliveryForm = () => {
                             onPlaceSelected={(place) => {
                               const lat = place.geometry?.location?.lat();
                               const lng = place.geometry?.location?.lng();
-                              const state = getStateFromAddressComponents(
+                              const region = resolveRegionFromPlace(
                                 place.address_components,
+                                market.country,
                               );
 
                               form.setValue(
@@ -336,13 +331,15 @@ export const BookADeliveryForm = () => {
                               );
                               form.setValue("dropoffCoords", { lat, lng });
 
-                              if (state && !form.getValues("state")) {
-                                form.setValue("state", state);
+                              if (region && !form.getValues("state")) {
+                                form.setValue("state", region.value);
                               }
                             }}
                             options={{
                               types: ["geocode", "establishment"],
-                              componentRestrictions: { country: ["ng"] },
+                              componentRestrictions: {
+                                country: [placesCountry(market.country)],
+                              },
                               fields: [
                                 "formatted_address",
                                 "name",
