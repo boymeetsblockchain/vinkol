@@ -1,5 +1,8 @@
-// components/modals/cartmodal.tsx
 "use client";
+
+import { useMarket } from "@/lib/markets/useMarket";
+import { formatMoney } from "@/lib/money";
+// components/modals/cartmodal.tsx
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -34,6 +37,7 @@ export const CartModal = ({
   total,
   shopId,
 }: CartModalProps) => {
+  const market = useMarket();
   const router = useRouter();
 
   if (!isOpen) return null;
@@ -42,13 +46,8 @@ export const CartModal = ({
     router.push(`/shops/checkout/${shopId}`);
   };
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("en-NG", {
-      style: "currency",
-      currency: "NGN",
-      maximumFractionDigits: 0
-    }).format(price);
-  };
+  const formatPrice = (price: number) =>
+    formatMoney(price, market.currency);
 
   return (
     <div className="fixed inset-0 z-50 overflow-hidden flex justify-end">

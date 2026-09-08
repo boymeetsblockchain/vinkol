@@ -1,4 +1,6 @@
 "use client";
+import { contentFor } from "@/lib/markets";
+import { useMarket } from "@/lib/markets/useMarket";
 
 import { BulkDeliveryForm } from "@/components/delivery/bulk-delivery-form";
 import { BulkQuoteSummary } from "@/components/delivery/bulk-quote-summary";
@@ -10,14 +12,16 @@ import MultiQuoteSummary from "@/components/delivery/multi-quote-summary";
 import { useState } from "react";
 import { LuBuilding2, LuTruck, LuRepeat2, LuBadgeCheck } from "react-icons/lu";
 
-const perks = [
+const perks = (coverAmount: string) => [
   { icon: LuTruck, label: "High-volume capacity", detail: "Send 10 to 1,000+ packages in one request" },
   { icon: LuRepeat2, label: "Flexible routing", detail: "One pickup with many dropoffs, or multiple pickup points" },
-  { icon: LuBadgeCheck, label: "Insured shipments", detail: "Up to ₦50,000 protection per item" },
+  { icon: LuBadgeCheck, label: "Insured shipments", detail: `Up to ${coverAmount} protection per item` },
   { icon: LuBuilding2, label: "Business invoicing", detail: "Get itemized receipts for every bulk run" },
 ];
 
 const BulkDeliveryPage = () => {
+  const market = useMarket();
+  const { coverAmount } = contentFor(market.country);
   const [flow, setFlow] = useState<DeliveryFlowType>(DeliveryFlowType.BULK);
   const [bulkQuote, setBulkQuote] = useState(null);
   const [multiQuote, setMultiQuote] = useState(null);
@@ -39,7 +43,7 @@ const BulkDeliveryPage = () => {
 
           {/* Perks grid */}
           <div className="mt-10 grid grid-cols-2 md:grid-cols-4 gap-6">
-            {perks.map(({ icon: Icon, label, detail }) => (
+            {perks(coverAmount).map(({ icon: Icon, label, detail }) => (
               <div key={label} className="flex flex-col gap-2">
                 <span className="h-9 w-9 rounded-xl bg-[var(--color-blue-primary)]/10 flex items-center justify-center">
                   <Icon size={18} className="text-[var(--color-blue-primary)]" />

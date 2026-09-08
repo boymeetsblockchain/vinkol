@@ -1,14 +1,31 @@
+import type { Metadata } from "next";
+
 import { BookADeliveryForm } from "@/components/delivery/book-a-delivery-form";
 import { LuPackageCheck, LuShield, LuMapPin, LuClock } from "react-icons/lu";
+import { contentFor } from "@/lib/markets";
+import { pageMetadata } from "@/lib/markets/metadata";
+import { marketFromRequest } from "@/lib/markets/server";
 
-const trustItems = [
-  { icon: LuShield, label: "Up to ₦50k item protection" },
+const trustItems = (coverAmount: string) => [
+  { icon: LuShield, label: `Up to ${coverAmount} item protection` },
   { icon: LuMapPin, label: "Real-time GPS tracking" },
   { icon: LuPackageCheck, label: "Verified & insured riders" },
   { icon: LuClock, label: "Same-day delivery" },
 ];
 
-function BookaDeliveryPage() {
+export async function generateMetadata(): Promise<Metadata> {
+  const country = await marketFromRequest();
+
+  return pageMetadata({
+    country,
+    title: "Book a Delivery",
+    description: `Get a price in seconds and have a verified rider collect your package across ${contentFor(country).serviceAreaPhrase}. The price you are quoted is the price you pay.`,
+    path: "/book-a-delivery",
+  });
+}
+
+async function BookaDeliveryPage() {
+  const { coverAmount } = contentFor(await marketFromRequest());
   return (
     <main className="min-h-screen bg-[#F7F8FA]">
       {/* Page header */}
@@ -26,7 +43,7 @@ function BookaDeliveryPage() {
 
           {/* Trust bar */}
           <div className="mt-8 flex flex-wrap gap-6">
-            {trustItems.map(({ icon: Icon, label }) => (
+            {trustItems(coverAmount).map(({ icon: Icon, label }) => (
               <span key={label} className="flex items-center gap-2 text-sm text-gray-600 font-medium">
                 <span className="h-7 w-7 rounded-full bg-[var(--color-blue-primary)]/10 flex items-center justify-center">
                   <Icon size={14} className="text-[var(--color-blue-primary)]" />

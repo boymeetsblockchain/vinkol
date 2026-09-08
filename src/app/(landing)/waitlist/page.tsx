@@ -1,3 +1,18 @@
+import type { Metadata } from "next";
+
+import { pageMetadata } from "@/lib/markets/metadata";
+import { marketFromRequest } from "@/lib/markets/server";
+
+export async function generateMetadata(): Promise<Metadata> {
+  return pageMetadata({
+    country: await marketFromRequest(),
+    title: "Rider Waitlist",
+    description:
+      "Join the Vinkol rider waitlist. Tell us about yourself and we will get in touch when onboarding opens in your area.",
+    path: "/waitlist",
+  });
+}
+
 import { RiderWaitlistForm } from "@/components/waitlist/rider-waitlist-form";
 import { LuBike, LuBadgeCheck, LuTrendingUp, LuShield } from "react-icons/lu";
 

@@ -1,6 +1,9 @@
 "use client";
 
 import { useGetQuoteMutation } from "@/services/orders/mutation";
+import { contentFor } from "@/lib/markets";
+import { useMarket } from "@/lib/markets/useMarket";
+import { formatMoney } from "@/lib/money";
 
 interface CartItem {
   id: string;
@@ -26,6 +29,10 @@ export const ContactModal = ({
   subtotal,
   total,
 }: ContactModalProps) => {
+  const market = useMarket();
+  const { contact } = contentFor(market.country);
+  const formatPrice = (price: number) => formatMoney(price, market.currency);
+
   if (!isOpen) return null;
 
   console.log(cartItems);
@@ -124,7 +131,7 @@ export const ContactModal = ({
                   />
                 </svg>
                 <p className="text-gray-700">
-                  19, Fastima Lekki Phase One, Lagos State
+                  {contact.address || "Enter your delivery address..."}
                 </p>
               </div>
             </div>
@@ -142,10 +149,4 @@ export const ContactModal = ({
   );
 };
 
-// Helper function (same as in CartModal)
-const formatPrice = (price: number) => {
-  return new Intl.NumberFormat("en-NG", {
-    style: "currency",
-    currency: "NGN",
-  }).format(price);
-};
+

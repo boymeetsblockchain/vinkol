@@ -14,7 +14,10 @@ export const ShopHero = ({ country }: { country: Country }) => {
   const router = useRouter();
 
   const handleSearch = () => {
-    router.push(`/shops/search?state=${selectedState}&q=${encodeURIComponent(searchQuery)}`);
+    const params = new URLSearchParams();
+    if (selectedState) params.set("state", selectedState);
+    if (searchQuery.trim()) params.set("search", searchQuery.trim());
+    router.push(`/shops/search?${params.toString()}`);
   };
 
   return (

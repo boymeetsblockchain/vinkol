@@ -6,6 +6,8 @@ import { CartModal } from "@/components/modals/cartmodal";
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useGetSingleStore } from "@/services/shops/query";
+import { formatMoney } from "@/lib/money";
+import { useMarket } from "@/lib/markets/useMarket";
 import { useGetAllProductsQuery } from "@/services/products/query";
 import { ShopSideBar } from "@/components/shop-page/sidebar";
 import {
@@ -14,7 +16,6 @@ import {
   ArrowLeft,
   MapPin,
   Star,
-  Clock,
   Plus,
   Search,
   X,
@@ -70,14 +71,19 @@ function ShopIdPage() {
   const id = params.id as string;
 
   // Fetch the store details
-  const { data: store, isLoading: isStoreLoading } = useGetSingleStore(id);
+  const market = useMarket();
+  const { data: store, isLoading: isStoreLoading } = useGetSingleStore(
+    id,
+    market.country,
+  );
   const { data: productsData, isLoading: areProductsLoading } =
     useGetAllProductsQuery(undefined, {
       store: id,
       category: selectedCategory,
     });
 
-  const products = productsData?.data.fetchedData || [];
+  const products = productsData?.data?.fetchedData ?? [];
+  const storeRating = store?.data?.store?.avgRating;
 
   // Extract slugs
   const productCategorySlugs = new Set(products.flatMap((p) => p.category));
@@ -249,15 +255,19 @@ function ShopIdPage() {
                     {store?.data?.store?.address}
                   </p>
                 </div>
-                {/* Badges */}
-                <div className="flex gap-2">
-                  <div className="bg-green-50 text-green-700 px-3 py-1.5 rounded-2xl text-xs font-bold flex items-center gap-1 border border-green-100 shadow-sm">
-                    <Star size={13} className="fill-green-700" /> 4.8 Excellent
+                {/* A rating is shown only where the store actually has one.
+                    A fixed "4.8 Excellent" and "20-35 min" used to render on
+                    every store regardless of its data, which is a claim we
+                    cannot stand behind — and in a market with no delivery
+                    history yet, plainly false. */}
+                {typeof storeRating === "number" && storeRating > 0 && (
+                  <div className="flex gap-2">
+                    <div className="bg-green-50 text-green-700 px-3 py-1.5 rounded-2xl text-xs font-bold flex items-center gap-1 border border-green-100 shadow-sm">
+                      <Star size={13} className="fill-green-700" />
+                      {storeRating.toFixed(1)}
+                    </div>
                   </div>
-                  <div className="bg-gray-50 text-gray-700 px-3 py-1.5 rounded-2xl text-xs font-bold flex items-center gap-1 border border-gray-100 shadow-sm">
-                    <Clock size={13} /> 20-35 min
-                  </div>
-                </div>
+                )}
               </div>
             </div>
           </div>
@@ -326,11 +336,7 @@ function ShopIdPage() {
 
                         <div className="mt-auto pt-4 flex items-center justify-between">
                           <span className="font-extrabold text-gray-900 text-[15px]">
-                            {new Intl.NumberFormat("en-NG", {
-                              style: "currency",
-                              currency: "NGN",
-                              maximumFractionDigits: 0,
-                            }).format(product.price)}
+                            {formatMoney(product.price, market.currency)}
                           </span>
                           {!product.isAvailable || (product.inventory ?? 0) <= 0 ? (
                             <span className="text-red-500 font-bold text-[13px] bg-red-50 px-3 py-1.5 rounded-xl border border-red-100 shadow-sm shrink-0">
@@ -419,11 +425,7 @@ function ShopIdPage() {
                   {selectedProduct.title}
                 </DialogTitle>
                 <span className="font-extrabold text-[var(--color-blue-primary)] text-xl shrink-0">
-                  {new Intl.NumberFormat("en-NG", {
-                    style: "currency",
-                    currency: "NGN",
-                    maximumFractionDigits: 0,
-                  }).format(selectedProduct.price)}
+                  {formatMoney(selectedProduct.price, market.currency)}
                 </span>
               </div>
               <DialogDescription className="text-gray-600 text-[15px] leading-relaxed mb-8">
