@@ -5,7 +5,14 @@ import { Package, DollarSign } from "lucide-react";
 import { useCreateMultiOrderMutation } from "@/services/orders/mutation";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+import { ChargesBreakdown } from "@/components/delivery/charges-breakdown";
+import { PaymentSourceSelector } from "@/components/delivery/payment-source";
+import { useMarket } from "@/lib/markets/useMarket";
+import { PaymentSource } from "@/lib/markets/types";
+import { formatMoney } from "@/lib/money";
+import { isQuoteUnusable } from "@/types/quote";
 
 interface IMultiQuoteData {
   guest: {
@@ -17,6 +24,14 @@ interface IMultiQuoteData {
   totalAmount: number;
   quote: string;
   totalOrders: number;
+  // Returned by the server on every quote; absent here previously, so this
+  // screen could only render naira.
+  country?: "NG" | "CA";
+  currency?: "NGN" | "CAD";
+  serviceFee?: number;
+  taxAmount?: number;
+  taxLabel?: string;
+  grandTotal?: number;
 }
 
 interface Props {
@@ -26,28 +41,38 @@ interface Props {
 
 export const MultiQuoteSummary = ({ quote, onEdit }: Props) => {
   const router = useRouter();
-  const [paymentSource, setPaymentSource] = useState<"Paystack" | "Globus">(
-    "Paystack",
-  );
+  const market = useMarket(quote.country);
+  const [paymentSource, setPaymentSource] = useState<PaymentSource | null>(null);
+
+  useEffect(() => {
+    if (!paymentSource && market.config.paymentSources.length > 0) {
+      setPaymentSource(market.config.paymentSources[0]);
+    }
+  }, [market.config.paymentSources, paymentSource]);
+
   const { mutate: createOrder, isPending } = useCreateMultiOrderMutation({
     onSuccess: (res) => {
-      // redirect to authorization url
       const url = res.data?.authorization_url;
       if (url) {
         router.push(url);
       }
     },
     onError: (err) => {
-      console.error("Create multi-order error", err);
+      if (isQuoteUnusable(err.message)) {
+        toast.error("This quote has expired. Please request a new one.");
+        onEdit();
+        return;
+      }
       toast.error(err.message);
     },
   });
 
   const handlePayment = () => {
-    const url = new URL(`/order/success`, window.location.origin).toString();
+    if (!paymentSource) return;
+
     createOrder({
       quoteId: quote.quote,
-      callbackUrl: url,
+      callbackUrl: new URL("/order/success", window.location.origin).toString(),
       paymentSource,
     });
   };
@@ -67,7 +92,10 @@ export const MultiQuoteSummary = ({ quote, onEdit }: Props) => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <SummaryItem
             label="Total Amount"
-            value={`₦${quote.totalAmount.toLocaleString()}`}
+            value={formatMoney(
+              quote.grandTotal ?? quote.totalAmount,
+              market.currency,
+            )}
           />
           <SummaryItem
             label="Total Orders"
@@ -98,34 +126,21 @@ export const MultiQuoteSummary = ({ quote, onEdit }: Props) => {
         </div>
       </div>
 
-      {/* Payment Source */}
-      <div className="rounded-xl border bg-white p-6 shadow-sm">
-        <h3 className="text-xl font-semibold">Payment Source</h3>
-        <div className="space-y-2 mt-4">
-          <label className="flex items-center">
-            <input
-              type="radio"
-              name="paymentSource"
-              value="Paystack"
-              checked={paymentSource === "Paystack"}
-              onChange={() => setPaymentSource("Paystack")}
-              className="mr-2"
-            />
-            <span>Paystack</span>
-          </label>
-          {/* <label className="flex items-center">
-            <input
-              type="radio"
-              name="paymentSource"
-              value="Globus"
-              checked={paymentSource === 'Globus'}
-              onChange={() => setPaymentSource('Globus')}
-              className="mr-2"
-            />
-            <span>Globus</span>
-          </label> */}
-        </div>
-      </div>
+      <ChargesBreakdown
+        currency={market.currency}
+        deliveryFee={quote.totalAmount}
+        serviceFee={quote.serviceFee}
+        taxAmount={quote.taxAmount}
+        taxLabel={quote.taxLabel}
+        grandTotal={quote.grandTotal}
+      />
+
+      <PaymentSourceSelector
+        sources={market.config.paymentSources}
+        value={paymentSource}
+        onChange={setPaymentSource}
+        isLoading={market.isLoading}
+      />
 
       {/* Actions */}
       <div className="flex flex-col md:flex-row gap-4">
@@ -136,7 +151,7 @@ export const MultiQuoteSummary = ({ quote, onEdit }: Props) => {
         <Button
           className="w-full md:w-auto"
           onClick={handlePayment}
-          disabled={isPending}
+          disabled={isPending || !paymentSource}
         >
           {isPending ? "Processing..." : "Continue with this quote"}
         </Button>

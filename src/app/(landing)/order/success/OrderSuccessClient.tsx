@@ -5,6 +5,8 @@ import React, { useEffect, useState } from "react";
 import { CheckCircle, XCircle, Loader2, HelpCircle } from "lucide-react";
 import { useVerifyPaymentMutation } from "@/services/payments/mutation";
 import { Button } from "@/components/button";
+import { clearCart } from "@/config/storage";
+import { clearCheckoutSession } from "@/config/checkout";
 
 type Status = "verifying" | "success" | "failed" | "error" | "invalid";
 
@@ -17,12 +19,17 @@ const OrderSuccessPage = () => {
 
   const { mutate: verify } = useVerifyPaymentMutation({
     onSuccess: (res) => {
-      // console.log({ response: res });
-      if (res.success) {
-        setStatus("success");
-      } else {
+      if (!res.success) {
         setStatus("failed");
+        return;
       }
+
+      // Cleared here rather than when leaving for the gateway: a customer who
+      // abandons the payment page still has their basket, and one who paid
+      // does not carry the same items into their next order.
+      clearCart();
+      clearCheckoutSession();
+      setStatus("success");
     },
     onError: () => {
       setStatus("error");

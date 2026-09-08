@@ -24,6 +24,9 @@ import { Button } from "../button";
 import Autocomplete from "react-google-autocomplete";
 import { useGetBulkQuoteMutation } from "@/services/orders/mutation";
 import { toast } from "sonner";
+
+import { contentFor } from "@/lib/markets";
+import { useMarket } from "@/lib/markets/useMarket";
 import { useRouter } from "next/navigation";
 import { TermsCheckbox } from "../shared/terms";
 import { useState } from "react";
@@ -44,6 +47,8 @@ export const BulkDeliveryForm = ({
 }: {
   handleSetQuote: (data: any) => void;
 }) => {
+  const market = useMarket();
+  const { coverAmount } = contentFor(market.country);
   const form = useForm<z.infer<typeof bulkDeliverySchema>>({
     resolver: zodResolver(bulkDeliverySchema),
     defaultValues: {
@@ -499,7 +504,7 @@ export const BulkDeliveryForm = ({
                 <div className="bg-blue-50/50 p-4 rounded-xl border border-blue-100 flex gap-4 items-start">
                   <Info className="w-6 h-6 text-blue-500 shrink-0 mt-0.5" />
                   <p className="text-sm text-blue-900 leading-relaxed">
-                    <strong>Insurance Coverage:</strong> Vinkol will cover up to ₦50,000 of damage or stolen package per dropoff. Please explicitly specify in the notes section if your goods are fragile.
+                    <strong>Insurance Coverage:</strong> Vinkol will cover up to {coverAmount} of damage or loss per dropoff. Please explicitly specify in the notes section if your goods are fragile.
                   </p>
                 </div>
 

@@ -1,11 +1,26 @@
 "use client";
-import { useSearchParams, useRouter } from "next/navigation";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { useCreateOrderFromStore } from "@/services/orders/mutation";
-import { getCartFromStorage, clearCart } from "@/config/storage";
-import { useState, useEffect } from "react";
 import { CheckCircle2, Loader2 } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
+import { ChargesBreakdown } from "@/components/delivery/charges-breakdown";
+import { PaymentSourceSelector } from "@/components/delivery/payment-source";
+import {
+  CheckoutSession,
+  clearCheckoutSession,
+  getCheckoutSession,
+  isCheckoutExpired,
+} from "@/config/checkout";
+import { clearCart, getCartFromStorage } from "@/config/storage";
+import { contentFor } from "@/lib/markets";
+import { useMarket } from "@/lib/markets/useMarket";
+import { PaymentSource } from "@/lib/markets/types";
+import { formatMoney } from "@/lib/money";
+import { useCreateOrderFromStore } from "@/services/orders/mutation";
+import { isQuoteUnusable } from "@/types/quote";
 
 interface CartItem {
   id: string;
@@ -17,231 +32,248 @@ interface CartItem {
 }
 
 export const QuotePage = () => {
-  const searchParams = useSearchParams();
   const router = useRouter();
-  const [paymentSource, setPaymentSource] = useState<"Paystack" | "Globus">(
-    "Paystack",
-  );
-  const state = searchParams.get("state");
-  const pickupLocation = searchParams.get("pickupLocation");
-  const dropoffLocation = searchParams.get("dropoffLocation");
-  const [cartItems, setCartItems] = useState<CartItem[]>(() =>
-    getCartFromStorage(),
-  );
+  const [session, setSession] = useState<CheckoutSession | null>(null);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [expired, setExpired] = useState(false);
+  const [paymentSource, setPaymentSource] = useState<PaymentSource | null>(null);
 
-  // Initialize totalAmount and deliveryFee with default numerical values
-  const [calculatedTotalAmount, setCalculatedTotalAmount] = useState(0);
-  const [calculatedDeliveryFee, setCalculatedDeliveryFee] = useState(0);
-
-  // Use useEffect to calculate and update amounts after initial render and when dependencies change
   useEffect(() => {
-    const totalCartValue = cartItems.reduce((total, item) => {
-      return total + item.price * item.quantity;
-    }, 0);
-    setCalculatedTotalAmount(totalCartValue);
+    const stored = getCheckoutSession();
+    setSession(stored);
+    setCartItems(getCartFromStorage());
+    if (stored && isCheckoutExpired(stored)) setExpired(true);
+  }, []);
 
-    // Ensure deliveryFee is a number, default to 0 if not present or invalid
-    const feeFromParams = searchParams.get("deliveryFee");
-    const parsedDeliveryFee = Number(feeFromParams || "0"); // Convert to number, default to 0
-    setCalculatedDeliveryFee(parsedDeliveryFee);
-  }, [cartItems, searchParams]); // Dependencies: cartItems (for totalAmount) and searchParams (for deliveryFee)
+  const market = useMarket(session?.country);
+  const { coverAmount } = contentFor(market.country);
 
-  const email = searchParams.get("email");
-
-  const phone = searchParams.get("phonenumber");
-  const firstname = searchParams.get("firstname");
-  const lastname = searchParams.get("lastname");
-  const store = searchParams.get("store");
+  useEffect(() => {
+    if (!paymentSource && market.config.paymentSources.length > 0) {
+      setPaymentSource(market.config.paymentSources[0]);
+    }
+  }, [market.config.paymentSources, paymentSource]);
 
   const { mutate, isPending, isSuccess } = useCreateOrderFromStore({
     onSuccess: (res) => {
       const url = res.data?.authorization_url;
+      clearCheckoutSession();
+
       if (url) {
+        // The cart is cleared once the payment is verified, not here: a
+        // customer who abandons the gateway still has their basket.
         router.push(url);
-      } else {
-        toast.success("Order created successfully.");
-        clearCart();
-        setTimeout(() => {
-          router.push("/");
-        }, 3000);
+        return;
       }
+
+      toast.success("Order created successfully.");
+      clearCart();
+      setTimeout(() => router.push("/"), 3000);
     },
     onError: (err) => {
-      console.error("Create order error", err);
+      if (isQuoteUnusable(err.message)) {
+        setExpired(true);
+        return;
+      }
       toast.error(err.message);
     },
   });
 
+  const restart = () => {
+    clearCheckoutSession();
+    router.push(session?.store ? `/shops/${session.store}` : "/explore-shop");
+  };
+
   const handleProceedToPayment = () => {
-    // Check if all required data from searchParams is available before mutating
-    if (
-      !state ||
-      !store ||
-      !dropoffLocation ||
-      calculatedDeliveryFee === undefined ||
-      !email ||
-      !firstname ||
-      !lastname ||
-      !phone
-    ) {
-      toast.error("Missing order details. Please go back and try again.");
-      console.error("Missing data for order creation:", {
-        state,
-        pickupLocation,
-        dropoffLocation,
-        email,
-        firstname,
-        lastname,
-        phone,
-        calculatedDeliveryFee,
-        store,
-      });
+    if (!session || !paymentSource) return;
+
+    if (isCheckoutExpired(session)) {
+      setExpired(true);
       return;
     }
 
-    // Transform cartItems into the desired products format for the backend
-    const formattedProducts = cartItems.map((item) => ({
-      product: item.id,
-      quantity: item.quantity,
-    }));
-
-    const url = new URL(`/order/success`, window.location.origin).toString();
+    if (cartItems.length === 0) {
+      toast.error("Your basket is empty.");
+      return;
+    }
 
     mutate({
       orderType: "Shopping",
-      state,
-      guest: {
-        firstname,
-        lastname,
-        email,
-        phone,
-      },
-      amount: calculatedTotalAmount,
-      store: store,
-      products: formattedProducts,
-      deliveryFee: calculatedDeliveryFee,
-      dropoffLocation: dropoffLocation,
+      state: session.state,
+      guest: session.guest,
+      amount: goodsAmount,
+      store: session.store!,
+      products: cartItems.map((item) => ({
+        product: item.id,
+        quantity: item.quantity,
+      })),
+      // The quote is the price. Any fee sent beside it would be ignored.
+      quoteId: session.quoteId,
+      dropoffLocation: session.dropoffLocation,
       deliveryType: "regular",
-      paymentSource: paymentSource,
-      callbackUrl: url,
+      paymentSource,
+      callbackUrl: new URL("/order/success", window.location.origin).toString(),
     });
   };
 
-  const serviceFee = Math.round(
-    0.025 * (calculatedTotalAmount + calculatedDeliveryFee),
+  // Basket subtotal, for display only. The server itemises the charge, and its
+  // figures are what the customer is asked to agree to below.
+  const goodsAmount = cartItems.reduce(
+    (total, item) => total + item.price * item.quantity,
+    0,
   );
+
+  if (session === null) {
+    return (
+      <Shell>
+        <Notice
+          title="We could not find your quote"
+          body="Quotes are held for this browser tab only. Please go back to the store and check out again to get a fresh price."
+          action={<Button onClick={restart}>Back to store</Button>}
+        />
+      </Shell>
+    );
+  }
+
+  if (expired) {
+    return (
+      <Shell>
+        <Notice
+          title="This quote has expired"
+          body="Prices are held for 15 minutes so the amount you see is the amount you pay. Your basket is still here — check out again for a new price."
+          action={<Button onClick={restart}>Get a new quote</Button>}
+        />
+      </Shell>
+    );
+  }
+
+  if (isPending) {
+    return (
+      <Shell>
+        <div className="flex flex-col gap-4 items-center justify-center py-6">
+          <Loader2
+            size={96}
+            strokeWidth={1}
+            className="text-blue-primary animate-spin"
+          />
+          <p>Creating order...</p>
+        </div>
+      </Shell>
+    );
+  }
+
+  if (isSuccess) {
+    return (
+      <Shell>
+        <div className="flex flex-col gap-4 items-center justify-center py-6">
+          <CheckCircle2 size={96} strokeWidth={1} className="text-green-600" />
+          <p>Please wait...</p>
+        </div>
+      </Shell>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-10 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-2xl mx-auto bg-white rounded-lg p-8 border border-gray-100">
-        {isPending ? (
-          <div className="flex flex-col gap-4 items-center justify-center py-6">
-            <Loader2
-              size={96}
-              strokeWidth={1}
-              className="text-blue-primary animate-spin"
-            />
-            <p>Creating order...</p>
-          </div>
-        ) : isSuccess ? (
-          <div className="flex flex-col gap-4 items-center justify-center py-6">
-            <CheckCircle2
-              size={96}
-              strokeWidth={1}
-              className="text-green-600"
-            />
-            <p>Please wait...</p>
-          </div>
-        ) : (
-          <>
-            <h1 className="text-4xl font-extrabold text-gray-900 mb-2 text-left">
-              Quote
-            </h1>
-            <p>Here is a quote on what you filled</p>
+    <Shell>
+      <p className="text-xs font-semibold tracking-[0.2em] uppercase text-[var(--color-blue-primary)] mb-3">
+        Your order
+      </p>
+      <h1 className="text-3xl font-bold text-gray-900 mb-3">Review and pay</h1>
+      <p className="text-gray-500 text-sm mb-6">
+        Check your basket and delivery details before paying.
+      </p>
 
-            <div className="space-y-4 text-gray-800">
-              <p className="text-lg font-semibold">
-                <span className="font-normal">State:</span> {state || "N/A"}
-              </p>
+      <ul className="divide-y divide-gray-100 border-y border-gray-100">
+        {cartItems.map((item) => (
+          <li
+            key={item.id}
+            className="flex items-baseline justify-between gap-4 py-3"
+          >
+            <span className="text-sm text-gray-700">
+              {item.title}
+              <span className="text-gray-400"> × {item.quantity}</span>
+            </span>
+            <span className="text-sm font-medium text-gray-900 tabular-nums">
+              {formatMoney(item.price * item.quantity, session.currency)}
+            </span>
+          </li>
+        ))}
+      </ul>
 
-              <p className="text-lg font-semibold">
-                <span className="font-normal">Drop-off Location:</span>{" "}
-                {dropoffLocation || "N/A"}
-              </p>
-              <p className="text-lg font-semibold">
-                <span className="font-normal">Item Total:</span> ₦
-                {calculatedTotalAmount.toLocaleString()}
-              </p>
-              <p className="text-lg font-semibold">
-                <span className="font-normal">Delivery Fee:</span> ₦
-                {calculatedDeliveryFee.toLocaleString()}
-              </p>
-              <p className="text-lg font-semibold">
-                <span className="font-normal">Service Fee:</span> ₦
-                {serviceFee.toLocaleString()}
-              </p>
-              <p className="text-2xl font-bold ">
-                <span className="font-semibold">Grand Total:</span>{" "}
-                <span className="text-blue-primary text-2xl">
-                  ₦
-                  {(
-                    calculatedTotalAmount +
-                    calculatedDeliveryFee +
-                    serviceFee
-                  ).toLocaleString()}
-                </span>
-              </p>
-            </div>
+      <dl className="space-y-3 text-gray-800 mt-6">
+        <Detail label="Deliver to" value={session.dropoffLocation} />
+        <Detail label="State" value={session.state} />
+      </dl>
 
-            {/* Payment Source Selection */}
-            <div className="mt-8 rounded-lg border bg-gray-50 p-6">
-              <h3 className="text-lg font-semibold mb-4">Payment Source</h3>
-              <div className="space-y-3">
-                <label className="flex items-center cursor-pointer">
-                  <input
-                    type="radio"
-                    name="paymentSource"
-                    value="Paystack"
-                    checked={paymentSource === "Paystack"}
-                    onChange={() => setPaymentSource("Paystack")}
-                    className="mr-3 w-4 h-4"
-                  />
-                  <span className="font-medium">Paystack</span>
-                </label>
-                {/* <label className="flex items-center cursor-pointer">
-                  <input
-                    type="radio"
-                    name="paymentSource"
-                    value="Globus"
-                    checked={paymentSource === "Globus"}
-                    onChange={() => setPaymentSource("Globus")}
-                    className="mr-3 w-4 h-4"
-                  />
-                  <span className="font-medium">Globus</span>
-                </label> */}
-              </div>
-            </div>
+      <ChargesBreakdown
+        currency={session.currency}
+        goodsAmount={session.goodsAmount ?? goodsAmount}
+        deliveryFee={session.deliveryFee}
+        serviceFee={session.serviceFee}
+        taxAmount={session.taxAmount}
+        taxLabel={session.taxLabel}
+        grandTotal={session.grandTotal}
+      />
 
-            <div className="mt-8 text-center">
-              <Button
-                onClick={handleProceedToPayment}
-                disabled={isPending}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-md transition-colors duration-200 text-lg"
-              >
-                {isPending ? "Processing..." : "Proceed To Payment"}
-              </Button>
-            </div>
+      {session.grandTotal === undefined && (
+        <p className="mt-3 text-xs text-gray-500">
+          Service fee{session.taxLabel ? ` and ${session.taxLabel}` : ""} are
+          calculated at payment and shown on your receipt.
+        </p>
+      )}
 
-            <div className="md:col-span-2">
-              <p className="text-center my-2 text-red-600 text-sm font-medium">
-                NOTE: Vinkol will cover up to ₦50,000 of damage or stolen
-                package. Please specify in the note section if goods are
-                fragile.
-              </p>
-            </div>
-          </>
-        )}
+      <PaymentSourceSelector
+        sources={market.config.paymentSources}
+        value={paymentSource}
+        onChange={setPaymentSource}
+        isLoading={market.isLoading}
+      />
+
+      <div className="mt-8 text-center">
+        <Button
+          onClick={handleProceedToPayment}
+          disabled={isPending || !paymentSource || cartItems.length === 0}
+          className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-md transition-colors duration-200 text-lg"
+        >
+          {isPending ? "Processing..." : "Proceed To Payment"}
+        </Button>
       </div>
-    </div>
+
+      <p className="text-center my-4 text-gray-500 text-sm">
+        Vinkol covers up to {coverAmount} of damage or loss. Please note at
+        checkout if goods are fragile.
+      </p>
+    </Shell>
   );
 };
+
+const Shell = ({ children }: { children: React.ReactNode }) => (
+  <div className="min-h-screen bg-gray-50 py-10 px-4 sm:px-6 lg:px-8">
+    <div className="max-w-2xl mx-auto bg-white rounded-2xl p-8 border border-gray-100">
+      {children}
+    </div>
+  </div>
+);
+
+const Notice = ({
+  title,
+  body,
+  action,
+}: {
+  title: string;
+  body: string;
+  action: React.ReactNode;
+}) => (
+  <div className="py-6 text-center">
+    <h1 className="text-2xl font-bold text-gray-900 mb-3">{title}</h1>
+    <p className="text-gray-500 text-sm mb-6 max-w-md mx-auto">{body}</p>
+    {action}
+  </div>
+);
+
+const Detail = ({ label, value }: { label: string; value?: string }) => (
+  <div className="flex flex-col sm:flex-row sm:items-baseline sm:gap-2">
+    <dt className="text-sm text-gray-500 sm:w-44 shrink-0">{label}</dt>
+    <dd className="font-medium text-gray-900">{value || "N/A"}</dd>
+  </div>
+);

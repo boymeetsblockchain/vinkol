@@ -24,10 +24,16 @@ import { Button } from "../button";
 import Autocomplete from "react-google-autocomplete";
 import { useGetQuoteMutation } from "@/services/orders/mutation";
 import { toast } from "sonner";
+
+import { useMarket } from "@/lib/markets/useMarket";
+import { contentFor } from "@/lib/markets";
 import { useRouter } from "next/navigation";
 import { TermsCheckbox } from "../shared/terms";
 import { useState } from "react";
 import { Package, MapPin, User, Clock, Info } from "lucide-react";
+
+import { saveCheckoutSession } from "@/config/checkout";
+import { formatMoney } from "@/lib/money";
 
 // Helper to get current time in HH:MM format
 const getCurrentTime = () => {
@@ -47,6 +53,8 @@ const getStateFromAddressComponents = (addressComponents: any[]) => {
 
 export const BookADeliveryForm = () => {
   const router = useRouter();
+  const market = useMarket();
+  const { coverAmount } = contentFor(market.country);
   const form = useForm<z.infer<typeof deliverySchema>>({
     resolver: zodResolver(deliverySchema),
     defaultValues: {
@@ -96,6 +104,15 @@ export const BookADeliveryForm = () => {
       },
       {
         onSuccess: (responseData) => {
+          const quote = responseData?.data;
+
+          if (!quote?.quoteId) {
+            toast.error(
+              "We could not hold a price for this delivery. Please try again.",
+            );
+            return;
+          }
+
           const dateObj = new Date(data.date);
           const formattedDate = dateObj.toLocaleDateString("en-US", {
             year: "numeric",
@@ -112,29 +129,44 @@ export const BookADeliveryForm = () => {
             hour12: true,
           });
 
-          const params = new URLSearchParams();
-          params.append("firstname", data.firstname);
-          params.append("lastname", data.lastname);
-          params.append("phonenumber", data.phonenumber);
-          params.append("email", data.email);
-          params.append("state", data.state);
-          params.append("pickupLocation", data.pickup);
-          params.append("dropoffLocation", data.dropoff);
-          params.append("date", formattedDate);
-          params.append("time", formattedTime);
-          params.append("deliveryType", data.type);
-          params.append("vehicleRequest", data.vehicle);
-          params.append("orderType", data.orderType);
-          params.append("amount", String(responseData.data.price || 0));
-          params.append("note", data.note || "");
-
-          toast.success("Quote successfully retrieved!", {
-            description: `Amount: ₦${
-              responseData.data.price?.toLocaleString() || "N/A"
-            }`,
+          // Handed over in sessionStorage, not the query string: this carries
+          // the customer's contact details, and a fee in the URL is a fee the
+          // customer can edit.
+          saveCheckoutSession({
+            quoteId: quote.quoteId,
+            country: quote.country,
+            currency: quote.currency,
+            guest: {
+              firstname: data.firstname,
+              lastname: data.lastname,
+              email: data.email,
+              phone: data.phonenumber,
+            },
+            state: data.state,
+            pickupLocation: data.pickup,
+            dropoffLocation: data.dropoff,
+            date: formattedDate,
+            time: formattedTime,
+            deliveryType: data.type,
+            vehicleRequest: data.vehicle,
+            orderType: data.orderType,
+            note: data.note || "",
+            deliveryFee: quote.discountedPrice ?? quote.price,
+            serviceFee: quote.serviceFee,
+            taxAmount: quote.taxAmount,
+            taxLabel: quote.taxLabel,
+            grandTotal: quote.grandTotal,
+            expiresAt: quote.expiresAt,
           });
 
-          router.push(`/quote?${params.toString()}`);
+          toast.success("Quote successfully retrieved!", {
+            description: `Total: ${formatMoney(
+              quote.grandTotal ?? quote.price,
+              quote.currency,
+            )}`,
+          });
+
+          router.push("/quote");
         },
         onError: (error: any) => {
           console.error("Get Quote failed:", error);
@@ -488,7 +520,7 @@ export const BookADeliveryForm = () => {
                 <div className="bg-blue-50/50 p-4 rounded-xl border border-blue-100 flex gap-4 items-start">
                   <Info className="w-6 h-6 text-blue-500 shrink-0 mt-0.5" />
                   <p className="text-sm text-blue-900 leading-relaxed">
-                    <strong>Insurance Coverage:</strong> Vinkol will cover up to ₦50,000 of damage or stolen package. Please explicitly specify in the notes section if your goods are fragile.
+                    <strong>Insurance Coverage:</strong> Vinkol will cover up to {coverAmount} of damage or loss. Please explicitly specify in the notes section if your goods are fragile.
                   </p>
                 </div>
 
