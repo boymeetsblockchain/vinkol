@@ -1,4 +1,6 @@
 "use client";
+import { contentFor } from "@/lib/markets";
+import { Country } from "@/lib/markets/types";
 import React, { useState } from "react";
 import { FaGooglePlay } from "react-icons/fa6";
 import { IoLogoApple } from "react-icons/io";
@@ -7,7 +9,9 @@ import { AppStoreCard } from "../shared/appstore";
 import { RiderAuthModal } from "../modals/rider-auth-modal";
 import Link from "next/link";
 
-export const Hero = () => {
+export const Hero = ({ country }: { country: Country }) => {
+  const { appStore, serviceAreaPhrase } = contentFor(country);
+
   const [isOpen, setIsOpen] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
 
@@ -40,7 +44,8 @@ export const Hero = () => {
             </h1>
 
             <p className="text-base sm:text-lg font-medium text-white/80 max-w-lg leading-relaxed">
-              Join 200+ verified riders delivering across Lagos. Set your own
+              Join our network of verified riders delivering across{" "}
+              {serviceAreaPhrase}. Set your own
               hours, accept tasks near you, and get paid fast.
             </p>
 
@@ -64,7 +69,7 @@ export const Hero = () => {
               <AppStoreCard
                 platform="App Store"
                 icon={<IoLogoApple color="black" size={20} />}
-                link="https://apps.apple.com/ng/app/vinkol-go/id6751474425"
+                link={appStore.rider}
               />
             </div>
           </div>

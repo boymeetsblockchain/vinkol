@@ -1,3 +1,4 @@
+import { handleApiError } from "@/lib/apiError";
 import axiosInstance from "@/config/guest";
 import {
   changeOrderStatusSchema,
@@ -10,32 +11,6 @@ import {
 } from "@/types/order";
 import * as z from "zod";
 
-/**
- * Handles common API errors by throwing a new Error with a more specific message.
- * This centralizes error handling logic, making the code DRY.
- *
- * @param {any} error - The error object caught from the axios request.
- * @param {string} defaultMessage - A fallback message if no specific error message is available from the response.
- * @throws {Error} Throws a new Error object with a descriptive message.
- */
-const handleApiError = (error: any, defaultMessage: string): never => {
-  if (error.response) {
-    // The request was made and the server responded with a status code
-    // that falls out of the range of 2xx.
-    // Use the server's error message if available, otherwise the default.
-    throw new Error(error.response.data.message || defaultMessage);
-  } else if (error.request) {
-    // The request was made but no response was received.
-    throw new Error(
-      "Network Error: No response received from the server. Please check your internet connection and try again.",
-    );
-  } else {
-    // Something happened in setting up the request that triggered an Error.
-    throw new Error(
-      `An unexpected error occurred: ${error.message || defaultMessage}`,
-    );
-  }
-};
 
 export const getQuote = async (data: z.infer<typeof getQuoteSchema>) => {
   try {
@@ -223,7 +198,7 @@ export const createStoreOrder = async (
   data: z.infer<typeof createStoreOrderSchema>,
 ) => {
   try {
-    const response = await axiosInstance.post("orders/guest-store-order", data);
+    const response = await axiosInstance.post("/orders/guest-store-order", data);
     return response.data;
   } catch (error) {
     handleApiError(error, " Error Creating Order from Store");
@@ -232,7 +207,7 @@ export const createStoreOrder = async (
 };
 export const getBulkQuote = async (data: any) => {
   try {
-    const response = await axiosInstance.post("orders/get-bulk-quote", data);
+    const response = await axiosInstance.post("/orders/get-bulk-quote", data);
     return response.data;
   } catch (error) {
     handleApiError(error, "Get Bulk Quote Failed");
@@ -241,7 +216,7 @@ export const getBulkQuote = async (data: any) => {
 
 export const getMultiOrderQuote = async (data: any) => {
   try {
-    const response = await axiosInstance.post("orders/multi-order-quote", data);
+    const response = await axiosInstance.post("/orders/multi-order-quote", data);
     return response.data;
   } catch (error) {
     handleApiError(error, "Get Multi-Order Quote Failed");

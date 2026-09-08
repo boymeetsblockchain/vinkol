@@ -1,9 +1,13 @@
 "use client";
+import { usePathname } from "next/navigation";
 import { RiTwitterXLine } from "react-icons/ri";
 import { FaInstagram } from "react-icons/fa6";
 import { FaLinkedin } from "react-icons/fa";
 import { IoMdMail } from "react-icons/io";
 import Link from "next/link";
+
+import { contentFor, marketFromPath, marketLink } from "@/lib/markets";
+import { CountrySwitcher } from "./country-switcher";
 
 const services = [
   { name: "Book a Delivery", path: "/book-a-delivery" },
@@ -29,6 +33,9 @@ const company = [
 ];
 
 export const Footer = () => {
+  const country = marketFromPath(usePathname() ?? "/");
+  const { brandName, contact, serviceAreaPhrase } = contentFor(country);
+
   return (
     <footer className="bg-[#0a0a0a] w-full text-white">
       <div className="max-w-7xl mx-auto px-6 md:px-20 pt-16 pb-10">
@@ -39,12 +46,15 @@ export const Footer = () => {
               <img src="/logo.png" alt="Vinkol" className="w-28 h-12 brightness-0 invert" />
             </Link>
             <p className="text-white/50 text-sm leading-relaxed max-w-[200px]">
-              Fast, verified, and insured delivery across Lagos.
+              Fast, verified, and insured delivery across {serviceAreaPhrase}.
             </p>
             <div className="flex items-center gap-2 text-sm text-white/50">
               <IoMdMail size={16} />
-              <a href="mailto:vinkollogistics@gmail.com" className="hover:text-white transition-colors">
-                vinkollogistics@gmail.com
+              <a
+                href={`mailto:${contact.email}`}
+                className="hover:text-white transition-colors"
+              >
+                {contact.email}
               </a>
             </div>
             <div className="flex items-center gap-3 pt-1">
@@ -84,7 +94,7 @@ export const Footer = () => {
               {services.map((item) => (
                 <li key={item.path}>
                   <Link
-                    href={item.path}
+                    href={marketLink(item.path, country)}
                     className="text-sm text-white/60 hover:text-white transition-colors"
                   >
                     {item.name}
@@ -103,7 +113,7 @@ export const Footer = () => {
               {partners.map((item) => (
                 <li key={item.path}>
                   <Link
-                    href={item.path}
+                    href={marketLink(item.path, country)}
                     className="text-sm text-white/60 hover:text-white transition-colors"
                   >
                     {item.name}
@@ -122,7 +132,7 @@ export const Footer = () => {
               {company.map((item) => (
                 <li key={item.path}>
                   <Link
-                    href={item.path}
+                    href={marketLink(item.path, country)}
                     className="text-sm text-white/60 hover:text-white transition-colors"
                   >
                     {item.name}
@@ -135,8 +145,13 @@ export const Footer = () => {
 
         {/* Bottom bar */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-8 text-xs text-white/30">
-          <p>© 2025 Vinkol Logistics Ltd. All rights reserved.</p>
-          <p>Lagos, Nigeria</p>
+          <p>
+            © {new Date().getFullYear()} {brandName}. All rights reserved.
+          </p>
+          <div className="flex items-center gap-5">
+            {contact.address && <p>{contact.address}</p>}
+            <CountrySwitcher />
+          </div>
         </div>
       </div>
     </footer>

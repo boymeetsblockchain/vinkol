@@ -1,8 +1,12 @@
+import { contentFor } from "@/lib/markets";
+import { Country } from "@/lib/markets/types";
 import { FaGooglePlay } from "react-icons/fa6";
 import { AppStoreCard } from "../shared/appstore";
 import { IoLogoApple } from "react-icons/io";
 
-export const CTA = () => {
+export const CTA = ({ country }: { country: Country }) => {
+  const { appStore } = contentFor(country);
+
   return (
     <section className="w-full bg-blue-primary">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center px-6 py-20 md:px-20 md:py-24">
@@ -26,7 +30,7 @@ export const CTA = () => {
             <AppStoreCard
               platform="App Store"
               icon={<IoLogoApple color="black" size={20} />}
-              link="https://apps.apple.com/ng/app/vinkol-go/id6751474425"
+              link={appStore.rider}
             />
           </div>
         </div>

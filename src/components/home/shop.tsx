@@ -1,8 +1,10 @@
+import { Country } from "@/lib/markets/types";
 import Link from "next/link";
 import { Button } from "../button";
 import ImagesSlider from "./slider";
 
-export const Shop = () => {
+export const Shop = ({ country }: { country: Country }) => {
+
   return (
     <section className="w-full bg-blue-primary">
       <div className="max-w-7xl grid w-full mx-auto px-6 py-16 md:px-20 md:py-20 gap-12 md:gap-16 grid-cols-1 md:grid-cols-2 items-center">

@@ -12,9 +12,13 @@ import { Country } from "./types";
 
 export interface Testimonial {
   name: string;
-  location: string;
-  quote: string;
+  role: string;
+  /** Initials for the avatar circle. */
+  avatar: string;
   rating: number;
+  text: string;
+  /** Tailwind background class for the avatar. */
+  color: string;
 }
 
 export interface MarketContent {
@@ -59,6 +63,11 @@ export interface MarketContent {
    */
   testimonials: Testimonial[];
   testimonialsHeading: string;
+  /**
+   * The aggregate rating badge. Null where there is no real rating to show;
+   * a made-up average is the same problem as a made-up review.
+   */
+  ratingSummary: { score: string; count: string } | null;
 
   meta: {
     titleSuffix: string;
@@ -98,48 +107,55 @@ const NIGERIA: MarketContent = {
   testimonials: [
     {
       name: "Amara Okafor",
-      location: "Lagos",
-      quote:
-        "My package arrived within the hour and the rider called ahead. Genuinely the best delivery app I've used in Lagos.",
+      role: "Small Business Owner",
+      avatar: "AO",
       rating: 5,
+      text: "Vinkol has completely changed how I manage deliveries for my store. Riders arrive in minutes and my customers are always satisfied. I can't imagine running my business without it.",
+      color: "bg-blue-500",
     },
     {
       name: "Tunde Adeleke",
-      location: "Lagos",
-      quote:
-        "I run a small shop and Vinkol handles every order now. Tracking means I stop fielding calls asking where things are.",
+      role: "Frequent Shopper",
+      avatar: "TA",
       rating: 5,
+      text: "I placed an order and had it at my door in under an hour. The real-time tracking gave me peace of mind the whole time. Genuinely the best delivery app I've used in Lagos.",
+      color: "bg-violet-500",
     },
     {
       name: "Ngozi Eze",
-      location: "Abuja",
-      quote:
-        "Booked a same-day pickup at short notice and it just worked. The price I was quoted was the price I paid.",
+      role: "E-commerce Seller",
+      avatar: "NE",
       rating: 5,
+      text: "My customers love that I offer same-day delivery now. Vinkol's riders are professional and the app is super easy to use. My sales have gone up since I started using it.",
+      color: "bg-emerald-500",
     },
     {
       name: "Chidi Nwosu",
-      location: "Enugu",
-      quote:
-        "Fragile items, and everything arrived intact. Being able to note that at booking made the difference.",
+      role: "Regular User",
+      avatar: "CN",
       rating: 5,
+      text: "The personal shopper feature is a game changer. I sent someone to pick up groceries and some items from two different stores — all in one trip. Absolutely seamless.",
+      color: "bg-orange-500",
     },
     {
       name: "Fatima Aliyu",
-      location: "Kano",
-      quote:
-        "I use it weekly for my store's deliveries. Riders are verified, which matters when you're handing over stock.",
+      role: "Fashion Retailer",
+      avatar: "FA",
       rating: 5,
+      text: "Fast, reliable, and insured. I've sent fragile items multiple times and everything arrived perfectly. The customer support team is also very responsive whenever I need help.",
+      color: "bg-pink-500",
     },
     {
       name: "Emeka Obi",
-      location: "Port Harcourt",
-      quote:
-        "Support actually answered when I needed them. It's rare to find a service this consistent in Nigeria.",
+      role: "Tech Entrepreneur",
+      avatar: "EO",
       rating: 5,
+      text: "I use Vinkol every week. The tracking is accurate, the riders are always on time, and the pricing is fair. It's rare to find a service this consistent in Nigeria.",
+      color: "bg-cyan-500",
     },
   ],
   testimonialsHeading: "Loved by thousands across Nigeria.",
+  ratingSummary: { score: "4.8", count: "2,000+ ratings" },
 
   meta: {
     titleSuffix: "Vinkol Logistics",
@@ -182,8 +198,11 @@ const CANADA: MarketContent = {
     rider: "https://apps.apple.com/app/vinkol-go/id6751474425",
   },
 
+  // Empty until a Toronto pilot produces real quotes we have permission to
+  // publish. The section renders nothing rather than inventing any.
   testimonials: [],
   testimonialsHeading: "",
+  ratingSummary: null,
 
   meta: {
     titleSuffix: "Vinkol Group",

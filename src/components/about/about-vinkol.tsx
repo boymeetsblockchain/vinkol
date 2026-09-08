@@ -1,4 +1,8 @@
-export const AboutVinkol = () => {
+import { contentFor } from "@/lib/markets";
+import { Country } from "@/lib/markets/types";
+export const AboutVinkol = ({ country }: { country: Country }) => {
+  const { brandName } = contentFor(country);
+
   return (
     <section className="max-w-7xl mx-auto px-6 md:px-20 py-20 md:py-28">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 md:gap-20 items-center">
@@ -18,7 +22,7 @@ export const AboutVinkol = () => {
           <p className="text-gray-500 text-base leading-relaxed">
             In response to global logistics challenges &mdash; especially
             highlighted during the COVID-19 pandemic &mdash; Vinkol launched its
-            specialized arm, Vinkol Logistics, in 2020. With a focus on
+            specialized arm, {brandName}, in 2020. With a focus on
             efficiency, cost-effectiveness, and client satisfaction, we provide
             on-demand delivery solutions rooted in technology, accountability,
             and genuine care for every customer.

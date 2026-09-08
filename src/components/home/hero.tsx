@@ -1,4 +1,6 @@
 "use client";
+import { contentFor } from "@/lib/markets";
+import { Country } from "@/lib/markets/types";
 import React, { useState, useEffect } from "react";
 import { FaGooglePlay, FaStar } from "react-icons/fa6";
 import { IoLogoApple } from "react-icons/io";
@@ -14,7 +16,9 @@ import { useTrackOrders } from "@/services/orders/query";
 import { TrackingModal } from "../modals/trackingmodal";
 import { toast } from "sonner";
 
-export const Hero = () => {
+export const Hero = ({ country }: { country: Country }) => {
+  const { appStore } = contentFor(country);
+
   const [trackDelivery, setTrackDelivery] = useState<boolean>(false);
   const [trackingId, setTrackingId] = useState<string>("");
   const [enabled, setEnabled] = useState<boolean>(false);
@@ -158,7 +162,7 @@ export const Hero = () => {
             <AppStoreCard
               platform="App Store"
               icon={<IoLogoApple color="black" size={20} />}
-              link="https://apps.apple.com/ng/app/vinkol/id6751447117"
+              link={appStore.customer}
             />
           </div>
         </div>

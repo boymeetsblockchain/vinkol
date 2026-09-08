@@ -1,4 +1,17 @@
+import { Country, Currency, PaymentSource } from "@/lib/markets/types";
 import * as z from "zod";
+
+/**
+ * Every gateway the platform supports, not the ones a given market permits.
+ * The selectable subset comes from GET /others/markets at runtime — pinning it
+ * in the type is what kept Stripe out of the frontend entirely.
+ */
+export const paymentSourceSchema = z.enum([
+  "Paystack",
+  "Globus",
+  "Stripe",
+  "Wallet",
+]);
 
 export const getQuoteSchema = z.object({
   state: z.string(),
@@ -61,14 +74,18 @@ export const orderDataSchema = z.object({
       lng: z.number(),
     })
     .optional(),
-  deliveryFee: z.number().positive("Amount must be a positive number"),
+  // The server ignores deliveryFee entirely when a quoteId is present, and
+  // without one it treats the request as a pre-quotes client and prices it as
+  // Nigerian. Send the quoteId.
+  quoteId: z.string().optional(),
+  deliveryFee: z.number().positive("Amount must be a positive number").optional(),
   deliveryType: z.enum(["regular", "express"], {
     errorMap: () => ({ message: "Invalid delivery type" }),
   }),
   vehicleRequest: z.enum(["truck", "car", "bike"], {
     errorMap: () => ({ message: "Invalid vehicle type" }),
   }),
-  paymentSource: z.enum(["Paystack", "Globus"]).optional(),
+  paymentSource: paymentSourceSchema.optional(),
   callbackUrl: z.string().optional(),
   guest: z.object({
     email: z.string().email("Invalid email address"),
@@ -122,10 +139,26 @@ export interface IOrder {
   amount: number;
   deliveryFee: number;
   totalAmount: number;
+
+  // Every order document carries these. They were absent from this interface,
+  // so the client had no way to know an order's market and fell back to naira.
+  country: Country;
+  currency: Currency;
+  /** Itemised by the server. Absent on orders predating itemised charges. */
+  serviceFee?: number;
+  taxAmount?: number;
+  taxRate?: number;
+  taxLabel?: string;
+  /** What the gateway actually charged. Prefer this over totalAmount. */
+  grandTotal?: number;
+
   note?: string;
   description?: string;
   orderOtp: string;
-  paystackReference: string;
+  /** Gateway-neutral. paystackReference is kept for Nigerian back-compat. */
+  paymentReference?: string;
+  paystackReference?: string;
+  paymentSource?: PaymentSource;
   paymentStatus: string;
   status: OrderStatus;
   orderType: OrderTypes;
@@ -162,10 +195,11 @@ export const createStoreOrderSchema = z.object({
     }),
   ),
   amount: z.number().positive(),
-  deliveryFee: z.number().nonnegative(),
+  quoteId: z.string().optional(),
+  deliveryFee: z.number().nonnegative().optional(),
   dropoffLocation: z.string(),
   deliveryType: z.enum(["regular", "express"]).optional(),
-  paymentSource: z.enum(["Paystack", "Globus"]).optional(),
+  paymentSource: paymentSourceSchema.optional(),
   callbackUrl: z.string().optional(),
   guest: z.object({
     email: z.string().email(),

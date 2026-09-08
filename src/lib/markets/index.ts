@@ -62,6 +62,32 @@ export function marketFromPath(pathname: string): Country {
     : DEFAULT_COUNTRY;
 }
 
+/**
+ * The public pages that exist per market. Anything else — the booking forms,
+ * the store flow, the dashboards — is one shared route whose market comes from
+ * the pickup address or the signed-in account, so prefixing it would create a
+ * URL with no page behind it.
+ */
+export const MARKET_ROUTES = [
+  "/",
+  "/about",
+  "/contact",
+  "/become-a-rider",
+  "/become-a-personal-shopper",
+  "/privacy-policy",
+  "/terms-and-conditions",
+] as const;
+
+/**
+ * A link that stays in the current market where a market-specific page exists,
+ * and points at the shared route where it does not.
+ */
+export function marketLink(path: string, country: Country): string {
+  return (MARKET_ROUTES as readonly string[]).includes(path)
+    ? marketPath(path, country)
+    : path;
+}
+
 /** Prefix an in-market link. `/about` in Canada becomes `/ca/about`. */
 export function marketPath(path: string, country: Country): string {
   const prefix = MARKET_PREFIX[country] ?? "";

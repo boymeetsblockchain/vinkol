@@ -1,8 +1,12 @@
+import { contentFor } from "@/lib/markets";
+import { Country } from "@/lib/markets/types";
 import { FaGooglePlay } from "react-icons/fa6";
 import { IoLogoApple } from "react-icons/io";
 import { Star } from "lucide-react";
 
-export const CTA = () => {
+export const CTA = ({ country }: { country: Country }) => {
+  const { appStore } = contentFor(country);
+
   return (
     <section className="w-full bg-[#0a0a0a] overflow-hidden">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 items-center px-6 py-20 md:px-20 md:py-24 relative">
@@ -50,7 +54,7 @@ export const CTA = () => {
               </div>
             </a>
             <a
-              href="https://apps.apple.com/ng/app/vinkol/id6751447117"
+              href={appStore.customer}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-3 bg-white text-black rounded-2xl px-5 py-3.5 hover:opacity-90 transition group w-fit"

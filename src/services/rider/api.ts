@@ -277,7 +277,7 @@ export const contactMessage = async (
   data: z.infer<typeof contactFormSchema>
 ) => {
   try {
-    const response = await axiosInstance.post("others/contact", data);
+    const response = await axiosInstance.post("/others/contact", data);
     return response;
   } catch (error) {
     handleApiError(error, "failed to send message");
@@ -286,7 +286,7 @@ export const contactMessage = async (
 
 export const subscribe = async (email: string) => {
   try {
-    const response = await axiosInstance.post("others/subscribe", { email });
+    const response = await axiosInstance.post("/others/subscribe", { email });
     return response;
   } catch (error) {
     handleApiError(error, "failed to send message");

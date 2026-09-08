@@ -1,9 +1,10 @@
 "use client";
+import { Country } from "@/lib/markets/types";
 
 import { useGetAllCollaborativeStores } from "@/services/shops/query";
 
-export const ShopList = () => {
-  const { data, isLoading, isError } = useGetAllCollaborativeStores();
+export const ShopList = ({ country }: { country: Country }) => {
+  const { data, isLoading, isError } = useGetAllCollaborativeStores(country);
 
   if (isLoading) {
     return <div className="text-center py-10">Loading stores...</div>;

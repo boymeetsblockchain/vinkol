@@ -1,4 +1,6 @@
 "use client";
+import { contentFor } from "@/lib/markets";
+import { Country } from "@/lib/markets/types";
 
 import { useGetAllCollaborativeStores } from "@/services/shops/query";
 import { Store, ArrowRight, AlertCircle } from "lucide-react";
@@ -19,12 +21,12 @@ const SkeletonCard = () => (
   </div>
 );
 
-const StoreCard = ({ shop }: { shop: any }) => {
+const StoreCard = ({ shop, fallbackLocation }: { shop: any; fallbackLocation: string }) => {
   const avatar = shop.avatar?.imageUrl || null;
   const cover = shop.coverImage?.imageUrl || shop.avatar?.imageUrl || null;
   const name = shop.storeName || shop.name || "Unnamed Store";
   const category = shop.category || shop.storeType || null;
-  const location = shop.state || shop.location || "Nigeria";
+  const location = shop.state || shop.location || fallbackLocation;
 
   return (
     <Link
@@ -65,8 +67,9 @@ const StoreCard = ({ shop }: { shop: any }) => {
   );
 };
 
-export const ShopList = () => {
-  const { data, isLoading, isError } = useGetAllCollaborativeStores();
+export const ShopList = ({ country }: { country: Country }) => {
+  const { serviceAreaPhrase } = contentFor(country);
+  const { data, isLoading, isError } = useGetAllCollaborativeStores(country);
   const shops: any[] = Array.isArray(data?.data) ? data.data : [];
 
   return (
@@ -80,7 +83,8 @@ export const ShopList = () => {
               Partner Stores
             </p>
             <h2 className="text-3xl md:text-5xl font-bold text-gray-900 tracking-tight leading-tight">
-              Find your favourite<br className="hidden md:block" /> stores in Nigeria.
+              Find your favourite<br className="hidden md:block" /> stores in{" "}
+              {serviceAreaPhrase}.
             </h2>
           </div>
           {!isLoading && shops.length > 0 && (
@@ -123,7 +127,11 @@ export const ShopList = () => {
         {!isLoading && !isError && shops.length > 0 && (
           <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5">
             {shops.map((shop: any, idx: number) => (
-              <StoreCard key={shop._id ?? idx} shop={shop} />
+              <StoreCard
+                key={shop._id ?? idx}
+                shop={shop}
+                fallbackLocation={serviceAreaPhrase}
+              />
             ))}
           </div>
         )}
