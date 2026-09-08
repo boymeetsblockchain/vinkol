@@ -1,3 +1,4 @@
+import { Country } from "@/lib/markets/types";
 import {
   registerShopSchema,
   loginShopSchema,
@@ -17,6 +18,7 @@ import {
   registerShop,
   resendOtp,
   resetPassword,
+  updateStoreCountry,
   updateStoreProfile,
   validateBank,
   verifyEmail,
@@ -178,6 +180,18 @@ export function useResetPasswordMutation(
   });
 
   return { mutate, data, error, isPending, isSuccess, isError };
+}
+
+/**
+ * mutateAsync rather than mutate: the country step awaits the write before
+ * navigating, so it cannot advance past a failed save.
+ */
+export function useUpdateStoreCountry() {
+  const { mutateAsync, isPending } = useMutation({
+    mutationFn: (country: Country) => updateStoreCountry(country),
+  });
+
+  return { updateCountry: mutateAsync, isPending };
 }
 
 export function useUpdateStoreProfile(options?: MutationOptions<any, Error>) {

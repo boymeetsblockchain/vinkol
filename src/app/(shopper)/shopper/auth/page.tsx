@@ -47,7 +47,7 @@ function Profile() {
       },
       {
         onSuccess: () => {
-          router.push("/shopper/complete");
+          router.push("/shopper/verify-phonenumber");
         },
         onError: (error: any) => {
           console.error("Profile update failed:", error);

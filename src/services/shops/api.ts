@@ -118,6 +118,27 @@ export const resetPassword = async (
   }
 };
 
+/**
+ * Sets the market the store operates in. Sent on its own rather than as part
+ * of the profile step, because it is asked before the store has a name or an
+ * address and the profile endpoint would reject a partial update differently.
+ *
+ * Multipart because that is what the endpoint accepts.
+ */
+export const updateStoreCountry = async (country: Country) => {
+  try {
+    const body = new FormData();
+    body.append("country", country);
+
+    const response = await axiosInstance.put("/stores/update-profile", body, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return response.data;
+  } catch (error) {
+    return handleApiError(error, "Failed to save your location.");
+  }
+};
+
 export const updateStoreProfile = async (
   data: z.infer<typeof updateStoreProfileSchema>
 ) => {

@@ -1,3 +1,4 @@
+import { Country } from "@/lib/markets/types";
 import { useMutation } from "@tanstack/react-query";
 import * as z from "zod";
 import {
@@ -20,6 +21,7 @@ import {
   forgotPassword,
   resetPassword,
   updateProfile,
+  updateUserCountry,
   submitKyc,
   submitVehicle,
   registerShopper,
@@ -240,6 +242,15 @@ export function useResetPasswordMutation(
  * Custom React Query hook for updating rider profile.
  * @param {MutationOptions<any, Error>} [options] - Optional configuration for the mutation.
  */
+/** See useUpdateStoreCountry. */
+export function useUpdateUserCountry() {
+  const { mutateAsync, isPending } = useMutation({
+    mutationFn: (country: Country) => updateUserCountry(country),
+  });
+
+  return { updateCountry: mutateAsync, isPending };
+}
+
 export function useUpdateProfileMutation(
   options?: MutationOptions<any, Error>
 ) {
@@ -322,7 +333,7 @@ export function useSubmitVechicle(options?: MutationOptions<any, Error>) {
 }
 
 export function useSendSmsOtp(options?: MutationOptions<any, Error>) {
-  const { mutate, data, error, isPending, isSuccess, isError } = useMutation({
+  const { mutate, mutateAsync, data, error, isPending, isSuccess, isError } = useMutation({
     mutationFn: async (payload: z.infer<typeof sendSmsOtpSchema>) => {
       return await sendSmsOtp(payload);
     },
@@ -335,11 +346,11 @@ export function useSendSmsOtp(options?: MutationOptions<any, Error>) {
     },
   });
 
-  return { mutate, data, error, isPending, isSuccess, isError };
+  return { mutate, mutateAsync, data, error, isPending, isSuccess, isError };
 }
 
 export function useVerifyPhoneNumber(options?: MutationOptions<any, Error>) {
-  const { mutate, data, error, isPending, isSuccess, isError } = useMutation({
+  const { mutate, mutateAsync, data, error, isPending, isSuccess, isError } = useMutation({
     mutationFn: async (payload: z.infer<typeof verifyPhoneSchema>) => {
       return await verifySmsOtp(payload);
     },
@@ -351,7 +362,7 @@ export function useVerifyPhoneNumber(options?: MutationOptions<any, Error>) {
     },
   });
 
-  return { mutate, data, error, isPending, isSuccess, isError };
+  return { mutate, mutateAsync, data, error, isPending, isSuccess, isError };
 }
 
 export function useSendContactMessageMutation(

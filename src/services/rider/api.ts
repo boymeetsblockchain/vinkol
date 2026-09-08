@@ -1,3 +1,4 @@
+import { Country } from "@/lib/markets/types";
 import axiosInstance from "@/config/rider";
 import {
   contactFormSchema,
@@ -167,6 +168,21 @@ export const resetPassword = async (
  * @returns {Promise<any>} The response data from the server.
  * @throws {Error} If the profile update fails.
  */
+/** Sets the market this account operates in. See updateStoreCountry. */
+export const updateUserCountry = async (country: Country) => {
+  try {
+    const body = new FormData();
+    body.append("country", country);
+
+    const response = await axiosInstance.put("/users/update-profile", body, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return response.data;
+  } catch (error) {
+    return handleApiError(error, "Failed to save your location.");
+  }
+};
+
 export const updateProfile = async (
   data: z.infer<typeof updateProfileSchema>
 ) => {
