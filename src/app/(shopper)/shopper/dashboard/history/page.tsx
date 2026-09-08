@@ -1,4 +1,6 @@
 "use client";
+import { useMarket } from "@/lib/markets/useMarket";
+import { formatMoney } from "@/lib/money";
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/button";
@@ -37,6 +39,11 @@ import {
 import { useRouter } from "next/navigation";
 
 interface OrderData {
+  // Every order document carries these; the four per-page copies of
+  // this interface each omitted them, so the client had no way to know
+  // an order's market and fell back to naira.
+  country?: "NG" | "CA";
+  currency?: "NGN" | "CAD";
   _id: string;
   guest?: {
     email: string;
@@ -81,6 +88,8 @@ interface OrderData {
 const ITEMS_PER_PAGE = 5;
 
 function OrderHistory() {
+  const { data: userProfile } = useUserProfile();
+  const market = useMarket(userProfile?.data?.country);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -425,22 +434,15 @@ function OrderHistory() {
                   </div>
                 </div>
 
-                {order && typeof order.deliveryFee === "number" ? (
-                  <p className="text-sm font-semibold text-gray-700">
-                    Amount:{" "}
-                    <span className="text-blue-primary">
-                      ₦
-                      {order.deliveryFee.toLocaleString("en-NG", {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
-                    </span>
-                  </p>
-                ) : (
-                  <p className="text-sm font-semibold text-gray-700">
-                    Amount: <span className="text-blue-primary">₦0.00</span>
-                  </p>
-                )}
+                <p className="text-sm font-semibold text-gray-700">
+                  Amount:{" "}
+                  <span className="text-blue-primary">
+                    {formatMoney(
+                      order?.deliveryFee ?? 0,
+                      order?.currency ?? market.currency,
+                    )}
+                  </span>
+                </p>
               </div>
             );
           })

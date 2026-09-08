@@ -1,4 +1,6 @@
 "use client";
+import { useMarket } from "@/lib/markets/useMarket";
+import { formatMoney } from "@/lib/money";
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/button";
@@ -26,6 +28,11 @@ import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
 
 interface OrderData {
+  // Every order document carries these; the four per-page copies of
+  // this interface each omitted them, so the client had no way to know
+  // an order's market and fell back to naira.
+  country?: "NG" | "CA";
+  currency?: "NGN" | "CAD";
   deliveryFee: any;
   _id: string;
   guest?: {
@@ -72,6 +79,7 @@ const ITEMS_PER_PAGE = 5;
 
 function Orders() {
   const { data: userProfile } = useUserProfile();
+  const market = useMarket(userProfile?.data?.country);
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
@@ -302,22 +310,15 @@ function Orders() {
                   </div>
                 </div>
 
-                {order && typeof order?.deliveryFee === "number" ? (
-                  <p className="text-sm font-semibold text-gray-700">
-                    Amount:{" "}
-                    <span className="text-blue-primary">
-                      ₦
-                      {order.deliveryFee.toLocaleString("en-NG", {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
-                    </span>
-                  </p>
-                ) : (
-                  <p className="text-sm font-semibold text-gray-700">
-                    Amount: <span className="text-blue-primary">₦0.00</span>
-                  </p>
-                )}
+                <p className="text-sm font-semibold text-gray-700">
+                  Amount:{" "}
+                  <span className="text-blue-primary">
+                    {formatMoney(
+                      order?.deliveryFee ?? 0,
+                      order?.currency ?? market.currency,
+                    )}
+                  </span>
+                </p>
 
                 <div className="flex justify-end gap-3 pt-4">
                   {["Pending", "Confirmed"].includes(order.status) && (

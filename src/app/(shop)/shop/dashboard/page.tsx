@@ -5,6 +5,10 @@ import { useGetStoreOrders } from "@/services/orders/query";
 import { useConfirmOrderMutation } from "@/services/orders/mutation";
 import { toast } from "sonner";
 import { IOrder } from "@/types/order";
+import { Currency } from "@/lib/markets/types";
+import { useMarket } from "@/lib/markets/useMarket";
+import { formatMoney } from "@/lib/money";
+import { useGetStoreProfile } from "@/services/shops/query";
 import { CheckCircle, ChevronLeft, ChevronRight, Package, MapPin, User, CreditCard } from "lucide-react";
 import { Dialog, DialogContent, DialogTrigger, DialogTitle } from "@/components/ui/dialog";
 
@@ -40,7 +44,17 @@ const SkeletonOrder = () => (
   </div>
 );
 
-function OrderCard({ order, onConfirm, isConfirming }: { order: IOrder; onConfirm: (id: string) => void; isConfirming: boolean }) {
+function OrderCard({
+  order,
+  onConfirm,
+  isConfirming,
+  currency,
+}: {
+  order: IOrder;
+  onConfirm: (id: string) => void;
+  isConfirming: boolean;
+  currency: Currency;
+}) {
   const s = STATUS_STYLES[order.status] || { bg: "bg-gray-50", text: "text-gray-700", dot: "bg-gray-400" };
   const customerName = order?.guest
     ? `${order.guest.firstname} ${order.guest.lastname}`
@@ -67,7 +81,9 @@ function OrderCard({ order, onConfirm, isConfirming }: { order: IOrder; onConfir
           <CreditCard size={15} className="text-gray-400 flex-shrink-0" />
           <div>
             <p className="text-[11px] text-gray-400 uppercase tracking-wide font-medium">Amount</p>
-            <p className="text-sm font-bold text-gray-900">₦{order.amount.toLocaleString()}</p>
+            <p className="text-sm font-bold text-gray-900">
+              {formatMoney(order.grandTotal ?? order.amount, order.currency ?? currency)}
+            </p>
           </div>
         </div>
         <div className="flex items-center gap-2.5 bg-gray-50 rounded-xl px-3 py-2.5">
@@ -118,9 +134,13 @@ function OrderCard({ order, onConfirm, isConfirming }: { order: IOrder; onConfir
                 )}
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold text-gray-800 truncate">{item.title}</p>
-                  <p className="text-xs text-gray-500">₦{item.price.toLocaleString()} × {item.quantity}</p>
+                  <p className="text-xs text-gray-500">
+                    {formatMoney(item.price, order.currency ?? currency)} × {item.quantity}
+                  </p>
                 </div>
-                <p className="text-sm font-bold text-gray-900 flex-shrink-0">₦{(item.price * item.quantity).toLocaleString()}</p>
+                <p className="text-sm font-bold text-gray-900 flex-shrink-0">
+                  {formatMoney(item.price * item.quantity, order.currency ?? currency)}
+                </p>
               </div>
             ))}
           </div>
@@ -153,20 +173,25 @@ function ShopId() {
     status: statusFilter !== "All" ? statusFilter : undefined,
   });
 
-  const orders = data?.data.fetchedData || [];
-  const totalPages = data?.data.no_of_pages || 1;
-  const totalOrders = data?.data.total || 0;
+  const orders = data?.data?.fetchedData ?? [];
+  const totalPages = data?.data?.no_of_pages ?? 1;
+  const totalOrders = data?.data?.total ?? 0;
 
   const { mutate: confirmOrderMutate, isPending } = useConfirmOrderMutation();
+  const { data: storeProfile } = useGetStoreProfile();
+  const market = useMarket(storeProfile?.data?.country);
 
-  const handleConfirmOrder = async (orderId: string) => {
-    try {
-      await confirmOrderMutate(orderId);
-      refetch();
-      toast.success("Order confirmed");
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || error.message || "Failed to confirm order");
-    }
+  const handleConfirmOrder = (orderId: string) => {
+    // mutate() returns void, so the previous try/await reported success before
+    // the request had resolved and its catch block could never run.
+    confirmOrderMutate(orderId, {
+      onSuccess: () => {
+        refetch();
+        toast.success("Order confirmed");
+      },
+      onError: (error: Error) =>
+        toast.error(error.message || "Failed to confirm order"),
+    });
   };
 
   return (
@@ -210,7 +235,13 @@ function ShopId() {
         <>
           <div className="space-y-4">
             {orders.map((order: IOrder) => (
-              <OrderCard key={order._id} order={order} onConfirm={handleConfirmOrder} isConfirming={isPending} />
+              <OrderCard
+                key={order._id}
+                order={order}
+                onConfirm={handleConfirmOrder}
+                isConfirming={isPending}
+                currency={market.currency}
+              />
             ))}
           </div>
 

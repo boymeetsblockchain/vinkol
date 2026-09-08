@@ -25,11 +25,11 @@ const dashboardLinks = [
     icon: <Package size={18} />,
     route: "/shop/dashboard/",
   },
-  // {
-  //   label: "Order History",
-  //   icon: <History size={18} />,
-  //   route: "/shop/dashboard/history",
-  // },
+  {
+    label: "Order History",
+    icon: <History size={18} />,
+    route: "/shop/dashboard/history",
+  },
   {
     label: "Products",
     icon: <ShoppingBasket size={18} />,
@@ -45,6 +45,11 @@ const dashboardLinks = [
     label: "Wallet",
     icon: <Wallet size={18} />,
     route: "/shop/dashboard/wallet",
+  },
+  {
+    label: "Settings",
+    icon: <Settings size={18} />,
+    route: "/shop/dashboard/settings",
   },
 ];
 
