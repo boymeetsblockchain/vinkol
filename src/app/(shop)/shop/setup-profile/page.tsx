@@ -7,11 +7,14 @@ import {
   resolveRegionFromPlace,
 } from "@/lib/markets";
 import { useMarket } from "@/lib/markets/useMarket";
-import { phonePlaceholder } from "@/lib/phone";
+import { normalizePhone, phonePlaceholder } from "@/lib/phone";
+import { completedSteps, pathAfter } from "@/lib/onboarding/steps";
+import { OnboardingShell } from "@/components/onboarding/shell";
+import { useGetStoreProfile } from "@/services/shops/query";
+import { useBank } from "@/services/banks/query";
 
 import { useState } from "react";
 import { Button } from "@/components/button";
-import { Header } from "@/components/shop/header";
 import { useRouter } from "next/navigation";
 import { useUpdateStoreProfile } from "@/services/shops/mutation";
 import Autocomplete from "react-google-autocomplete";
@@ -20,11 +23,16 @@ import { toast } from "sonner";
 function SetUpProfile() {
   const router = useRouter();
   const { mutate, isPending } = useUpdateStoreProfile();
+  const { data: profileData } = useGetStoreProfile();
+  const { data: bank } = useBank("store");
+  const profile = profileData?.data;
+  // The store's own country, not the visitor's cookie: a Canadian store editing
+  // its profile needs City and Province whichever market the browser remembers.
+  const market = useMarket(profile?.country);
 
   // Local state for form inputs
   const [name, setName] = useState("");
   const [bio, setBio] = useState("");
-  const market = useMarket();
   const [address, setAddress] = useState("");
   const [lga, setLga] = useState("");
   const [state, setState] = useState("");
@@ -34,45 +42,74 @@ function SetUpProfile() {
   const [lng, setLng] = useState("");
   const [tags, setTags] = useState("");
 
-  const handleSubmit = () => {
-    // console.log(lat, lng);
-    mutate(
-      {
-        name,
-        bio,
+  const [failure, setFailure] = useState("");
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setFailure("");
+
+    if (name.trim().length < 2) {
+      setFailure("Please enter your shop's name.");
+      return;
+    }
+    if (!tags) {
+      setFailure("Please choose the category that best fits your shop.");
+      return;
+    }
+    // The address has to come from the suggestions: typing into the box leaves
+    // no coordinates, and a delivery cannot be priced without them.
+    if (!address || !lat || !lng) {
+      setFailure("Please pick your shop address from the suggestions.");
+      return;
+    }
+    if (!normalizePhone(phone, market.country)) {
+      setFailure("Please enter a valid phone number.");
+      return;
+    }
+
+    // Blank fields are omitted rather than sent as "". Every string field on
+    // the server is optional but rejects an empty value, so a blank bio used to
+    // fail the whole request with a 400 and no redirect.
+    const payload = Object.fromEntries(
+      Object.entries({
+        name: name.trim(),
+        bio: bio.trim(),
         address,
-        lga,
+        lga: lga.trim(),
         lat,
         lng,
-        state,
-        phone,
+        state: state.trim(),
+        phone: normalizePhone(phone, market.country) ?? "",
         tags,
-        avatar: avatar || undefined,
-      },
+      }).filter(([, value]) => value !== ""),
+    ) as Record<string, string>;
+
+    mutate(
+      { ...payload, avatar: avatar || undefined } as never,
       {
         onSuccess: () => {
-          router.push("/shop/opening-hours");
+          router.push(pathAfter("store", "profile", profile, !!bank));
         },
-        onError: (error, variables) => {
-          toast.error(error?.message);
+        onError: (error) => {
+          const message =
+            error?.message || "Could not save your profile. Please try again.";
+          setFailure(message);
+          toast.error(message);
         },
       },
     );
   };
 
   return (
-    <section className="min-h-screen flex flex-col py-6">
-      <Header />
-      <div className="flex items-center justify-center max-w-screen-xl mx-auto px-4 w-full">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-          {/* Left: Form Section */}
-          <div className="w-full flex flex-col gap-6">
-            <div>
-              <h1 className="text-3xl font-bold ">Store Profile</h1>
-              <h2 className="text-sm text-gray-600 mt-1">
-                Complete details to complete profile
-              </h2>
-            </div>
+    <OnboardingShell
+      role="store"
+      stepKey="profile"
+      profile={profile}
+      title="Store profile"
+      description="How your shop appears to customers, and where we collect their orders from."
+      completed={completedSteps("store", profile, !!bank)}
+    >
+      <form onSubmit={handleSubmit} className="flex flex-col gap-6">
 
             {/* Profile Image Upload */}
             <label className="flex justify-center flex-col items-center gap-2">
@@ -202,28 +239,25 @@ function SetUpProfile() {
               />
             </div>
 
-            {/* Submit Button */}
-            <Button
-              variant="auth"
-              className="w-full rounded-md mt-4"
-              onClick={handleSubmit}
-              disabled={isPending}
-            >
-              {isPending ? "Submitting..." : "Submit"}
-            </Button>
-          </div>
+        {failure && (
+          <p
+            role="alert"
+            className="rounded-xl bg-red-50 border border-red-100 px-4 py-3 text-sm text-red-700"
+          >
+            {failure}
+          </p>
+        )}
 
-          {/* Right: Image Section */}
-          <div className="hidden md:block w-full h-full">
-            <img
-              src="/assets/riderauth.jpg"
-              alt="Rider Auth Illustration"
-              className="w-full h-full object-contain rounded-lg"
-            />
-          </div>
-        </div>
-      </div>
-    </section>
+        <Button
+          variant="auth"
+          className="w-full rounded-md mt-2"
+          type="submit"
+          disabled={isPending}
+        >
+          {isPending ? "Submitting..." : "Save and continue"}
+        </Button>
+      </form>
+    </OnboardingShell>
   );
 }
 
