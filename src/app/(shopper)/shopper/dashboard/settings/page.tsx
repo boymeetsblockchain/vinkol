@@ -4,6 +4,7 @@ import { Button } from "@/components/button";
 import { useUpdateProfileMutation } from "@/services/rider/mutation";
 import { useUserProfile } from "@/services/rider/query";
 import { PayoutSettings } from "@/components/dashboard/payout-settings";
+import { PhoneSettings } from "@/components/dashboard/phone-settings";
 import { regionsFor } from "@/lib/markets";
 import { useMarket } from "@/lib/markets/useMarket";
 import { toast } from "sonner";
@@ -79,7 +80,9 @@ function SettingsPage() {
           <div className="flex flex-col items-center gap-2">
             <img
               src={
-                avatarFile ? URL.createObjectURL(avatarFile) : avatar.imageUrl
+                avatarFile
+                  ? URL.createObjectURL(avatarFile)
+                  : avatar?.imageUrl || "/assets/placeholder.png"
               }
               alt="Rider Profile"
               className="h-36 w-36 rounded-full border border-gray-300 object-cover"
@@ -141,6 +144,15 @@ function SettingsPage() {
             {updateProfileMutation.isPending ? "Saving..." : "Save"}
           </Button>
         </div>
+      </div>
+
+      <div className="border-t border-gray-100 mt-12 pt-10 max-w-screen-xl mx-auto w-full">
+        <PhoneSettings
+          email={data?.data?.email}
+          phone={data?.data?.phone}
+          isPhoneVerified={data?.data?.isPhoneVerified}
+          country={data?.data?.country}
+        />
       </div>
 
       <div className="border-t border-gray-100 mt-12 pt-10 max-w-screen-xl mx-auto w-full">

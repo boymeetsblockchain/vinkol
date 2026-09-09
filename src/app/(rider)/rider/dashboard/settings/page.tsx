@@ -4,11 +4,11 @@ import { Button } from "@/components/button";
 import { useUpdateProfileMutation } from "@/services/rider/mutation";
 import { useUserProfile } from "@/services/rider/query";
 import { PayoutSettings } from "@/components/dashboard/payout-settings";
+import { PhoneSettings } from "@/components/dashboard/phone-settings";
 import { regionsFor } from "@/lib/markets";
 import { useMarket } from "@/lib/markets/useMarket";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 
 function SettingsPage() {
   const { data, isPending, refetch } = useUserProfile();
@@ -80,7 +80,9 @@ function SettingsPage() {
           <div className="flex flex-col items-center gap-2">
             <img
               src={
-                avatarFile ? URL.createObjectURL(avatarFile) : avatar.imageUrl
+                avatarFile
+                  ? URL.createObjectURL(avatarFile)
+                  : avatar?.imageUrl || "/assets/placeholder.png"
               }
               alt="Rider Profile"
               className="h-36 w-36 rounded-full border border-gray-300 object-cover"
@@ -141,23 +143,16 @@ function SettingsPage() {
           >
             {updateProfileMutation.isPending ? "Saving..." : "Save"}
           </Button>
-
-          <div className="flex flex-col gap-2 mt-4">
-            <label htmlFor="">Phone</label>
-            <input
-              type="text"
-              readOnly
-              placeholder="No phone number provided"
-              className="w-full py-2 px-3 focus:outline-none border border-[#A5A4A0] rounded-[5px placeholder:text-base"
-              value={data?.data?.phone || ""}
-            />
-            <Button variant="secondary">
-              <Link href={"/rider/verify-phonenumber"}>
-                {data?.data?.phone ? "Change Phone" : "Verify Phone"}
-              </Link>
-            </Button>
-          </div>
         </div>
+      </div>
+
+      <div className="border-t border-gray-100 mt-12 pt-10 max-w-screen-xl mx-auto w-full">
+        <PhoneSettings
+          email={data?.data?.email}
+          phone={data?.data?.phone}
+          isPhoneVerified={data?.data?.isPhoneVerified}
+          country={data?.data?.country}
+        />
       </div>
 
       <div className="border-t border-gray-100 mt-12 pt-10 max-w-screen-xl mx-auto w-full">
