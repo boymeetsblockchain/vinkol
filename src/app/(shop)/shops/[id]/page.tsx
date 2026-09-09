@@ -72,11 +72,16 @@ function ShopIdPage() {
   const id = params.id as string;
 
   // Fetch the store details
-  const market = useMarket();
+  const requestMarket = useMarket();
   const { data: store, isLoading: isStoreLoading } = useGetSingleStore(
     id,
-    market.country,
+    requestMarket.country,
   );
+
+  // Prices follow the store's own market, not the visitor's. The basket lives
+  // in localStorage and survives a market switch, so resolving currency from
+  // the visitor would relabel a naira basket as dollars.
+  const market = useMarket(store?.data?.store?.country);
   const {
     data: productsData,
     isLoading: areProductsLoading,
@@ -495,6 +500,7 @@ function ShopIdPage() {
       </Dialog>
 
       <CartModal
+        currency={market.currency}
         isOpen={openCartModal}
         onClose={() => setOpenCartModal(false)}
         shopId={id as string}

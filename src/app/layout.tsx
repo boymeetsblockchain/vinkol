@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 import "./globals.css";
 import ReactQueryProvider from "@/providers/react-query";
+import { MarketProvider } from "@/lib/markets/context";
 import { metadataBase } from "@/lib/markets/metadata";
 import { marketFromRequest } from "@/lib/markets/server";
 import { Toaster } from "@/components/ui/sonner";
@@ -30,7 +31,9 @@ export default async function RootLayout({
       suppressHydrationWarning
     >
       <body className="antialiased">
-        <ReactQueryProvider>{children}</ReactQueryProvider>
+        <ReactQueryProvider>
+          <MarketProvider country={country}>{children}</MarketProvider>
+        </ReactQueryProvider>
         <Toaster position="top-right" richColors />
       </body>
     </html>

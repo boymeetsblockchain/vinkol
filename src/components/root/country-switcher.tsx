@@ -3,7 +3,8 @@
 import { usePathname, useRouter } from "next/navigation";
 
 import { COUNTRY_NAMES, COUNTRIES, Country } from "@/lib/markets/types";
-import { MARKET_COOKIE, marketFromPath, swapMarketPath } from "@/lib/markets";
+import { MARKET_COOKIE, swapMarketPath } from "@/lib/markets";
+import { useMarket } from "@/lib/markets/useMarket";
 
 /**
  * Lets a visitor change market, and remembers the choice.
@@ -15,12 +16,21 @@ import { MARKET_COOKIE, marketFromPath, swapMarketPath } from "@/lib/markets";
 export const CountrySwitcher = () => {
   const pathname = usePathname() ?? "/";
   const router = useRouter();
-  const current = marketFromPath(pathname);
+  // Via useMarket rather than the path, so the highlight agrees with the
+  // footer around it on the routes that have no prefix to read.
+  const { country: current } = useMarket();
 
   const choose = (country: Country) => {
     if (country === current) return;
     document.cookie = `${MARKET_COOKIE}=${country}; path=/; max-age=${60 * 60 * 24 * 365}; samesite=lax`;
-    router.push(swapMarketPath(pathname, country));
+
+    const target = swapMarketPath(pathname, country);
+    if (target !== pathname) router.push(target);
+
+    // A push reuses the cached root layout, so without this the new cookie
+    // never reaches the server components that read it — including the
+    // provider that tells the rest of the app which market it is in.
+    router.refresh();
   };
 
   return (

@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { MARKET_COOKIE, MARKET_PREFIX, MARKET_ROUTES } from "@/lib/markets";
+import {
+  MARKET_COOKIE,
+  MARKET_PREFIX,
+  hasMarketVersion,
+} from "@/lib/markets";
 import { Country, isCountry } from "@/lib/markets/types";
 
 /**
@@ -41,16 +45,6 @@ const hasMarketPrefix = (pathname: string) =>
     (prefix) =>
       prefix && (pathname === prefix || pathname.startsWith(`${prefix}/`)),
   );
-
-/** Exact match: /terms-and-conditions-customer is not /terms-and-conditions. */
-const hasMarketVersion = (pathname: string) => {
-  const normalized =
-    pathname.length > 1 && pathname.endsWith("/")
-      ? pathname.slice(0, -1)
-      : pathname;
-
-  return (MARKET_ROUTES as readonly string[]).includes(normalized);
-};
 
 const remember = (response: NextResponse, country: Country) => {
   response.cookies.set(MARKET_COOKIE, country, COOKIE_OPTIONS);

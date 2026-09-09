@@ -1,12 +1,12 @@
 "use client";
-import { usePathname } from "next/navigation";
 import { RiTwitterXLine } from "react-icons/ri";
 import { FaInstagram } from "react-icons/fa6";
 import { FaLinkedin } from "react-icons/fa";
 import { IoMdMail } from "react-icons/io";
 import Link from "next/link";
 
-import { contentFor, marketFromPath, marketLink } from "@/lib/markets";
+import { contentFor, marketLink } from "@/lib/markets";
+import { useMarket } from "@/lib/markets/useMarket";
 import { CountrySwitcher } from "./country-switcher";
 
 const services = [
@@ -33,7 +33,7 @@ const company = [
 ];
 
 export const Footer = () => {
-  const country = marketFromPath(usePathname() ?? "/");
+  const { country } = useMarket();
   const { brandName, contact, serviceAreaPhrase } = contentFor(country);
 
   return (

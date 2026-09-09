@@ -1,6 +1,6 @@
 "use client";
 
-import { useMarket } from "@/lib/markets/useMarket";
+import { Currency } from "@/lib/markets/types";
 import { formatMoney } from "@/lib/money";
 // components/modals/cartmodal.tsx
 
@@ -26,6 +26,8 @@ interface CartModalProps {
   onRemoveItem: (id: string) => void;
   onUpdateQuantity: (id: string, quantity: number) => void;
   total: number;
+  /** The store's currency, so a basket cannot be relabelled by a switch. */
+  currency: Currency;
 }
 
 export const CartModal = ({
@@ -36,8 +38,8 @@ export const CartModal = ({
   onUpdateQuantity,
   total,
   shopId,
+  currency,
 }: CartModalProps) => {
-  const market = useMarket();
   const router = useRouter();
 
   if (!isOpen) return null;
@@ -47,7 +49,7 @@ export const CartModal = ({
   };
 
   const formatPrice = (price: number) =>
-    formatMoney(price, market.currency);
+    formatMoney(price, currency);
 
   return (
     <div className="fixed inset-0 z-50 overflow-hidden flex justify-end">

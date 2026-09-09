@@ -178,6 +178,8 @@ export const getStoreProfile = async () => {
 interface GetAllStoresParams {
   search?: string;
   state?: string;
+  /** Scopes the listing to one market; the server rejects cross-market rows. */
+  country?: Country;
 }
 
 export const getAllStores = async (params?: GetAllStoresParams) => {

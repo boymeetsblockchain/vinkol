@@ -8,7 +8,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { BiX } from "react-icons/bi";
 import { cn } from "@/lib/utils"; // Assuming you have this utility from your previous code
-import { marketFromPath, marketLink, marketPath } from "@/lib/markets";
+import { marketLink, marketPath } from "@/lib/markets";
+import { useMarket } from "@/lib/markets/useMarket";
 
 const navLinks = [
   { name: "About", path: "/about" },
@@ -31,7 +32,7 @@ export const Navbar: React.FC<{ shop?: boolean }> = ({ shop }) => {
   const [showDeliveryDropdown, setShowDeliveryDropdown] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
-  const country = marketFromPath(pathname ?? "/");
+  const { country } = useMarket();
   const href = (path: string) => marketLink(path, country);
 
   const navigate = () => {

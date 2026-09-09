@@ -1,5 +1,11 @@
 "use client";
-import { placesCountry, regionLabel, resolveRegionFromPlace } from "@/lib/markets";
+import {
+  localityLabel,
+  placesCountry,
+  regionFieldLabel,
+  resolveLocalityFromPlace,
+  resolveRegionFromPlace,
+} from "@/lib/markets";
 import { useMarket } from "@/lib/markets/useMarket";
 import { phonePlaceholder } from "@/lib/phone";
 
@@ -50,7 +56,7 @@ function SetUpProfile() {
         onError: (error, variables) => {
           toast.error(error?.message);
         },
-      }
+      },
     );
   };
 
@@ -136,32 +142,32 @@ function SetUpProfile() {
                     setLng(place.geometry.location.lng().toString());
                   }
 
-                  // Optional: Extract city/state/LGA from address components
-                  let foundLga = "";
-                  let foundState = "";
+                  const components = place.address_components ?? [];
 
-                  for (const component of place.address_components) {
-                    if (
-                      component.types.includes("administrative_area_level_2")
-                    ) {
-                      // This is often the county or LGA
-                      foundLga = component.long_name;
-                    }
-                  }
-                  setLga(foundLga);
+                  // Nigeria's LGA and Canada's city come from different Google
+                  // components, so this is not one field read two ways.
+                  setLga(resolveLocalityFromPlace(components, market.country));
 
                   // Google's long_name gives "Lagos State" and "Ontario";
                   // store search matches the exact stored value, so the
                   // canonical one is what has to be saved.
                   const region = resolveRegionFromPlace(
-                    place.address_components,
+                    components,
                     market.country,
                   );
                   setState(region?.value ?? "");
                 }}
                 options={{
                   types: ["address"], // Restrict to addresses
-                  componentRestrictions: { country: placesCountry(market.country) },
+                  componentRestrictions: {
+                    country: [placesCountry(market.country)],
+                  },
+                  fields: [
+                    "formatted_address",
+                    "name",
+                    "geometry.location",
+                    "address_components",
+                  ],
                 }}
                 defaultValue={address} // Set default value to reflect current address state
                 className="w-full py-2 px-3 focus:outline-none border border-[#A5A4A0] rounded-[5px] placeholder:text-blue-primary placeholder:text-base"
@@ -171,20 +177,20 @@ function SetUpProfile() {
               <div className="grid grid-cols-2 gap-10">
                 <input
                   type="text"
-                  placeholder="Local government"
+                  placeholder={localityLabel(market.country)}
                   value={lga}
                   onChange={(e) => setLga(e.target.value)}
                   className="w-full py-2 px-3 focus:outline-none border border-[#A5A4A0] rounded-[5px] placeholder:text-blue-primary placeholder:text-base"
                 />
+                {/* Prefilled from the address but editable: Google does not
+                    always return a locality, and a locked empty field would
+                    leave the merchant unable to finish. */}
                 <input
                   type="text"
-                  readOnly
-                  placeholder={
-                    market.country === "CA" ? "Province" : "State"
-                  }
-                  value={state ? regionLabel(state, market.country) : ""}
-                  title="Set from your shop address"
-                  className="w-full py-2 px-3 bg-gray-100 text-gray-600 focus:outline-none border border-[#A5A4A0] rounded-[5px] placeholder:text-blue-primary placeholder:text-base cursor-default"
+                  placeholder={regionFieldLabel(market.country)}
+                  value={state}
+                  onChange={(e) => setState(e.target.value)}
+                  className="w-full py-2 px-3 focus:outline-none border border-[#A5A4A0] rounded-[5px] placeholder:text-blue-primary placeholder:text-base"
                 />
               </div>
               <input
