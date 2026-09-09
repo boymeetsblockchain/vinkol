@@ -13,6 +13,7 @@ export const handleApiError = (error: any, defaultMessage: string): never => {
     throw new ApiError(
       error.response.data?.message || defaultMessage,
       error.response.status,
+      error.response.data?.data,
     );
   }
 
