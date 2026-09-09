@@ -224,6 +224,47 @@ export const submitVehicle = async (data: any) => {
   }
 };
 
+/**
+ * The three KYC endpoints the website never called, which is why no rider or
+ * shopper could reach a submitted KYC: the server requires a guarantor from
+ * both, and a registration and insurance certificate from anyone driving a car,
+ * truck or van.
+ */
+export const submitGuarantor = async (data: FormData) => {
+  try {
+    const response = await axiosInstance.patch("/kyc/submit-guarantor", data, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return response.data;
+  } catch (error) {
+    handleApiError(error, "Failed to submit guarantor.");
+  }
+};
+
+export const submitVehicleRegistration = async (data: FormData) => {
+  try {
+    const response = await axiosInstance.patch(
+      "/kyc/submit-vehicle-registration",
+      data,
+      { headers: { "Content-Type": "multipart/form-data" } },
+    );
+    return response.data;
+  } catch (error) {
+    handleApiError(error, "Failed to submit vehicle registration.");
+  }
+};
+
+export const submitVehicleInsurance = async (data: FormData) => {
+  try {
+    const response = await axiosInstance.patch("/kyc/submit-insurance", data, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return response.data;
+  } catch (error) {
+    handleApiError(error, "Failed to submit insurance certificate.");
+  }
+};
+
 export const createUserBank = async (
   data: z.infer<typeof createStoreBankSchema>
 ) => {

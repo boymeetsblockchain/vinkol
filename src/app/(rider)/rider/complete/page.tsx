@@ -29,7 +29,8 @@ export default function RiderIdentityPage() {
       imageLabel="Photo of your ID"
       submitLabel="Submit ID"
       isPending={isPending}
-      nextPath="/rider/vechicle"
+      profile={data?.data}
+      hasBank={!!bank}
       completed={completedSteps("rider", data?.data, !!bank)}
       onSubmit={(body, handlers) => mutate(body, handlers)}
     />

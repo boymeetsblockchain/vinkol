@@ -27,7 +27,8 @@ export default function RiderVehiclePage() {
       imageLabel="Photo of your vehicle"
       submitLabel="Submit vehicle"
       isPending={isPending}
-      nextPath="/rider/account"
+      profile={data?.data}
+      hasBank={!!bank}
       completed={completedSteps("rider", data?.data, !!bank)}
       onSubmit={(body, handlers) => mutate(body, handlers)}
     />

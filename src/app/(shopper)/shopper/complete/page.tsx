@@ -29,7 +29,8 @@ export default function ShopperIdentityPage() {
       imageLabel="Photo of your ID"
       submitLabel="Submit ID"
       isPending={isPending}
-      nextPath="/shopper/vechicle"
+      profile={data?.data}
+      hasBank={!!bank}
       completed={completedSteps("shopper", data?.data, !!bank)}
       onSubmit={(body, handlers) => mutate(body, handlers)}
     />

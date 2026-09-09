@@ -36,6 +36,7 @@ export const BankStep = ({ role }: { role: OnboardingRole }) => {
     <OnboardingShell
       role={role}
       stepKey="bank"
+      profile={profile}
       title="Where should we send your earnings?"
       description="Your wallet is credited as you complete jobs. These are the details we use when you request a withdrawal."
       completed={completedSteps(role, profile, !!bank)}

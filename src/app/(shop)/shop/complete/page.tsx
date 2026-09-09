@@ -29,7 +29,8 @@ export default function StoreIdentityPage() {
       imageLabel="Photo of your ID"
       submitLabel="Submit ID"
       isPending={isPending}
-      nextPath="/shop/business-document"
+      profile={data?.data}
+      hasBank={!!bank}
       completed={completedSteps("store", data?.data, !!bank)}
       onSubmit={(body, handlers) => mutate(body, handlers)}
     />

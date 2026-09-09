@@ -8,7 +8,11 @@ import { Button } from "@/components/button";
 import { OnboardingShell } from "@/components/onboarding/shell";
 import { useMarket } from "@/lib/markets/useMarket";
 import { normalizePhone, phonePlaceholder } from "@/lib/phone";
-import { OnboardingRole, completedSteps } from "@/lib/onboarding/steps";
+import {
+  OnboardingRole,
+  completedSteps,
+  pathAfter,
+} from "@/lib/onboarding/steps";
 import { useSendSmsOtp, useVerifyPhoneNumber } from "@/services/rider/mutation";
 import { useGetUserBank, useUserProfile } from "@/services/rider/query";
 
@@ -46,9 +50,9 @@ export const PhoneStep = ({ role }: { role: OnboardingRole }) => {
       ? localStorage.getItem("ride-email")
       : null);
 
-  const nextPath = userBank?.data
-    ? `/${role}/dashboard`
-    : `/${role}/account`;
+  // Was `bank` or the dashboard, which jumped over ID, vehicle and guarantor —
+  // collecting payout details before any of the checks that justify them.
+  const nextPath = pathAfter(role, "phone", profile, !!userBank?.data);
 
   const handleSendOtp = async () => {
     const normalized = normalizePhone(phone, market.country);
@@ -103,6 +107,7 @@ export const PhoneStep = ({ role }: { role: OnboardingRole }) => {
     <OnboardingShell
       role={role}
       stepKey="phone"
+      profile={profile}
       title="Verify your phone number"
       description="Customers and our support team reach you on this number, so we send a code to confirm it works."
       completed={completedSteps(role, profile, !!userBank?.data)}

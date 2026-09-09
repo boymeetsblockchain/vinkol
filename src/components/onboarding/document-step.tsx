@@ -6,7 +6,12 @@ import { toast } from "sonner";
 
 import { Button } from "@/components/button";
 import { OnboardingShell } from "@/components/onboarding/shell";
-import { OnboardingRole } from "@/lib/onboarding/steps";
+import {
+  OnboardingProfile,
+  OnboardingRole,
+  OnboardingStepKey,
+  pathAfter,
+} from "@/lib/onboarding/steps";
 
 /**
  * A document upload step: pick a type, attach an image, submit.
@@ -21,13 +26,17 @@ const MAX_BYTES = 2 * 1024 * 1024;
 
 interface Props {
   role: OnboardingRole;
-  stepKey: string;
+  stepKey: OnboardingStepKey;
   title: string;
   description: string;
-  /** Form field for the selected type, e.g. "idType" or "vehicleType". */
-  typeField: string;
-  typeLabel: string;
-  options: { value: string; label: string }[];
+  /**
+   * Form field for the selected type, e.g. "idType". Omit all three for a
+   * document that has no type to choose — a registration or an insurance
+   * certificate is just a file.
+   */
+  typeField?: string;
+  typeLabel?: string;
+  options?: { value: string; label: string }[];
   imageLabel: string;
   submitLabel: string;
   isPending: boolean;
@@ -36,11 +45,11 @@ interface Props {
     body: FormData,
     handlers: { onSuccess: () => void; onError: (error: Error) => void },
   ) => void;
-  /** Where to go on success. */
-  nextPath: string;
+  profile?: OnboardingProfile | null;
+  hasBank?: boolean;
   /** Shown as "skip" when the step is genuinely optional. */
   skipPath?: string;
-  completed?: Set<string>;
+  completed?: Set<OnboardingStepKey>;
 }
 
 export const DocumentStep = ({
@@ -55,7 +64,8 @@ export const DocumentStep = ({
   submitLabel,
   isPending,
   onSubmit,
-  nextPath,
+  profile,
+  hasBank = false,
   skipPath,
   completed,
 }: Props) => {
@@ -66,8 +76,8 @@ export const DocumentStep = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!type) {
-      toast.error(`Please choose a ${typeLabel.toLowerCase()}.`);
+    if (typeField && !type) {
+      toast.error(`Please choose a ${(typeLabel ?? "type").toLowerCase()}.`);
       return;
     }
     if (!image) {
@@ -81,13 +91,14 @@ export const DocumentStep = ({
     }
 
     const body = new FormData();
-    body.append(typeField, type);
+    if (typeField) body.append(typeField, type);
     body.append("image", image);
 
     onSubmit(body, {
       onSuccess: () => {
         toast.success("Uploaded.");
-        router.push(nextPath);
+        // Asked of the sequence, so this step cannot skip its successor.
+        router.push(pathAfter(role, stepKey, profile, hasBank));
       },
       onError: (error) =>
         toast.error(error.message || "Upload failed. Please try again."),
@@ -98,32 +109,40 @@ export const DocumentStep = ({
     <OnboardingShell
       role={role}
       stepKey={stepKey}
+      profile={profile}
       title={title}
       description={description}
       completed={completed}
       onSkip={skipPath ? () => router.push(skipPath) : undefined}
     >
       <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-        <div className="flex flex-col gap-1.5">
-          <label htmlFor="docType" className="text-sm font-medium text-gray-700">
-            {typeLabel}
-          </label>
-          <select
-            id="docType"
-            className="w-full bg-gray-50 border border-gray-200 py-3 px-4 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-[var(--color-blue-primary)]"
-            value={type}
-            onChange={(e) => setType(e.target.value)}
-            disabled={isPending}
-            required
-          >
-            <option value="">Select {typeLabel.toLowerCase()}</option>
-            {options.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
+        {typeField && (
+          <div className="flex flex-col gap-1.5">
+            <label
+              htmlFor="docType"
+              className="text-sm font-medium text-gray-700"
+            >
+              {typeLabel}
+            </label>
+            <select
+              id="docType"
+              className="w-full bg-gray-50 border border-gray-200 py-3 px-4 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-[var(--color-blue-primary)]"
+              value={type}
+              onChange={(e) => setType(e.target.value)}
+              disabled={isPending}
+              required
+            >
+              <option value="">
+                Select {(typeLabel ?? "type").toLowerCase()}
               </option>
-            ))}
-          </select>
-        </div>
+              {(options ?? []).map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
         <div className="flex flex-col gap-1.5">
           <label htmlFor="docImage" className="text-sm font-medium text-gray-700">

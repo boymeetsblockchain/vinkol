@@ -14,7 +14,13 @@ import {
   Country,
   isCountry,
 } from "@/lib/markets/types";
-import { OnboardingRole, STEPS } from "@/lib/onboarding/steps";
+import {
+  OnboardingProfile,
+  OnboardingRole,
+  OnboardingStepKey,
+  completedSteps,
+  pathAfter,
+} from "@/lib/onboarding/steps";
 
 /**
  * Where the account operates.
@@ -50,7 +56,8 @@ interface Props {
   isPending?: boolean;
   /** Already-stored country, when returning to this step to change it. */
   current?: Country;
-  completed?: Set<string>;
+  profile?: OnboardingProfile | null;
+  hasBank?: boolean;
 }
 
 export const CountryStep = ({
@@ -58,7 +65,8 @@ export const CountryStep = ({
   onSubmit,
   isPending,
   current,
-  completed,
+  profile,
+  hasBank = false,
 }: Props) => {
   const router = useRouter();
   const [selected, setSelected] = useState<Country | null>(current ?? null);
@@ -69,13 +77,17 @@ export const CountryStep = ({
     if (isCountry(remembered)) setSelected(remembered);
   }, [selected]);
 
-  const next = STEPS[role][2];
+  const completed: Set<OnboardingStepKey> = completedSteps(
+    role,
+    profile,
+    hasBank,
+  );
 
   const submit = async () => {
     if (!selected) return;
     try {
       await onSubmit(selected);
-      router.push(next.path);
+      router.push(pathAfter(role, "country", profile, hasBank));
     } catch (error: any) {
       toast.error(error?.message ?? "Could not save your location.");
     }
@@ -85,6 +97,7 @@ export const CountryStep = ({
     <OnboardingShell
       role={role}
       stepKey="country"
+      profile={profile}
       title="Where do you operate?"
       description="This sets your currency, how you get paid, and the details we need for payouts. It cannot be changed later without contacting support."
       completed={completed}

@@ -5,10 +5,12 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft, Check } from "lucide-react";
 
 import {
+  OnboardingProfile,
   OnboardingRole,
-  STEPS,
+  OnboardingStepKey,
   previousStep,
   stepIndex,
+  stepsFor,
 } from "@/lib/onboarding/steps";
 
 /**
@@ -21,11 +23,16 @@ import {
 
 interface Props {
   role: OnboardingRole;
-  stepKey: string;
+  stepKey: OnboardingStepKey;
   title: string;
   description?: string;
+  /**
+   * Needed for the step list, not just for display: a rider's list is longer
+   * when their vehicle needs a registration and an insurance certificate.
+   */
+  profile?: OnboardingProfile | null;
   /** Which earlier steps are done, for ticks in the stepper. */
-  completed?: Set<string>;
+  completed?: Set<OnboardingStepKey>;
   /** Where "skip" goes. Omit to hide it. */
   onSkip?: () => void;
   skipLabel?: string;
@@ -37,16 +44,17 @@ export const OnboardingShell = ({
   stepKey,
   title,
   description,
+  profile,
   completed,
   onSkip,
   skipLabel = "Skip for now",
   children,
 }: Props) => {
   const router = useRouter();
-  const steps = STEPS[role];
-  const index = stepIndex(role, stepKey);
+  const steps = stepsFor(role, profile);
+  const index = stepIndex(role, stepKey, profile);
   const current = index < 0 ? 0 : index;
-  const back = previousStep(role, stepKey);
+  const back = previousStep(role, stepKey, profile);
   const progress = ((current + 1) / steps.length) * 100;
 
   return (

@@ -14,23 +14,26 @@ import {
   contactFormSchema,
 } from "@/types/rider";
 import {
-  registerRider,
-  loginRider,
-  verifyEmail,
-  resendOtp,
+  contactMessage,
+  createUserBank,
   forgotPassword,
+  loginRider,
+  registerRider,
+  registerShopper,
+  resendOtp,
   resetPassword,
-  updateProfile,
-  updateUserCountry,
+  sendSmsOtp,
+  submitGuarantor,
   submitKyc,
   submitVehicle,
-  registerShopper,
-  sendSmsOtp,
-  verifySmsOtp,
-  contactMessage,
+  submitVehicleInsurance,
+  submitVehicleRegistration,
   subscribe,
+  updateProfile,
+  updateUserCountry,
+  verifyEmail,
+  verifySmsOtp,
   withdraw,
-  createUserBank,
 } from "./api"; // Assuming 'api' is the file containing all the API functions
 import { toast } from "sonner";
 import { createStoreBankSchema } from "@/types/shop";
@@ -430,3 +433,33 @@ export function useWithDraw(options?: MutationOptions<any, Error>) {
 
   return { mutate, data, error, isPending, isSuccess, isError };
 }
+
+const kycMutation = (
+  fn: (body: FormData) => Promise<any>,
+  failure: string,
+) =>
+  function useKycUpload(options?: MutationOptions<any, Error>) {
+    const { mutate, isPending, isSuccess, isError, error } = useMutation({
+      mutationFn: fn,
+      onSuccess: (data) => options?.onSuccess?.(data),
+      onError: (err: Error) => {
+        console.error(failure, err.message);
+        options?.onError?.(err);
+      },
+    });
+
+    return { mutate, isPending, isSuccess, isError, error };
+  };
+
+export const useSubmitGuarantor = kycMutation(
+  submitGuarantor,
+  "Submit guarantor failed:",
+);
+export const useSubmitVehicleRegistration = kycMutation(
+  submitVehicleRegistration,
+  "Submit vehicle registration failed:",
+);
+export const useSubmitVehicleInsurance = kycMutation(
+  submitVehicleInsurance,
+  "Submit insurance failed:",
+);

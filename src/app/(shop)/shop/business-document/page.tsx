@@ -27,8 +27,8 @@ export default function StoreBusinessDocPage() {
       imageLabel="Photo or scan of the document"
       submitLabel="Submit document"
       isPending={isPending}
-      nextPath="/shop/setup-profile"
-      skipPath="/shop/setup-profile"
+      profile={data?.data}
+      hasBank={!!bank}
       completed={completedSteps("store", data?.data, !!bank)}
       onSubmit={(body, handlers) => mutate(body, handlers)}
     />
