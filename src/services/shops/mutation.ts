@@ -99,9 +99,12 @@ export function useVerifyEmailMutation(options?: MutationOptions<any, Error>) {
       return await verifyEmail(payload);
     },
     onSuccess: (responseData) => {
-      // console.log("Email verification successful:", responseData);
+      // Guarded: an unguarded write stores the string "undefined", which
+      // reads as a token everywhere and ejects the user on the first request.
+      if (responseData.token) {
+        localStorage.setItem("accessToken", responseData.token);
+      }
       options?.onSuccess?.(responseData);
-      localStorage.setItem("accessToken", responseData.token);
     },
     onError: (errorData: Error) => {
       console.error("Email verification failed:", errorData.message);
