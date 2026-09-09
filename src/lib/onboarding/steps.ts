@@ -42,8 +42,20 @@ export interface OnboardingStep {
   /** Shown in the stepper. Short enough to read at a glance. */
   label: string;
   path: string;
-  /** Steps a user may legitimately leave for later. */
+  /**
+   * Steps a user may legitimately leave for later — nothing they need on day
+   * one is gated on them, and every one has a screen in the dashboard that can
+   * still create the record afterwards. This flag is the only thing that
+   * decides whether a step offers a skip and whether it can wall a dashboard.
+   */
   optional?: boolean;
+  /** Wording for the skip affordance. Only read when `optional`. */
+  skipLabel?: string;
+  /**
+   * What the dashboard says about it once skipped. Names the consequence, so
+   * the reminder is useful rather than nagging.
+   */
+  nudge?: string;
 }
 
 /** Vehicles that need a registration and an insurance certificate as well. */
@@ -61,15 +73,36 @@ const STORE_STEPS: OnboardingStep[] = [
     path: "/shop/business-document",
   },
   { key: "profile", label: "Store profile", path: "/shop/setup-profile" },
-  { key: "hours", label: "Opening hours", path: "/shop/opening-hours" },
-  { key: "bank", label: "Payouts", path: "/shop/account", optional: true },
+  {
+    key: "hours",
+    label: "Opening hours",
+    path: "/shop/opening-hours",
+    optional: true,
+    skipLabel: "Set these later",
+    nudge: "Set your opening hours so customers know when you're open.",
+  },
+  {
+    key: "bank",
+    label: "Payouts",
+    path: "/shop/account",
+    optional: true,
+    skipLabel: "Add this later",
+    nudge: "Add your payout details so you can withdraw your earnings.",
+  },
 ];
 
 const riderSteps = (needsVehicleDocs: boolean): OnboardingStep[] => [
   { key: "verify-email", label: "Verify email", path: "/rider/auth/otp" },
   { key: "country", label: "Location", path: "/rider/country" },
   { key: "profile", label: "Your details", path: "/rider/auth" },
-  { key: "phone", label: "Phone", path: "/rider/verify-phonenumber" },
+  {
+    key: "phone",
+    label: "Phone",
+    path: "/rider/verify-phonenumber",
+    optional: true,
+    skipLabel: "I'll verify later",
+    nudge: "Verify your phone number to start accepting orders.",
+  },
   { key: "identity", label: "Your ID", path: "/rider/complete" },
   { key: "vehicle", label: "Vehicle", path: "/rider/vechicle" },
   ...(needsVehicleDocs
@@ -87,7 +120,14 @@ const riderSteps = (needsVehicleDocs: boolean): OnboardingStep[] => [
       ] as OnboardingStep[])
     : []),
   { key: "guarantor", label: "Guarantor", path: "/rider/guarantor" },
-  { key: "bank", label: "Payouts", path: "/rider/account" },
+  {
+    key: "bank",
+    label: "Payouts",
+    path: "/rider/account",
+    optional: true,
+    skipLabel: "Add this later",
+    nudge: "Add your payout details so you can withdraw your earnings.",
+  },
 ];
 
 // No vehicle step: a personal shopper is never asked for one, and the server's
@@ -96,10 +136,24 @@ const SHOPPER_STEPS: OnboardingStep[] = [
   { key: "verify-email", label: "Verify email", path: "/shopper/auth/otp" },
   { key: "country", label: "Location", path: "/shopper/country" },
   { key: "profile", label: "Your details", path: "/shopper/auth" },
-  { key: "phone", label: "Phone", path: "/shopper/verify-phonenumber" },
+  {
+    key: "phone",
+    label: "Phone",
+    path: "/shopper/verify-phonenumber",
+    optional: true,
+    skipLabel: "I'll verify later",
+    nudge: "Verify your phone number to start accepting orders.",
+  },
   { key: "identity", label: "Your ID", path: "/shopper/complete" },
   { key: "guarantor", label: "Guarantor", path: "/shopper/guarantor" },
-  { key: "bank", label: "Payouts", path: "/shopper/account" },
+  {
+    key: "bank",
+    label: "Payouts",
+    path: "/shopper/account",
+    optional: true,
+    skipLabel: "Add this later",
+    nudge: "Add your payout details so you can withdraw your earnings.",
+  },
 ];
 
 export const dashboardFor: Record<OnboardingRole, string> = {
@@ -226,6 +280,65 @@ export function nextStep(
 ): OnboardingStep | null {
   const done = completedSteps(role, profile, hasBank);
   return stepsFor(role, profile).find((step) => !done.has(step.key)) ?? null;
+}
+
+/**
+ * The first outstanding step that cannot be deferred, or null.
+ *
+ * This is what may hold a dashboard closed. `nextStep` cannot: it returns
+ * optional steps too, so gating on it meant a skip button changed nothing —
+ * pressing skip landed on the dashboard, which sent the user back to the step
+ * they had just skipped.
+ */
+export function nextRequiredStep(
+  role: OnboardingRole,
+  profile: OnboardingProfile | null | undefined,
+  hasBank: boolean,
+): OnboardingStep | null {
+  const done = completedSteps(role, profile, hasBank);
+  return (
+    stepsFor(role, profile).find(
+      (step) => !step.optional && !done.has(step.key),
+    ) ?? null
+  );
+}
+
+/** Steps that were deferred and are still outstanding, for the dashboard nudge. */
+export function skippedSteps(
+  role: OnboardingRole,
+  profile: OnboardingProfile | null | undefined,
+  hasBank: boolean,
+): OnboardingStep[] {
+  const done = completedSteps(role, profile, hasBank);
+  return stepsFor(role, profile).filter(
+    (step) => step.optional && !done.has(step.key),
+  );
+}
+
+/**
+ * Where "skip" goes, and what to call it. Null when the step cannot be skipped.
+ *
+ * Deliberately not `pathAfter`. That marks the step done for routing purposes,
+ * which is the one assumption a skip violates, and when nothing is left ahead
+ * it walks *backwards* — so `pathAfter("bank")` on a part-built account returns
+ * the email step. Skipping only ever moves forward, then out to the dashboard.
+ */
+export function skipFor(
+  role: OnboardingRole,
+  stepKey: OnboardingStepKey,
+  profile: OnboardingProfile | null | undefined,
+  done: Set<OnboardingStepKey>,
+): { path: string; label: string } | null {
+  const steps = stepsFor(role, profile);
+  const from = steps.findIndex((step) => step.key === stepKey);
+  if (from < 0 || !steps[from].optional) return null;
+
+  return {
+    path:
+      steps.slice(from + 1).find((step) => !done.has(step.key))?.path ??
+      dashboardFor[role],
+    label: steps[from].skipLabel ?? "Skip for now",
+  };
 }
 
 /**

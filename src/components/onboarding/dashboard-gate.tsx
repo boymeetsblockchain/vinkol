@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import {
   OnboardingProfile,
   OnboardingRole,
+  nextRequiredStep,
   nextStep,
 } from "@/lib/onboarding/steps";
 
@@ -23,6 +24,11 @@ import {
  * The order here is: nothing submitted, then rejected, then awaiting review.
  * Each state says what to do next and links to the step that does it, rather
  * than leaving someone on a wall with no exit.
+ *
+ * Only *required* steps hold the dashboard closed. Gating on `nextStep`, which
+ * returns optional steps too, is what made the skip affordance pointless: the
+ * skip landed here and this sent the user straight back to the step they had
+ * just chosen to defer. Deferred steps are nudged on the dashboard instead.
  */
 
 interface Props {
@@ -65,18 +71,23 @@ export const DashboardGate = ({
   if (!profile) return <>{children}</>;
 
   const outstanding = nextStep(role, profile, hasBank);
+  const required = nextRequiredStep(role, profile, hasBank);
   const status = profile.kyc?.status;
 
-  // Steps still to do, and they are not the KYC ones handled below.
-  if (outstanding && !profile.kyc) {
+  // No documents at all. Keyed on the KYC row rather than on the step list so
+  // someone with nothing submitted is never told their documents are in review.
+  if (!profile.kyc) {
+    const target = required ?? outstanding;
     return (
       <Notice
         title="Finish setting up your account"
         body="You have a few steps left before you can start taking orders."
         action={
-          <Button asChild>
-            <Link href={outstanding.path}>Continue setup</Link>
-          </Button>
+          target ? (
+            <Button asChild>
+              <Link href={target.path}>Continue setup</Link>
+            </Button>
+          ) : undefined
         }
       />
     );

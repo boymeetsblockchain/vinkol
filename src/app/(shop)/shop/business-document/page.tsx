@@ -16,7 +16,7 @@ export default function StoreBusinessDocPage() {
       role="store"
       stepKey="business-document"
       title="Upload a business document"
-      description="Optional, but it speeds up verification and unlocks business invoicing. You can add it later from your dashboard."
+      description="We need this to verify your business before your store can go live. A CAC certificate, certificate of incorporation or memorandum of registration all work."
       typeField="documentType"
       typeLabel="Document type"
       options={[

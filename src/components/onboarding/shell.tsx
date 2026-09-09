@@ -9,6 +9,7 @@ import {
   OnboardingRole,
   OnboardingStepKey,
   previousStep,
+  skipFor,
   stepIndex,
   stepsFor,
 } from "@/lib/onboarding/steps";
@@ -33,9 +34,6 @@ interface Props {
   profile?: OnboardingProfile | null;
   /** Which earlier steps are done, for ticks in the stepper. */
   completed?: Set<OnboardingStepKey>;
-  /** Where "skip" goes. Omit to hide it. */
-  onSkip?: () => void;
-  skipLabel?: string;
   children: React.ReactNode;
 }
 
@@ -46,8 +44,6 @@ export const OnboardingShell = ({
   description,
   profile,
   completed,
-  onSkip,
-  skipLabel = "Skip for now",
   children,
 }: Props) => {
   const router = useRouter();
@@ -56,6 +52,7 @@ export const OnboardingShell = ({
   const current = index < 0 ? 0 : index;
   const back = previousStep(role, stepKey, profile);
   const progress = ((current + 1) / steps.length) * 100;
+  const skip = skipFor(role, stepKey, profile, completed ?? new Set());
 
   return (
     <section className="min-h-screen bg-white">
@@ -156,14 +153,13 @@ export const OnboardingShell = ({
 
               {children}
 
-              {onSkip && (
-                <button
-                  type="button"
-                  onClick={onSkip}
+              {skip && (
+                <Link
+                  href={skip.path}
                   className="text-sm text-gray-500 hover:text-gray-900 underline underline-offset-4 w-fit"
                 >
-                  {skipLabel}
-                </button>
+                  {skip.label}
+                </Link>
               )}
             </div>
 

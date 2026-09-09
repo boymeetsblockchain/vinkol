@@ -7,6 +7,7 @@ import { ShopperDashBoardSidebBar } from "@/components/shop/sidebar";
 import { useGetStoreProfile } from "@/services/shops/query";
 import { useBank } from "@/services/banks/query";
 import { DashboardGate } from "@/components/onboarding/dashboard-gate";
+import { SetupReminder } from "@/components/onboarding/setup-reminder";
 import { ApiError } from "@/lib/interfaces/error";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -155,7 +156,16 @@ const Layout = ({ children }: { children: ReactNode }) => {
         {/* <ShopHeader /> */}
 
         {/* Scrollable content */}
-        <div className="flex-1 overflow-auto">{children}</div>
+        <div className="flex-1 overflow-auto">
+          <div className="px-4 md:px-6 pt-6">
+            <SetupReminder
+              role="store"
+              profile={data?.data}
+              hasBank={!!bank}
+            />
+          </div>
+          {children}
+        </div>
       </div>
     </div>
     </DashboardGate>

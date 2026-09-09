@@ -40,8 +40,6 @@ export const BankStep = ({ role }: { role: OnboardingRole }) => {
       title="Where should we send your earnings?"
       description="Your wallet is credited as you complete jobs. These are the details we use when you request a withdrawal."
       completed={completedSteps(role, profile, !!bank)}
-      onSkip={() => router.push(dashboard)}
-      skipLabel="Add this later"
     >
       <BankForm
         owner={owner}

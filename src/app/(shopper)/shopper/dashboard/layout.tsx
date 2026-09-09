@@ -5,6 +5,7 @@ import { Profile } from "@/components/rider/profile";
 import { ShopperDashBoardSidebBar } from "@/components/shop/shopper-sidebar";
 import { useGetUserBank, useUserProfile } from "@/services/rider/query";
 import { DashboardGate } from "@/components/onboarding/dashboard-gate";
+import { SetupReminder } from "@/components/onboarding/setup-reminder";
 import { ApiError } from "@/lib/interfaces/error";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -159,7 +160,16 @@ const Layout = ({ children }: { children: ReactNode }) => {
         </div>
 
         {/* Page Content */}
-        <div className="max-w-screen-2xl bg-white mx-auto">{children}</div>
+        <div className="max-w-screen-2xl bg-white mx-auto">
+          <div className="px-4 md:px-6 pt-6">
+            <SetupReminder
+              role="shopper"
+              profile={data?.data}
+              hasBank={!!userBank?.data}
+            />
+          </div>
+          {children}
+        </div>
       </div>
     </div>
     </DashboardGate>

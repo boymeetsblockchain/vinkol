@@ -47,8 +47,6 @@ interface Props {
   ) => void;
   profile?: OnboardingProfile | null;
   hasBank?: boolean;
-  /** Shown as "skip" when the step is genuinely optional. */
-  skipPath?: string;
   completed?: Set<OnboardingStepKey>;
 }
 
@@ -66,7 +64,6 @@ export const DocumentStep = ({
   onSubmit,
   profile,
   hasBank = false,
-  skipPath,
   completed,
 }: Props) => {
   const router = useRouter();
@@ -113,7 +110,6 @@ export const DocumentStep = ({
       title={title}
       description={description}
       completed={completed}
-      onSkip={skipPath ? () => router.push(skipPath) : undefined}
     >
       <form onSubmit={handleSubmit} className="flex flex-col gap-5">
         {typeField && (
