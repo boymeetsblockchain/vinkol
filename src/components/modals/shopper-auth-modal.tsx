@@ -232,21 +232,21 @@ export const ShopperAuthModal = ({
               </div>
             )}
 
-            <Button
-              size="lg"
-              variant="auth"
-              className="rounded-[5px] w-3/4 my-4"
-              type="submit" // Set type to submit for form submission
-              disabled={isPending} // Disable button while mutation is in progress
-            >
-              {isPending ? "Processing..." : isLogin ? "Log In" : "Sign Up"}
-            </Button>
             {!isLogin && (
               <TermsCheckbox
                 isChecked={isChecked}
                 onChange={() => setIsChecked(!isChecked)}
               />
             )}
+            <Button
+              size="lg"
+              variant="auth"
+              className="rounded-[5px] w-3/4 my-4"
+              type="submit" // Set type to submit for form submission
+              disabled={isPending || (!isLogin && !isChecked)}
+            >
+              {isPending ? "Processing..." : isLogin ? "Log In" : "Sign Up"}
+            </Button>
           </form>
 
           {/* Switch between login and register */}

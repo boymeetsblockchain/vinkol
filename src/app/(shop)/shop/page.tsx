@@ -125,21 +125,21 @@ function ShopperAuth() {
               )}
             </div>
 
+            <TermsCheckbox
+              isChecked={isChecked}
+              onChange={() => setIsChecked(!isChecked)}
+            />
             <div className="w-full">
               <Button
                 type="submit"
                 variant="auth"
                 size="lg"
                 className="rounded-[5px] w-full"
-                disabled={isPending}
+                disabled={isPending || !isChecked}
               >
                 {isPending ? "Signing up..." : "Sign up"}
               </Button>
             </div>
-            <TermsCheckbox
-              isChecked={isChecked}
-              onChange={() => setIsChecked(!isChecked)}
-            />
           </form>
 
           <Link href={"/shop/login"} className="text-sm text-gray-400">
