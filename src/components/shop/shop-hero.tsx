@@ -6,7 +6,7 @@ import { LuPackageCheck } from "react-icons/lu";
 import { RiMotorbikeFill } from "react-icons/ri";
 import { Button } from "../button";
 import { AppStoreCard } from "../shared/appstore";
-import { ShopperAuthModal } from "../modals/shopper-auth-modal.";
+import { ShopperAuthModal } from "../modals/shopper-auth-modal";
 
 export const Hero = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);

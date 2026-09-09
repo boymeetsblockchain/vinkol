@@ -11,6 +11,7 @@ import { useMarket } from "@/lib/markets/useMarket";
 import { useGetAllProductsQuery } from "@/services/products/query";
 import { ShopSideBar } from "@/components/shop-page/sidebar";
 import {
+  AlertCircle,
   Menu,
   ShoppingCart,
   ArrowLeft,
@@ -76,11 +77,15 @@ function ShopIdPage() {
     id,
     market.country,
   );
-  const { data: productsData, isLoading: areProductsLoading } =
-    useGetAllProductsQuery(undefined, {
-      store: id,
-      category: selectedCategory,
-    });
+  const {
+    data: productsData,
+    isLoading: areProductsLoading,
+    isError: productsFailed,
+    refetch: refetchProducts,
+  } = useGetAllProductsQuery(undefined, {
+    store: id,
+    category: selectedCategory,
+  });
 
   const products = productsData?.data?.fetchedData ?? [];
   const storeRating = store?.data?.store?.avgRating;
@@ -295,7 +300,21 @@ function ShopIdPage() {
 
           {/* ── Product Grid ── */}
           <div className="px-4 md:px-8 py-6 max-w-7xl mx-auto">
-            {areProductsLoading ? (
+            {productsFailed ? (
+              <div className="flex flex-col items-center gap-3 py-16 text-center">
+                <AlertCircle size={28} className="text-red-500" />
+                <p className="font-semibold text-gray-900">
+                  We could not load this store&rsquo;s items
+                </p>
+                <button
+                  type="button"
+                  onClick={() => refetchProducts()}
+                  className="text-sm font-semibold text-[var(--color-blue-primary)] hover:underline underline-offset-4"
+                >
+                  Try again
+                </button>
+              </div>
+            ) : areProductsLoading ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {[1, 2, 3, 4, 5, 6].map((i) => (
                   <div

@@ -11,11 +11,6 @@ import Link from "next/link";
 
 function Profile() {
   const router = useRouter();
-  const authToken =
-    typeof window !== "undefined"
-      ? localStorage.getItem("riderAuthToken")
-      : null;
-
   const [firstName, setFirstName] = useState<string>("");
   const [avatar, setAvatar] = useState<File | null>(null);
   const [selectedState, setSelectedState] = useState<string>("");

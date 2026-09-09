@@ -148,22 +148,21 @@ function OrderHistory() {
     setCurrentPage(1);
   }, [statusFilter, deliveryTypeFilter, searchTerm]);
 
-  const handleAcceptOrder = async (orderId: string) => {
+  const handleAcceptOrder = (orderId: string) => {
     setAcceptingOrderId(orderId);
-    try {
-      await acceptOrderMutate(orderId);
-      refetch();
-      toast.success("Order accepted successfully!");
-    } catch (error: any) {
-      console.error("Failed to accept order:", error);
-      toast.error(
-        `Failed to accept order: ${
-          error.response?.data?.message || error.message || "Unknown error"
-        }`
-      );
-    } finally {
-      setAcceptingOrderId(null);
-    }
+
+    // mutate() returns void, so awaiting it resolved immediately: the catch
+    // was dead, the success toast fired before the request had been answered,
+    // and the finally cleared the spinner before it was ever seen.
+    acceptOrderMutate(orderId, {
+      onSuccess: () => {
+        refetch();
+        toast.success("Order accepted successfully!");
+      },
+      onError: (error: Error) =>
+        toast.error(error.message || "Failed to accept order"),
+      onSettled: () => setAcceptingOrderId(null),
+    });
   };
 
   const handleStatusChange = (
