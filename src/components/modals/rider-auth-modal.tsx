@@ -10,6 +10,11 @@ import {
   useForgotPasswordMutation,
 } from "@/services/rider/mutation";
 import { toast } from "sonner"; // For user notifications
+
+import {
+  needsEmailVerification,
+  verifyEmailPathFor,
+} from "@/lib/auth/loginOutcome";
 import { TermsCheckbox } from "../shared/terms";
 import { ArrowLeft } from "lucide-react";
 
@@ -95,11 +100,21 @@ export const RiderAuthModal = ({
       riderLogin(
         { email, password },
         {
-          onSuccess: () => {
-            toast.success("Login successful!");
-            router.push("/rider/dashboard"); // Or wherever the user should go after login
+          onSuccess: (response) => {
             localStorage.setItem("ride-email", email);
-            onClose(); // Close the modal on successful login
+
+            // The server accepts an unverified login and answers 200 with no
+            // token, so this has to be checked before claiming success.
+            if (needsEmailVerification(response)) {
+              toast.info("Verify your email to finish signing in.");
+              router.push(verifyEmailPathFor("rider", email));
+              onClose();
+              return;
+            }
+
+            toast.success("Login successful!");
+            router.push("/rider/dashboard");
+            onClose();
           },
           onError: (error) => {
             console.error("Login failed:", error);

@@ -9,7 +9,12 @@ import {
   useRiderLoginMutation,
   useShopperLoginMutation,
 } from "@/services/rider/mutation"; // Assuming these are correctly defined
-import { toast } from "sonner"; // For user notifications
+import { toast } from "sonner";
+
+import {
+  needsEmailVerification,
+  verifyEmailPathFor,
+} from "@/lib/auth/loginOutcome"; // For user notifications
 import { useShopLoginMutation } from "@/services/shops/mutation";
 import { TermsCheckbox } from "../shared/terms";
 import { ArrowLeft } from "lucide-react";
@@ -96,10 +101,19 @@ export const ShopperAuthModal = ({
       shopperLogin(
         { email, password },
         {
-          onSuccess: () => {
+          onSuccess: (response) => {
+            // The server accepts an unverified login and answers 200 with no
+            // token, so this has to be checked before claiming success.
+            if (needsEmailVerification(response)) {
+              toast.info("Verify your email to finish signing in.");
+              router.push(verifyEmailPathFor("shopper", email));
+              onClose();
+              return;
+            }
+
             toast.success("Login successful!");
-            router.push("/shopper/dashboard"); // Or wherever the user should go after login
-            onClose(); // Close the modal on successful login
+            router.push("/shopper/dashboard");
+            onClose();
           },
           onError: (error) => {
             console.error("Login failed:", error);
