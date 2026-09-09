@@ -37,7 +37,12 @@ export interface DeliveryQuote extends QuoteCharges, QuoteClaim {
   discountedPrice?: number;
 }
 
-/** POST /orders/shopping-delivery-fee */
+/**
+ * POST /orders/shopping-delivery-fee
+ *
+ * Itemised when the request carried the basket. The charge fields are optional
+ * because a request without `products` still gets a delivery-only quote.
+ */
 export interface ShoppingDeliveryQuote extends QuoteClaim {
   price: number;
   distance?: number;
@@ -45,6 +50,12 @@ export interface ShoppingDeliveryQuote extends QuoteClaim {
   currency: Currency;
   taxRate: number;
   taxLabel: string;
+  /** The basket as the server valued it, not as the client totalled it. */
+  goodsAmount?: number;
+  deliveryFee?: number;
+  serviceFee?: number;
+  taxAmount?: number;
+  grandTotal?: number;
 }
 
 /** POST /orders/get-bulk-quote */

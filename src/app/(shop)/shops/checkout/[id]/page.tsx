@@ -13,6 +13,10 @@ import { placesCountry, regionLabel, resolveRegionFromPlace } from "@/lib/market
 import { useMarket } from "@/lib/markets/useMarket";
 import { useGetShoppingDeliveryFee } from "@/services/orders/mutation";
 
+/** Display-only fallback for a server that did not itemise the quote. */
+const basketSubtotal = (cart: { price: number; quantity: number }[]) =>
+  cart.reduce((total, item) => total + item.price * item.quantity, 0);
+
 function CheckoutPage() {
   const params = useParams();
   const router = useRouter();
@@ -65,11 +69,20 @@ function CheckoutPage() {
       return;
     }
 
+    const cart = getCartFromStorage();
+
     mutate(
       {
         store: id,
         deliveryType: "regular",
         dropoffLocation: { lat, lng },
+        // Sending the basket gets the service fee and tax back with the fare,
+        // so the customer sees the real total before paying rather than the
+        // client guessing at it.
+        products: cart.map((item) => ({
+          product: item.id,
+          quantity: item.quantity,
+        })),
       },
       {
         onSuccess: (responseData) => {
@@ -81,8 +94,6 @@ function CheckoutPage() {
             );
             return;
           }
-
-          const cart = getCartFromStorage();
 
           // sessionStorage rather than the query string: this carries the
           // customer's name, email, phone and street address, and a fee in a
@@ -100,17 +111,22 @@ function CheckoutPage() {
             state,
             dropoffLocation: address,
             store: id,
-            goodsAmount: cart.reduce(
-              (total, item) => total + item.price * item.quantity,
-              0,
-            ),
-            deliveryFee: quote.price,
+            // The server's own itemisation. goodsAmount is what it valued
+            // the basket at, which is what the order will be charged for.
+            goodsAmount: quote.goodsAmount ?? basketSubtotal(cart),
+            deliveryFee: quote.deliveryFee ?? quote.price,
+            serviceFee: quote.serviceFee,
+            taxAmount: quote.taxAmount,
             taxLabel: quote.taxLabel,
+            grandTotal: quote.grandTotal,
             expiresAt: quote.expiresAt,
           });
 
           toast.success("Quote successfully retrieved!", {
-            description: `Delivery: ${formatMoney(quote.price, quote.currency)}`,
+            description: `Total: ${formatMoney(
+              quote.grandTotal ?? quote.price,
+              quote.currency,
+            )}`,
           });
 
           router.push("/quote/stores");

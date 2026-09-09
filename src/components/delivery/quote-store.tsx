@@ -101,7 +101,9 @@ export const QuotePage = () => {
       orderType: "Shopping",
       state: session.state,
       guest: session.guest,
-      amount: goodsAmount,
+      // Ignored by the server when the quote carries a priced basket; sent so
+      // a quote taken before itemisation still has an amount to fall back on.
+      amount: session.goodsAmount ?? goodsAmount,
       store: session.store!,
       products: cartItems.map((item) => ({
         product: item.id,
@@ -116,8 +118,8 @@ export const QuotePage = () => {
     });
   };
 
-  // Basket subtotal, for display only. The server itemises the charge, and its
-  // figures are what the customer is asked to agree to below.
+  // Only a fallback for the line items: the authoritative basket value is the
+  // one the server priced, which is also what the order is charged for.
   const goodsAmount = cartItems.reduce(
     (total, item) => total + item.price * item.quantity,
     0,
@@ -216,6 +218,8 @@ export const QuotePage = () => {
       />
 
       {session.grandTotal === undefined && (
+        // Only reachable for a quote taken before the delivery-fee endpoint
+        // itemised its charges.
         <p className="mt-3 text-xs text-gray-500">
           Service fee{session.taxLabel ? ` and ${session.taxLabel}` : ""} are
           calculated at payment and shown on your receipt.

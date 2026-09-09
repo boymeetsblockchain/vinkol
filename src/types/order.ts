@@ -181,6 +181,17 @@ export const getShoppingDeliveryFeeSchema = z.object({
     lat: z.union([z.string(), z.number()]).transform(String),
     lng: z.union([z.string(), z.number()]).transform(String),
   }),
+  // Sending the basket gets an itemised quote back. Deliberately no price:
+  // the server values each product from its own record, so what the customer
+  // is shown is what the gateway will charge.
+  products: z
+    .array(
+      z.object({
+        product: z.string(),
+        quantity: z.number().int().min(1),
+      }),
+    )
+    .optional(),
 });
 
 export const createStoreOrderSchema = z.object({
