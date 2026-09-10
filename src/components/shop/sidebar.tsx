@@ -13,6 +13,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { FaSignOutAlt } from "react-icons/fa";
 import { Dialog, DialogContent, DialogTrigger, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
+import { useLogout } from "@/lib/auth/useLogout";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -57,10 +58,7 @@ export const ShopperDashBoardSidebBar = ({ isOpen, onClose }: SidebarProps) => {
   const pathname = usePathname();
 
   const router = useRouter();
-  const handleLogout = () => {
-    localStorage.clear();
-    router.push("/");
-  };
+  const handleLogout = useLogout();
 
   return (
     <aside

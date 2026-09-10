@@ -158,7 +158,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
       <div className="flex-1 w-full min-w-0">
         {/* Top Bar with Profile */}
         <div className="flex justify-end items-center px-5 md:px-8 h-16 bg-white border-b border-gray-100">
-          <Profile />
+          <Profile role="rider" />
         </div>
 
         {/* Page Content */}

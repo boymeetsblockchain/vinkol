@@ -1,4 +1,5 @@
 "use client";
+import { useLogout } from "@/lib/auth/useLogout";
 import { useUserProfile } from "@/services/rider/query";
 import { X, Package, History, Wallet, FileText, Settings } from "lucide-react";
 import Link from "next/link";
@@ -52,10 +53,7 @@ const verifiedDashboardLinks = [
 export const RiderDashBoardSidebBar = ({ isOpen, onClose }: SidebarProps) => {
   const { data, isLoading } = useUserProfile();
   const router = useRouter();
-  const handleLogout = () => {
-    localStorage.clear();
-    router.push("/");
-  };
+  const handleLogout = useLogout();
 
   // Determine which links to show based on verification status
   const dashboardLinks = data?.data?.isKYCVerified
