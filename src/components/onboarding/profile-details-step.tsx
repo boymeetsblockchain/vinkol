@@ -38,6 +38,7 @@ export const ProfileDetailsStep = ({
   const regionLabel = regionFieldLabel(market.country);
 
   const [firstname, setFirstname] = useState("");
+  const [lastname, setLastname] = useState("");
   const [region, setRegion] = useState("");
   const [avatar, setAvatar] = useState<File | null>(null);
 
@@ -47,7 +48,11 @@ export const ProfileDetailsStep = ({
     e.preventDefault();
 
     if (!firstname.trim()) {
-      toast.error("Please enter your full name.");
+      toast.error("Please enter your first name.");
+      return;
+    }
+    if (!lastname.trim()) {
+      toast.error("Please enter your last name.");
       return;
     }
     if (!region) {
@@ -64,7 +69,12 @@ export const ProfileDetailsStep = ({
     }
 
     updateProfile(
-      { firstname: firstname.trim(), state: region, avatar },
+      {
+        firstname: firstname.trim(),
+        lastname: lastname.trim(),
+        state: region,
+        avatar,
+      },
       {
         onSuccess: () => {
           toast.success("Profile saved.");
@@ -86,25 +96,47 @@ export const ProfileDetailsStep = ({
       completed={completedSteps(role, profile, !!userBank?.data)}
     >
       <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-        <div className="flex flex-col gap-1.5">
-          <label
-            htmlFor="firstname"
-            className="text-sm font-medium text-gray-700"
-          >
-            Full name
-          </label>
-          <input
-            id="firstname"
-            className="w-full bg-gray-50 border border-gray-200 text-gray-900 placeholder:text-gray-400 py-3 px-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--color-blue-primary)] focus:bg-white transition-all"
-            value={firstname}
-            onChange={(e) => setFirstname(e.target.value)}
-            placeholder="e.g. Ada Obi"
-            disabled={isPending}
-            required
-          />
-          <span className="text-xs text-gray-500">
-            Must match your government-issued ID.
-          </span>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+          <div className="flex flex-col gap-1.5">
+            <label
+              htmlFor="firstname"
+              className="text-sm font-medium text-gray-700"
+            >
+              Full name
+            </label>
+            <input
+              id="firstname"
+              className="w-full bg-gray-50 border border-gray-200 text-gray-900 placeholder:text-gray-400 py-3 px-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--color-blue-primary)] focus:bg-white transition-all"
+              value={firstname}
+              onChange={(e) => setFirstname(e.target.value)}
+              placeholder="e.g. John"
+              disabled={isPending}
+              required
+            />
+            <span className="text-xs text-gray-500">
+              Must match your government-issued ID.
+            </span>
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <label
+              htmlFor="lastname"
+              className="text-sm font-medium text-gray-700"
+            >
+              Last name
+            </label>
+            <input
+              id="lastname"
+              className="w-full bg-gray-50 border border-gray-200 text-gray-900 placeholder:text-gray-400 py-3 px-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--color-blue-primary)] focus:bg-white transition-all"
+              value={lastname}
+              onChange={(e) => setLastname(e.target.value)}
+              placeholder="e.g. Doe"
+              disabled={isPending}
+              required
+            />
+            <span className="text-xs text-gray-500">
+              Must match your government-issued ID.
+            </span>
+          </div>
         </div>
 
         <div className="flex flex-col gap-1.5">
