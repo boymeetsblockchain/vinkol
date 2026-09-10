@@ -35,18 +35,37 @@ Canadian order silently falls back to Nigeria if it fails, so check both.
 
 ---
 
-## 2. Geolocation only works on Vercel
+## 2. Geolocation is host-independent
 
-The `/` to `/ca` redirect and the server-side market resolution both read the
-`x-vercel-ip-country` header (`src/middleware.ts`, `src/lib/markets/server.ts`).
+No longer Vercel-only. Both the `/` to `/ca` redirect (`src/middleware.ts`) and
+the server-side market resolution (`src/lib/markets/server.ts`) go through
+`src/lib/markets/geoHeader.ts`, which reads whichever header the host sends:
 
-On Vercel this is set automatically and nothing needs configuring. Anywhere
-else the header is absent, and both fall back to Nigeria with no redirect and
-no error. A Canadian visitor would land on the naira site and stay there.
+| Header | Host |
+|---|---|
+| `x-vercel-ip-country` | Vercel — still the primary |
+| `cf-ipcountry` | Cloudflare, free on every plan |
+| `cloudfront-viewer-country` | AWS CloudFront |
+| `x-nf-geo` | Netlify (base64 JSON) |
+| `x-geo-country` | Anything else — set it from your own proxy |
 
-If this ever moves off Vercel, those two reads are the only places to change.
-The country switcher in the footer keeps working regardless, since it writes
-the cookie directly.
+Cloudflare's `XX` and `T1` are treated as no opinion rather than as countries.
+
+Where the host sends none of them — a plain Node host, or local development —
+`src/components/root/market-detector.tsx` guesses once from the browser's
+timezone (`America/Toronto` and the other Canadian zones, `Africa/Lagos`),
+falling back to the region subtag of `navigator.language`. It then follows the
+middleware's own rules: it does nothing if the cookie is already set or the path
+already names a market, and it only redirects where that path has a version in
+the other market, so it cannot send anyone to a `/ca` page that does not exist.
+
+Timezone is a soft signal — wrong for a VPN or a traveller — which is why the
+footer switcher overrides it and the onboarding country step still asks. It is
+read locally and mapped only to NG or CA; nothing is sent to a third party, and
+there is no API key, no rate limit and no permission prompt.
+
+The country switcher in the footer keeps working regardless, since it writes the
+cookie directly.
 
 ---
 

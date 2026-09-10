@@ -6,6 +6,7 @@ import { MarketProvider } from "@/lib/markets/context";
 import { metadataBase } from "@/lib/markets/metadata";
 import { marketFromRequest } from "@/lib/markets/server";
 import { Toaster } from "@/components/ui/sonner";
+import { MarketDetector } from "@/components/root/market-detector";
 
 export const metadata: Metadata = {
   // Per-page titles come from lib/markets/metadata. This is only the fallback
@@ -32,7 +33,10 @@ export default async function RootLayout({
     >
       <body className="antialiased">
         <ReactQueryProvider>
-          <MarketProvider country={country}>{children}</MarketProvider>
+          <MarketProvider country={country}>
+            <MarketDetector />
+            {children}
+          </MarketProvider>
         </ReactQueryProvider>
         <Toaster position="top-right" richColors />
       </body>

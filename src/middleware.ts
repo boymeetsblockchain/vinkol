@@ -5,6 +5,7 @@ import {
   MARKET_PREFIX,
   hasMarketVersion,
 } from "@/lib/markets";
+import { countryFromHeaders } from "@/lib/markets/geoHeader";
 import { Country, isCountry } from "@/lib/markets/types";
 
 /**
@@ -66,8 +67,8 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const geo = request.headers.get("x-vercel-ip-country")?.toUpperCase();
-  if (!isCountry(geo)) return NextResponse.next();
+  const geo = countryFromHeaders(request.headers);
+  if (!geo) return NextResponse.next();
 
   // Remember either way, so the geo check happens at most once per visitor
   // even on a page with no market version of its own.
