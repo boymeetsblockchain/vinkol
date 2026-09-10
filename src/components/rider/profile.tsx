@@ -38,14 +38,18 @@ export const Profile = () => {
         <div className="hidden md:block">
           {/* Consider adding a name if available in the API response */}
           {/* <h1 className="text-sm font-bold">{data.data.name}</h1> */}
-          <p className="text-sm">{firstname}</p>
-          <p className="text-xs">{email}</p>
+          <p className="text-sm font-medium text-gray-900 leading-tight">
+            {firstname}
+          </p>
+          <p className="text-xs text-gray-400 leading-tight max-w-[180px] truncate">
+            {email}
+          </p>
         </div>
         <div className="flex items-center gap-1">
           <img
-            src={avatar?.imageUrl}
-            className="h-8 w-8 rounded-full object-cover"
-            alt="User Profile"
+            src={avatar?.imageUrl || "/assets/placeholder.png"}
+            className="h-8 w-8 rounded-full object-cover bg-gray-100"
+            alt=""
           />
         </div>
       </div>

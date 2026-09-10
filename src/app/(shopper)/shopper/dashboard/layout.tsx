@@ -138,7 +138,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
       unauthorized={(error as ApiError | null)?.status === 401}
       loginPath="/shopper/auth"
     >
-    <div className="min-h-screen  flex flex-col md:flex-row">
+    <div className="min-h-screen flex flex-col md:flex-row bg-gray-50">
       {/* Mobile Hamburger */}
       <div className="md:hidden fixed top-4 left-4 z-50">
         <button onClick={() => setIsSidebarOpen(true)}>
@@ -153,15 +153,15 @@ const Layout = ({ children }: { children: ReactNode }) => {
       />
 
       {/* Main Content */}
-      <div className="flex-1 w-full ">
+      <div className="flex-1 w-full min-w-0">
         {/* Top Bar with Profile */}
-        <div className="flex justify-end items-center px-4 pt-6 ">
+        <div className="flex justify-end items-center px-5 md:px-8 h-16 bg-white border-b border-gray-100">
           <Profile />
         </div>
 
         {/* Page Content */}
-        <div className="max-w-screen-2xl bg-white mx-auto">
-          <div className="px-4 md:px-6 pt-6">
+        <div className="max-w-screen-2xl mx-auto">
+          <div className="px-5 md:px-8 pt-5 md:pt-8">
             <SetupReminder
               role="shopper"
               profile={data?.data}

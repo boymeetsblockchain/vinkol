@@ -1,5 +1,9 @@
 "use client";
 import { useMarket } from "@/lib/markets/useMarket";
+import { Package } from "lucide-react";
+import { PageHeader } from "@/components/dashboard/page-header";
+import { StatCard } from "@/components/dashboard/stat-card";
+import { EmptyState } from "@/components/dashboard/empty-state";
 import { formatMoney } from "@/lib/money";
 
 import { useState, useEffect } from "react";
@@ -168,6 +172,9 @@ function Orders() {
     }
   };
 
+  const isFiltered =
+    statusFilter !== "all" || deliveryTypeFilter !== "all" || !!searchTerm;
+
   const acceptedOrders = filteredOrders.filter(
     (order: OrderData) =>
       order.status === "Delivered" ||
@@ -176,18 +183,26 @@ function Orders() {
   );
 
   return (
-    <section className="py-6 px-4">
-      <div className="bg-blue-primary w-full rounded-md p-4 text-sm text-white mb-6 shadow-md">
-        You currently have{" "}
-        <span className="font-bold">{acceptedOrders?.length}</span> accepted
-        orders
+    <section className="p-5 md:p-8">
+      <PageHeader
+        title="Available orders"
+        subtitle={
+          userProfile?.data?.state
+            ? `Orders you can accept in ${userProfile.data.state}`
+            : "Orders you can accept"
+        }
+      />
+
+      <div className="grid grid-cols-2 gap-4 mb-6 max-w-sm">
+        <StatCard label="Available now" value={filteredOrders.length} />
+        <StatCard label="Accepted" value={acceptedOrders.length} />
       </div>
 
       {/* Filter and Search Controls */}
-      <div className="mb-6 grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="bg-white border border-gray-100 rounded-2xl p-4 mb-6 grid grid-cols-1 md:grid-cols-4 gap-3">
         <div className="md:col-span-1">
           <Select onValueChange={(value: any) => setStatusFilter(value)}>
-            <SelectTrigger>
+            <SelectTrigger className="w-full">
               <SelectValue placeholder="Filter by status" />
             </SelectTrigger>
             <SelectContent>
@@ -203,7 +218,7 @@ function Orders() {
 
         <div className="md:col-span-1">
           <Select onValueChange={(value: any) => setDeliveryTypeFilter(value)}>
-            <SelectTrigger>
+            <SelectTrigger className="w-full">
               <SelectValue placeholder="Filter by delivery type" />
             </SelectTrigger>
             <SelectContent>
@@ -227,7 +242,18 @@ function Orders() {
       {/* Orders List */}
       <div className="flex flex-col space-y-6">
         {isPending ? (
-          <p className="text-center text-gray-600">Loading orders...</p>
+          <div className="flex flex-col gap-4">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div
+                key={i}
+                className="bg-white border border-gray-100 rounded-2xl p-5 animate-pulse"
+              >
+                <div className="h-4 w-40 bg-gray-100 rounded mb-3" />
+                <div className="h-3 w-64 bg-gray-100 rounded mb-2" />
+                <div className="h-3 w-52 bg-gray-100 rounded" />
+              </div>
+            ))}
+          </div>
         ) : paginatedOrders.length > 0 ? (
           paginatedOrders.map((order: OrderData) => {
             const isThisOrderBeingAccepted = acceptingOrderId === order._id;
@@ -343,9 +369,15 @@ function Orders() {
             );
           })
         ) : (
-          <p className="text-center text-gray-600">
-            No orders match your filters.
-          </p>
+          <EmptyState
+            icon={Package}
+            title={isFiltered ? "No orders match your filters" : "No orders right now"}
+            body={
+              isFiltered
+                ? "Try clearing a filter or searching for something else."
+                : "New orders in your area will appear here as they come in."
+            }
+          />
         )}
       </div>
 
