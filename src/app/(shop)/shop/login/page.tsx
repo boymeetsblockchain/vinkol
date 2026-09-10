@@ -14,6 +14,7 @@ import {
   needsEmailVerification,
   verifyEmailPathFor,
 } from "@/lib/auth/loginOutcome";
+import { PasswordInput } from "@/components/ui/password-input";
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -96,8 +97,8 @@ function ShopperAuth() {
               )}
             </div>
             <div>
-              <input
-                type="password"
+              <PasswordInput
+                
                 placeholder="Password"
                 {...register("password")}
                 className="w-full py-2 px-3 focus:outline-none border border-[#A5A4A0] rounded-[5px] placeholder:text-blue-primary placeholder:text-base"

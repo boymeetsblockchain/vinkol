@@ -17,6 +17,7 @@ import {
 } from "@/lib/auth/loginOutcome";
 import { TermsCheckbox } from "../shared/terms";
 import { ArrowLeft } from "lucide-react";
+import { PasswordInput } from "@/components/ui/password-input";
 
 interface ShopperAuthModalProps {
   isOpen: boolean;
@@ -196,16 +197,16 @@ export const RiderAuthModal = ({
             <input
               type="email"
               placeholder="Email"
-              className="w-3/4 py-2 px-3 focus:outline-none border border-[#A5A4A0] rounded-[5px] placeholder:text-blue-primary placeholder:text-base"
+              className="w-full py-2 px-3 focus:outline-none border border-[#A5A4A0] rounded-[5px] placeholder:text-blue-primary placeholder:text-base"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
             />
 
-            <input
-              type="password"
+            <PasswordInput
+              wrapperClassName="w-3/4"
               placeholder="Password"
-              className="w-3/4 py-2 px-3 focus:outline-none border border-[#A5A4A0] rounded-[5px] placeholder:text-blue-primary placeholder:text-base"
+              className="w-full py-2 px-3 focus:outline-none border border-[#A5A4A0] rounded-[5px] placeholder:text-blue-primary placeholder:text-base"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
@@ -213,10 +214,10 @@ export const RiderAuthModal = ({
 
             {/* Confirm password only in register mode */}
             {!isLogin && (
-              <input
-                type="password"
+              <PasswordInput
+                wrapperClassName="w-3/4"
                 placeholder="Confirm password"
-                className="w-3/4 py-2 px-3 focus:outline-none border border-[#A5A4A0] rounded-[5px] placeholder:text-blue-primary placeholder:text-base"
+                className="w-full py-2 px-3 focus:outline-none border border-[#A5A4A0] rounded-[5px] placeholder:text-blue-primary placeholder:text-base"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required

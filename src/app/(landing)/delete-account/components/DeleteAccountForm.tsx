@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { deleteAccount } from "@/lib/actions/delete-account";
 import React, { useState } from "react";
 import { toast } from "sonner";
+import { PasswordInput } from "@/components/ui/password-input";
 
 const DeleteAccountForm = () => {
   const [loading, setLoading] = useState(false);
@@ -62,8 +63,7 @@ const DeleteAccountForm = () => {
 
         <div className="flex flex-col w-full gap-2">
           <Label>Password</Label>
-          <input
-            type="password"
+          <PasswordInput
             name="password"
             value={formData.password}
             onChange={handleChange}

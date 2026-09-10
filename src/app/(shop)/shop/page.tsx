@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { TermsCheckbox } from "@/components/shared/terms";
 import { useState } from "react";
+import { PasswordInput } from "@/components/ui/password-input";
 
 const registerSchema = z
   .object({
@@ -99,8 +100,8 @@ function ShopperAuth() {
               )}
             </div>
             <div>
-              <input
-                type="password"
+              <PasswordInput
+                
                 placeholder="Password"
                 {...register("password")}
                 className="w-full py-2 px-3 focus:outline-none border border-[#A5A4A0] rounded-[5px] placeholder:text-blue-primary placeholder:text-base"
@@ -112,8 +113,8 @@ function ShopperAuth() {
               )}
             </div>
             <div>
-              <input
-                type="password"
+              <PasswordInput
+                
                 placeholder="Confirm Password"
                 {...register("confirmPassword")}
                 className="w-full py-2 px-3 focus:outline-none border border-[#A5A4A0] rounded-[5px] placeholder:text-blue-primary placeholder:text-base"

@@ -10,6 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useState, Suspense } from "react";
+import { PasswordInput } from "@/components/ui/password-input";
 
 const resetPasswordSchema = z
   .object({
@@ -115,8 +116,8 @@ function ResetPasswordForm() {
                 className="w-full flex flex-col gap-4"
               >
                 <div>
-                  <input
-                    type="password"
+                  <PasswordInput
+                    
                     placeholder="New password"
                     {...register("password")}
                     className="w-full py-2 px-3 focus:outline-none border border-[#A5A4A0] rounded-[5px] placeholder:text-blue-primary placeholder:text-base"
@@ -129,8 +130,8 @@ function ResetPasswordForm() {
                 </div>
 
                 <div>
-                  <input
-                    type="password"
+                  <PasswordInput
+                    
                     placeholder="Confirm new password"
                     {...register("confirmPassword")}
                     className="w-full py-2 px-3 focus:outline-none border border-[#A5A4A0] rounded-[5px] placeholder:text-blue-primary placeholder:text-base"
