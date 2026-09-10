@@ -35,6 +35,7 @@ export const AccountSettings = () => {
   const market = useMarket(data?.data?.country);
 
   const [firstname, setFirstname] = useState("");
+  const [lastname, setLastname] = useState("");
   const [region, setRegion] = useState("");
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
@@ -42,6 +43,7 @@ export const AccountSettings = () => {
   useEffect(() => {
     if (!data?.data) return;
     setFirstname(data.data.firstname || "");
+    setLastname(data.data.lastname || "");
     setRegion(data.data.state || "");
   }, [data]);
 
@@ -95,7 +97,11 @@ export const AccountSettings = () => {
     e.preventDefault();
 
     if (firstname.trim().length < 2) {
-      toast.error("Please enter your name.");
+      toast.error("Please enter your first name.");
+      return;
+    }
+    if (lastname.trim().length < 2) {
+      toast.error("Please enter your last name.");
       return;
     }
     if (!region) {
@@ -103,8 +109,14 @@ export const AccountSettings = () => {
       return;
     }
 
-    const payload: { firstname: string; state: string; avatar?: File } = {
+    const payload: {
+      firstname: string;
+      lastname: string;
+      state: string;
+      avatar?: File;
+    } = {
       firstname: firstname.trim(),
+      lastname: lastname.trim(),
       state: region,
     };
     if (avatarFile) payload.avatar = avatarFile;
@@ -164,25 +176,45 @@ export const AccountSettings = () => {
               />
             </div>
 
-            <div className="flex flex-col gap-1.5">
-              <label
-                htmlFor="firstname"
-                className="text-sm font-medium text-gray-700"
-              >
-                Full name
-              </label>
-              <input
-                id="firstname"
-                className={FIELD}
-                value={firstname}
-                onChange={(e) => setFirstname(e.target.value)}
-                placeholder="e.g. Ada Obi"
-                required
-              />
-              <span className="text-xs text-gray-500">
-                Make sure this matches your government-issued ID.
-              </span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="flex flex-col gap-1.5">
+                <label
+                  htmlFor="firstname"
+                  className="text-sm font-medium text-gray-700"
+                >
+                  First name
+                </label>
+                <input
+                  id="firstname"
+                  className={FIELD}
+                  value={firstname}
+                  onChange={(e) => setFirstname(e.target.value)}
+                  placeholder="e.g. Ada"
+                  required
+                />
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <label
+                  htmlFor="lastname"
+                  className="text-sm font-medium text-gray-700"
+                >
+                  Last name
+                </label>
+                <input
+                  id="lastname"
+                  className={FIELD}
+                  value={lastname}
+                  onChange={(e) => setLastname(e.target.value)}
+                  placeholder="e.g. Obi"
+                  required
+                />
+              </div>
             </div>
+
+            <span className="text-xs text-gray-500 -mt-2">
+              Make sure these match your government-issued ID.
+            </span>
 
             <div className="flex flex-col gap-1.5">
               <label htmlFor="email" className="text-sm font-medium text-gray-700">
