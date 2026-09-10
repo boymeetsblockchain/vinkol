@@ -35,7 +35,7 @@ const FALLBACK: Record<Country, MarketConfig> = {
     locale: "en-NG",
     timezone: "Africa/Lagos",
     tax: { label: "" },
-    paymentSources: ["Paystack", "Globus", "Wallet"],
+    paymentSources: ["Paystack", "Wallet"],
     customerWalletsEnabled: true,
     tippingEnabled: true,
     minimumTip: 500,

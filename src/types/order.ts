@@ -6,12 +6,7 @@ import * as z from "zod";
  * The selectable subset comes from GET /others/markets at runtime — pinning it
  * in the type is what kept Stripe out of the frontend entirely.
  */
-export const paymentSourceSchema = z.enum([
-  "Paystack",
-  "Globus",
-  "Stripe",
-  "Wallet",
-]);
+export const paymentSourceSchema = z.enum(["Paystack", "Stripe", "Wallet"]);
 
 export const getQuoteSchema = z.object({
   state: z.string(),

@@ -10,7 +10,12 @@
 export type Country = "NG" | "CA";
 export type Currency = "NGN" | "CAD";
 
-export type PaymentSource = "Paystack" | "Globus" | "Stripe" | "Wallet";
+/**
+ * Globus is deliberately absent: it is switched off for now, and the server
+ * still returns it for Nigeria, so leaving it in the union would let it render
+ * again. Add it back here first if it is ever re-enabled.
+ */
+export type PaymentSource = "Paystack" | "Stripe" | "Wallet";
 
 export interface BankAccountShape {
   /** False in Canada: the name cannot be resolved, so it must be entered. */
