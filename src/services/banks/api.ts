@@ -77,7 +77,10 @@ export const resolveAccountName = async (payload: {
 }): Promise<string | null> => {
   try {
     const response = await axiosInstance.post("/banks/validate", payload);
-    return response.data?.data?.account_name ?? null;
+    // The server normalises Paystack's snake_case `account_name` into
+    // `accountName` before responding, so reading Paystack's own field name
+    // here got undefined from a perfectly successful 200.
+    return response.data?.data?.accountName ?? null;
   } catch (error) {
     return handleApiError(error, "Could not verify that account");
   }
