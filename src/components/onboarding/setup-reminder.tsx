@@ -44,7 +44,9 @@ export const SetupReminder = ({
   }, [role]);
 
   const outstanding = skippedSteps(role, profile, hasBank);
-  if (dismissed || !outstanding.length) return null;
+  // Without a profile every optional step reads as outstanding, so a
+  // signed-out visitor was told they had two things left to finish.
+  if (!profile || dismissed || !outstanding.length) return null;
 
   const dismiss = () => {
     setDismissed(true);

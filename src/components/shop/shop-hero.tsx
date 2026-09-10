@@ -1,5 +1,6 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { FaGooglePlay, FaStar } from "react-icons/fa6";
 import { IoLogoApple } from "react-icons/io";
 import { LuPackageCheck } from "react-icons/lu";
@@ -11,6 +12,16 @@ import { ShopperAuthModal } from "../modals/shopper-auth-modal";
 export const Hero = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLogin, setIsLogin] = useState(false);
+
+  // The dashboards redirect here when a session has expired; there is no
+  // standalone login route for these roles, only this modal.
+  const wantsLogin = useSearchParams().get("login") === "1";
+  useEffect(() => {
+    if (wantsLogin) {
+      setIsLogin(true);
+      setIsModalOpen(true);
+    }
+  }, [wantsLogin]);
 
   const triggerRegisterModal = () => {
     setIsLogin(false);

@@ -1,19 +1,30 @@
 "use client";
 import { contentFor } from "@/lib/markets";
 import { Country } from "@/lib/markets/types";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaGooglePlay } from "react-icons/fa6";
 import { IoLogoApple } from "react-icons/io";
 import { Button } from "../button";
 import { AppStoreCard } from "../shared/appstore";
 import { RiderAuthModal } from "../modals/rider-auth-modal";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 
 export const Hero = ({ country }: { country: Country }) => {
   const { appStore, serviceAreaPhrase } = contentFor(country);
 
   const [isOpen, setIsOpen] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
+
+  // The dashboards redirect here when a session has expired; there is no
+  // standalone login route for these roles, only this modal.
+  const wantsLogin = useSearchParams().get("login") === "1";
+  useEffect(() => {
+    if (wantsLogin) {
+      setIsLogin(true);
+      setIsOpen(true);
+    }
+  }, [wantsLogin]);
 
   const openModal = (mode: "login" | "register") => {
     setIsLogin(mode === "login");

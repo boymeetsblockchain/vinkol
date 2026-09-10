@@ -138,7 +138,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
       profile={data?.data}
       hasBank={!!userBank?.data}
       unauthorized={(error as ApiError | null)?.status === 401}
-      loginPath="/rider/auth"
+      loginPath="/become-a-rider?login=1"
     >
     <div className="min-h-screen flex flex-col md:flex-row bg-gray-50">
       {/* Mobile Hamburger */}

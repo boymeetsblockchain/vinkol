@@ -25,6 +25,12 @@ import {
  * Each state says what to do next and links to the step that does it, rather
  * than leaving someone on a wall with no exit.
  *
+ * It fails *closed*. `if (!profile) return children` used to render the whole
+ * dashboard to anyone whose profile had not loaded — including a signed-out
+ * visitor, who got a working sidebar and no redirect, because the only
+ * signed-out signal was a 401 status the rider service never attached to its
+ * errors.
+ *
  * Only *required* steps hold the dashboard closed. Gating on `nextStep`, which
  * returns optional steps too, is what made the skip affordance pointless: the
  * skip landed here and this sent the user straight back to the step they had
@@ -68,7 +74,25 @@ export const DashboardGate = ({
     return <Notice title="Signing you out…" body="Taking you to the login page." />;
   }
 
-  if (!profile) return <>{children}</>;
+  // Fails closed: no profile means nothing here can be gated, so the dashboard
+  // must not render. The layout shows a skeleton while the request is still in
+  // flight, so reaching this means it finished without a profile.
+  if (!profile) {
+    return (
+      <Notice
+        title="We could not load your account"
+        body="Check your connection and try again, or sign in if you have been signed out."
+        action={
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            <Button onClick={() => window.location.reload()}>Try again</Button>
+            <Button asChild variant="outline">
+              <Link href={loginPath}>Sign in</Link>
+            </Button>
+          </div>
+        }
+      />
+    );
+  }
 
   const outstanding = nextStep(role, profile, hasBank);
   const required = nextRequiredStep(role, profile, hasBank);
