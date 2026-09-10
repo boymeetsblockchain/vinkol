@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { CheckCircle2, Clock } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 
 import { Button } from "@/components/button";
+import { SettingsCard } from "@/components/dashboard/settings-card";
+import { StatusBadge } from "@/components/dashboard/status-badge";
 
 import { VerifyPhoneForm } from "@/components/phone/verify-phone-form";
 import { Country } from "@/lib/markets/types";
@@ -42,33 +43,21 @@ export const PhoneSettings = ({
   const showForm = !isPhoneVerified || changing;
 
   return (
-    <section>
-      <div className="flex items-center justify-between gap-4 mb-1">
-        <h2 className="text-lg font-bold text-gray-900">Phone number</h2>
-        <span
-          className={
-            isPhoneVerified
-              ? "flex items-center gap-1.5 text-xs font-semibold text-green-700 bg-green-50 border border-green-100 rounded-full px-2.5 py-1"
-              : "flex items-center gap-1.5 text-xs font-semibold text-amber-700 bg-amber-50 border border-amber-100 rounded-full px-2.5 py-1"
-          }
-        >
-          {isPhoneVerified ? (
-            <>
-              <CheckCircle2 size={12} /> Verified
-            </>
-          ) : (
-            <>
-              <Clock size={12} /> Not verified
-            </>
-          )}
-        </span>
-      </div>
-      <p className="text-sm text-gray-500 mb-5">
-        {isPhoneVerified
+    <SettingsCard
+      title="Phone number"
+      description={
+        isPhoneVerified
           ? "This is the number customers and support reach you on. Change it and we will send a code to the new number."
-          : "You need a verified number before you can accept orders."}
-      </p>
-
+          : "You need a verified number before you can accept orders."
+      }
+      badge={
+        <StatusBadge
+          ok={isPhoneVerified}
+          okLabel="Verified"
+          pendingLabel="Not verified"
+        />
+      }
+    >
       {showForm ? (
         <div className="flex flex-col gap-4">
           <VerifyPhoneForm
@@ -102,6 +91,6 @@ export const PhoneSettings = ({
           </Button>
         </div>
       )}
-    </section>
+    </SettingsCard>
   );
 };

@@ -1,5 +1,6 @@
 "use client";
 
+import { Avatar } from "@/components/dashboard/avatar";
 import { useUserProfile } from "@/services/rider/query";
 
 export const Profile = () => {
@@ -46,10 +47,11 @@ export const Profile = () => {
           </p>
         </div>
         <div className="flex items-center gap-1">
-          <img
-            src={avatar?.imageUrl || "/assets/placeholder.png"}
-            className="h-8 w-8 rounded-full object-cover bg-gray-100"
-            alt=""
+          <Avatar
+            src={avatar?.imageUrl}
+            name={firstname}
+            className="h-9 w-9"
+            textClass="text-xs"
           />
         </div>
       </div>
