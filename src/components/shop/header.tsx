@@ -4,7 +4,7 @@ export const Header = () => {
   return (
     <header className=" p-2 border-b border-[rgba(0,0,0,0.1)">
       <div className="flex-shrink-0 ">
-        <Link href={"/"}>
+        <Link href={"/shop/login"}>
           <img
             src="/logo.png"
             alt="Vinkol Logo"

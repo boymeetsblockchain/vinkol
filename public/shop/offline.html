@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0e74d8" />
+    <title>You are offline — Vinkol for Stores</title>
+    <!--
+      Deliberately a plain static file rather than a Next.js route.
+
+      An offline fallback has to render with nothing but itself. The first
+      attempt cached the framework's /shop/offline document, whose hashed JS
+      chunks were not precached — so with the origin unreachable React could
+      not hydrate and the screen showed "Application error: a client-side
+      exception" instead of the offline notice. Inline CSS, an inline SVG and a
+      few lines of inline script have no such dependency, and a later build
+      cannot break them.
+    -->
+    <style>
+      :root { color-scheme: light; }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        padding: 24px;
+        text-align: center;
+        background: #f9fafb;
+        color: #0a1b33;
+        font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, Helvetica, Arial, sans-serif;
+      }
+      .badge {
+        width: 64px;
+        height: 64px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 1px 3px rgba(10, 27, 51, 0.08);
+      }
+      h1 { margin: 0; font-size: 20px; font-weight: 700; }
+      p {
+        margin: 6px 0 0;
+        max-width: 26rem;
+        font-size: 14px;
+        line-height: 1.55;
+        color: #6b7280;
+      }
+      button {
+        margin-top: 4px;
+        padding: 10px 20px;
+        font: inherit;
+        font-size: 14px;
+        font-weight: 600;
+        color: #fff;
+        background: #0e74d8;
+        border: 0;
+        border-radius: 6px;
+        cursor: pointer;
+      }
+      button:disabled { opacity: 0.6; cursor: default; }
+    </style>
+  </head>
+  <body>
+    <div class="badge" aria-hidden="true">
+      <svg
+        width="26"
+        height="26"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="#9ca3af"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="m1 1 22 22" />
+        <path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55" />
+        <path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39" />
+        <path d="M10.71 5.05A16 16 0 0 1 22.58 9" />
+        <path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88" />
+        <path d="M8.53 16.11a6 6 0 0 1 6.95 0" />
+        <path d="M12 20h.01" />
+      </svg>
+    </div>
+
+    <div>
+      <h1>You are offline</h1>
+      <p>
+        Your orders and balance need a connection, so we are not showing
+        anything rather than showing you something out of date. This page will
+        move on by itself once you are back online.
+      </p>
+    </div>
+
+    <button id="retry" type="button">Try again</button>
+
+    <script>
+      (function () {
+        var button = document.getElementById("retry");
+        var target = "/shop/dashboard";
+
+        function go() {
+          button.disabled = true;
+          button.textContent = "Reconnecting…";
+          // Replace, so the offline page does not sit in the back stack.
+          window.location.replace(target);
+        }
+
+        button.addEventListener("click", go);
+        // An installed app has no address bar to reload from, so recover
+        // without the owner having to do anything.
+        window.addEventListener("online", go);
+      })();
+    </script>
+  </body>
+</html>
