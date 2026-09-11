@@ -20,6 +20,22 @@ const phoneField = (label = "Phone number") =>
       { message: `${label} is not valid` },
     );
 
+/**
+ * Same check, but for an input the customer may legitimately leave blank.
+ * phoneField opens with `min(1)`, so reusing it on an optional field would
+ * block submit on an empty one.
+ */
+const optionalPhoneField = (label: string) =>
+  z
+    .string()
+    .refine(
+      (value) =>
+        value.trim() === "" ||
+        normalizePhone(value, "NG") !== null ||
+        normalizePhone(value, "CA") !== null,
+      { message: `${label} is not valid` },
+    );
+
 // src/dto/delivery.form.schema.ts
 
 export const deliverySchema = z.object({
@@ -61,6 +77,21 @@ export const deliverySchema = z.object({
   }),
   state: z.string(),
   orderType: z.enum(["Delivery", "Shopping"]),
+
+  // Who the package is for. Optional throughout — the section is collapsed by
+  // default and the server accepts the order without it.
+  receiverContact: z
+    .object({
+      name: z.string(),
+      phone: optionalPhoneField("Recipient phone"),
+    })
+    // A phone with no name could never be shown: the recipient row on the
+    // delivery emails is guarded on the name.
+    .refine((value) => value.phone.trim() === "" || value.name.trim() !== "", {
+      message: "Recipient name is required when you give a phone number",
+      path: ["name"],
+    })
+    .optional(),
 });
 
 export const bulkDeliverySchema = z.object({

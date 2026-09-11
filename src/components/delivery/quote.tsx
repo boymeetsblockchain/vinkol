@@ -103,6 +103,10 @@ export const QuotePage = () => {
       callbackUrl: new URL("/order/success", window.location.origin).toString(),
       guest: session.guest,
       note: session.note || "",
+      // Absent unless the booking form collected one.
+      ...(session.receiverContact
+        ? { receiverContact: session.receiverContact }
+        : {}),
     });
   };
 

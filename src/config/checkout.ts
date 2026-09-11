@@ -36,6 +36,9 @@ export interface CheckoutSession {
   guest: CheckoutGuest;
   state: string;
 
+  /** Who the package is for, when the customer chose to add them. */
+  receiverContact?: { name: string; phone: string };
+
   /** Free-text addresses, as submitted. */
   pickupLocation?: string;
   dropoffLocation: string;

@@ -69,6 +69,14 @@ export const orderDataSchema = z.object({
       lng: z.number(),
     })
     .optional(),
+  // Who the package is for. Optional, and the server allows either field to be
+  // "" — omit the whole object when the customer did not add a recipient.
+  receiverContact: z
+    .object({
+      name: z.string(),
+      phone: z.string(),
+    })
+    .optional(),
   // The server ignores deliveryFee entirely when a quoteId is present, and
   // without one it treats the request as a pre-quotes client and prices it as
   // Nigerian. Send the quoteId.

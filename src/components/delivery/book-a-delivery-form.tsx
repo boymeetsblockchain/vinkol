@@ -35,7 +35,8 @@ import {
 import { useRouter } from "next/navigation";
 import { TermsCheckbox } from "../shared/terms";
 import { useState } from "react";
-import { Package, MapPin, User, Clock, Info } from "lucide-react";
+import { Package, MapPin, User, Clock, Info, UserRound } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 
 import { saveCheckoutSession } from "@/config/checkout";
 import { formatMoney } from "@/lib/money";
@@ -67,11 +68,13 @@ export const BookADeliveryForm = () => {
       priority: "low",
       note: "",
       state: "",
+      receiverContact: { name: "", phone: "" },
     },
   });
 
   const { mutate, isPending } = useGetQuoteMutation();
   const [isChecked, setIsChecked] = useState<boolean>(false);
+  const [addRecipient, setAddRecipient] = useState<boolean>(false);
 
   const onSubmit = (data: z.infer<typeof deliverySchema>) => {
     if (!isChecked) {
@@ -138,6 +141,17 @@ export const BookADeliveryForm = () => {
               phone: data.phonenumber,
             },
             state: data.state,
+            // Only when the section is open and someone was actually named.
+            // Collapsing it discards whatever was typed rather than submitting
+            // details the customer decided against.
+            ...(addRecipient && data.receiverContact?.name.trim()
+              ? {
+                  receiverContact: {
+                    name: data.receiverContact.name.trim(),
+                    phone: data.receiverContact.phone.trim(),
+                  },
+                }
+              : {}),
             pickupLocation: data.pickup,
             dropoffLocation: data.dropoff,
             date: formattedDate,
@@ -269,6 +283,79 @@ export const BookADeliveryForm = () => {
                     )}
                   />
                 </div>
+              </div>
+
+              {/* Recipient Details — optional, so it stays collapsed until asked for */}
+              <div className="space-y-6">
+                <div className="flex items-center justify-between gap-3 pb-3 border-b border-gray-100">
+                  <div className="flex items-center gap-3">
+                    <div className="bg-blue-50 p-2 rounded-lg">
+                      <UserRound className="w-5 h-5 text-blue-600" />
+                    </div>
+                    <div>
+                      <h2
+                        className="text-xl font-semibold text-gray-800"
+                        id="recipient-details-heading"
+                      >
+                        Add recipient details
+                      </h2>
+                      <p className="text-sm text-gray-500">
+                        Optional. Helps the rider know who to hand the package to.
+                      </p>
+                    </div>
+                  </div>
+                  <Switch
+                    checked={addRecipient}
+                    onCheckedChange={setAddRecipient}
+                    aria-labelledby="recipient-details-heading"
+                  />
+                </div>
+
+                {addRecipient && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FormField
+                      control={form.control}
+                      name="receiverContact.name"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-gray-700">
+                            Recipient Name
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              type="text"
+                              className="h-12 bg-gray-50/50"
+                              placeholder="e.g. Jane Doe"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="receiverContact.phone"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-gray-700">
+                            Recipient Phone
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              type="tel"
+                              className="h-12 bg-gray-50/50"
+                              placeholder={phonePlaceholder(market.country)}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                )}
               </div>
 
               {/* Delivery Locations */}
