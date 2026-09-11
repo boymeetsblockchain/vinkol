@@ -347,9 +347,30 @@ function ShopIdPage() {
                   {products.map((product) => (
                     <div
                       key={product._id}
-                      className="bg-white rounded-2xl p-4 flex gap-4 border border-gray-100 hover:border-blue-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] transition-all duration-300 group cursor-pointer"
+                      className="bg-white rounded-2xl p-4 flex flex-col gap-4 border border-gray-100 hover:border-blue-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] transition-all duration-300 group cursor-pointer"
                       onClick={() => setSelectedProduct(product)}
                     >
+                      <div className="flex items-center gap-4">
+                        <div className="w-32 h-32 flex-shrink-0 bg-gray-50 rounded-xl overflow-hidden relative border border-gray-100">
+                          {product.image?.imageUrl ? (
+                            <img
+                              src={product.image.imageUrl}
+                              alt={product.title}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-gray-300">
+                              <ShoppingCart size={24} />
+                            </div>
+                          )}
+                        </div>
+
+                        <div>
+                          <span className="font-extrabold text-gray-900 text-[15px]">
+                            {formatMoney(product.price, market.currency)}
+                          </span>
+                        </div>
+                      </div>
                       <div className="flex-1 min-w-0 flex flex-col">
                         <h3 className="font-bold text-gray-900 text-[15px] leading-snug line-clamp-2 group-hover:text-[var(--color-blue-primary)] transition-colors">
                           {product.title}
@@ -359,10 +380,8 @@ function ShopIdPage() {
                         </p>
 
                         <div className="mt-auto pt-4 flex items-center justify-between">
-                          <span className="font-extrabold text-gray-900 text-[15px]">
-                            {formatMoney(product.price, market.currency)}
-                          </span>
-                          {!product.isAvailable || (product.inventory ?? 0) <= 0 ? (
+                          {!product.isAvailable ||
+                          (product.inventory ?? 0) <= 0 ? (
                             <span className="text-red-500 font-bold text-[13px] bg-red-50 px-3 py-1.5 rounded-xl border border-red-100 shadow-sm shrink-0">
                               Out of stock
                             </span>
@@ -372,26 +391,12 @@ function ShopIdPage() {
                                 e.stopPropagation();
                                 handleAddToCart(product);
                               }}
-                              className="bg-[var(--color-blue-primary)] text-white text-sm font-bold px-3 py-1.5 rounded-xl flex items-center justify-center hover:bg-blue-700 transition-colors shadow-sm"
+                              className="bg-blue-primary text-white text-sm font-bold w-full px-3 py-1.5 rounded-xl flex items-center justify-center hover:bg-blue-700 transition-colors shadow-sm"
                             >
                               Add to cart
                             </button>
                           )}
                         </div>
-                      </div>
-
-                      <div className="w-32 h-32 flex-shrink-0 bg-gray-50 rounded-xl overflow-hidden relative border border-gray-100">
-                        {product.image?.imageUrl ? (
-                          <img
-                            src={product.image.imageUrl}
-                            alt={product.title}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-gray-300">
-                            <ShoppingCart size={24} />
-                          </div>
-                        )}
                       </div>
                     </div>
                   ))}
@@ -437,11 +442,6 @@ function ShopIdPage() {
                   <ShoppingCart size={40} />
                 </div>
               )}
-              <DialogClose asChild>
-                <button className="absolute top-4 right-4 w-10 h-10 bg-white/90 backdrop-blur-md rounded-full shadow-md text-gray-800 flex items-center justify-center hover:scale-105 transition">
-                  <X size={20} />
-                </button>
-              </DialogClose>
             </div>
             <div className="p-6">
               <div className="flex justify-between items-start gap-4 mb-4">

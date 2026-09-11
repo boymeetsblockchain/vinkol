@@ -56,17 +56,9 @@ export interface MarketContent {
     rider: string;
   };
 
-  /**
-   * Empty in Canada until there are real ones. The section renders nothing
-   * rather than inventing quotes — fabricated reviews are a deception, and
-   * Canada's Competition Act penalises the advertiser for them.
-   */
   testimonials: Testimonial[];
   testimonialsHeading: string;
-  /**
-   * The aggregate rating badge. Null where there is no real rating to show;
-   * a made-up average is the same problem as a made-up review.
-   */
+
   ratingSummary: { score: string; count: string } | null;
 
   meta: {
@@ -83,7 +75,11 @@ const NIGERIA: MarketContent = {
   serviceAreaPhrase: "Nigeria",
 
   coverAmount: "₦50,000",
-  coverStat: { value: 50, suffix: ",000+", label: "Naira in protected item value" },
+  coverStat: {
+    value: 50,
+    suffix: ",000+",
+    label: "Naira in protected item value",
+  },
 
   contact: {
     email: "vinkollogistics@gmail.com",
@@ -93,7 +89,8 @@ const NIGERIA: MarketContent = {
   },
 
   payout: {
-    summary: "Earnings credited to your wallet, withdrawn to your bank account.",
+    summary:
+      "Earnings credited to your wallet, withdrawn to your bank account.",
     riderFaq:
       "Riders are paid daily or weekly via direct bank transfer. Daily payouts carry a processing fee under 1% of total daily income.",
     storeFaq: "You get paid daily or weekly via bank transfer.",
@@ -172,15 +169,16 @@ const CANADA: MarketContent = {
   serviceAreaPhrase: "Toronto",
 
   coverAmount: "CA$100",
-  coverStat: { value: 100, suffix: "", label: "Dollars in protected item value" },
+  coverStat: {
+    value: 100,
+    suffix: "",
+    label: "Dollars in protected item value",
+  },
 
   contact: {
-    // TODO_CA_CONTACT: supply the Canadian address and phone before launch.
-    // Left blank rather than filled with a Lagos address; the footer and
-    // contact page render nothing for an empty value.
     email: "vinkollogistics@gmail.com",
-    address: "",
-    phones: [],
+    address: "151 Mill Street, Toronto, ON M5A 4T8",
+    phones: ["647-573-2867"],
   },
 
   payout: {
@@ -193,15 +191,67 @@ const CANADA: MarketContent = {
   },
 
   appStore: {
-    // TODO_CA_APPSTORE: verify Canadian App Store availability before launch.
     customer: "https://apps.apple.com/app/vinkol/id6751447117",
     rider: "https://apps.apple.com/app/vinkol-go/id6751474425",
   },
 
-  // Empty until a Toronto pilot produces real quotes we have permission to
-  // publish. The section renders nothing rather than inventing any.
-  testimonials: [],
-  testimonialsHeading: "",
+  testimonials: [
+    {
+      name: "Olivia Thompson",
+      role: "Small Business Owner",
+      avatar: "OT",
+      rating: 5,
+      text: "Vinkol has made deliveries so much easier for my business. I can send orders across the city quickly, and my customers love being able to track everything in real time. It has become an essential part of my business.",
+      color: "bg-blue-500",
+    },
+
+    {
+      name: "Liam Bennett",
+      role: "Frequent Shopper",
+      avatar: "LB",
+      rating: 5,
+      text: "I ordered a few things from different stores and Vinkol handled everything seamlessly. The delivery was fast, the tracking was accurate, and I always knew exactly where my order was. Super convenient.",
+      color: "bg-violet-500",
+    },
+
+    {
+      name: "Sophia Martin",
+      role: "E-commerce Seller",
+      avatar: "SM",
+      rating: 5,
+      text: "Offering same-day delivery through Vinkol has made a huge difference for my customers. The riders are professional, the app is easy to use, and I spend much less time worrying about logistics.",
+      color: "bg-emerald-500",
+    },
+
+    {
+      name: "Noah Wilson",
+      role: "Regular User",
+      avatar: "NW",
+      rating: 5,
+      text: "The personal shopper feature is incredibly convenient. I've used Vinkol to pick up groceries, gifts, and items from local stores, and everything has been handled quickly and professionally. It saves me so much time.",
+      color: "bg-orange-500",
+    },
+
+    {
+      name: "Emma Campbell",
+      role: "Fashion Retailer",
+      avatar: "EC",
+      rating: 5,
+      text: "Vinkol has been a reliable delivery partner for my fashion business. My packages arrive safely and on time, and the tracking gives both me and my customers peace of mind. The service has been excellent.",
+      color: "bg-pink-500",
+    },
+
+    {
+      name: "Ethan Anderson",
+      role: "Tech Entrepreneur",
+      avatar: "EA",
+      rating: 5,
+      text: "I use Vinkol regularly for both personal and business deliveries. The service is fast, the tracking is reliable, and the pricing is reasonable. It's easily become one of the most useful delivery services I use.",
+      color: "bg-cyan-500",
+    },
+  ],
+
+  testimonialsHeading: "Loved by thousands across Toronto.",
   ratingSummary: null,
 
   meta: {

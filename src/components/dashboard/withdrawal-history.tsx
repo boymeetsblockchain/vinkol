@@ -21,7 +21,9 @@ export interface WithdrawalRecord {
   status: "Pending" | "Approved" | "Rejected";
   reason?: string;
   createdAt: string;
-  bank?: { accountName?: string; accountNumber?: string; bankName?: string } | string;
+  bank?:
+    | { accountName?: string; accountNumber?: string; bankName?: string }
+    | string;
 }
 
 const STATUS_STYLE: Record<WithdrawalRecord["status"], string> = {
@@ -31,7 +33,7 @@ const STATUS_STYLE: Record<WithdrawalRecord["status"], string> = {
 };
 
 const STATUS_HINT: Record<WithdrawalRecord["status"], string> = {
-  Pending: "Awaiting review by our team",
+  Pending: "Awaiting review",
   Approved: "Sent to your account",
   Rejected: "Not approved",
 };
@@ -120,7 +122,10 @@ export const WithdrawalHistory = ({
 
             <div className="flex-1 min-w-0">
               <p className="font-semibold text-gray-900 text-sm">
-                {formatMoney(record.amount, record.currency ?? fallbackCurrency)}
+                {formatMoney(
+                  record.amount,
+                  record.currency ?? fallbackCurrency,
+                )}
               </p>
               <p className="text-xs text-gray-400">
                 {formatDate(record.createdAt)} · {STATUS_HINT[record.status]}

@@ -60,6 +60,7 @@ interface OrderData {
   vehicleRequest: string;
   orderType: string;
   deliveryFee: number;
+  riderFee: number;
   paystackReference: string;
   paymentStatus: string;
   products: any[];
@@ -125,14 +126,14 @@ function Orders() {
       }
 
       return true;
-    }
+    },
   );
   // console.log(data);
   // Pagination logic
   const totalPages = Math.ceil(filteredOrders.length / ITEMS_PER_PAGE);
   const paginatedOrders = filteredOrders.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
+    currentPage * ITEMS_PER_PAGE,
   );
 
   // Reset to first page when filters change
@@ -154,7 +155,7 @@ function Orders() {
           toast.error(
             `Failed to accept order: ${
               error.response?.data?.message || error.message || "Unknown error"
-            }`
+            }`,
           );
         },
       });
@@ -163,7 +164,7 @@ function Orders() {
       toast.error(
         `Failed to accept order: ${
           error.response?.data?.message || error.message || "Unknown error"
-        }`
+        }`,
       );
     } finally {
       setAcceptingOrderId(null);
@@ -177,7 +178,7 @@ function Orders() {
     (order: OrderData) =>
       order.status === "Delivered" ||
       order.status === "Picked" ||
-      order.status === "Accepted"
+      order.status === "Accepted",
   );
 
   return (
@@ -280,10 +281,10 @@ function Orders() {
                       order.status === "Pending"
                         ? "bg-gray-500"
                         : order.status === "Accepted"
-                        ? "bg-blue-primary"
-                        : order.status === "Picked"
-                        ? "bg-yellow-500"
-                        : "bg-green-500"
+                          ? "bg-blue-primary"
+                          : order.status === "Picked"
+                            ? "bg-yellow-500"
+                            : "bg-green-500"
                     }`}
                   >
                     {order.status}
@@ -337,7 +338,7 @@ function Orders() {
                   Amount:{" "}
                   <span className="text-blue-primary">
                     {formatMoney(
-                      order?.deliveryFee ?? 0,
+                      order?.riderFee ?? 0,
                       order?.currency ?? market.currency,
                     )}
                   </span>
@@ -368,7 +369,11 @@ function Orders() {
         ) : (
           <EmptyState
             icon={Package}
-            title={isFiltered ? "No orders match your filters" : "No orders right now"}
+            title={
+              isFiltered
+                ? "No orders match your filters"
+                : "No orders right now"
+            }
             body={
               isFiltered
                 ? "Try clearing a filter or searching for something else."
@@ -410,7 +415,7 @@ function Orders() {
                       {page}
                     </PaginationLink>
                   </PaginationItem>
-                )
+                ),
               )}
 
               <PaginationItem>

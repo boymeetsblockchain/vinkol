@@ -56,19 +56,25 @@ export const Hero = ({ country }: { country: Country }) => {
 
             <p className="text-base sm:text-lg font-medium text-white/80 max-w-lg leading-relaxed">
               Join our network of verified riders delivering across{" "}
-              {serviceAreaPhrase}. Set your own
-              hours, accept tasks near you, and get paid fast.
+              {serviceAreaPhrase}. Set your own hours, accept tasks near you,
+              and get paid fast.
             </p>
 
             <div className="flex flex-wrap items-center gap-3 pt-1">
-              <Button size="lg" className="rounded-full px-8 font-semibold" onClick={() => openModal("register")}>
+              <Button
+                size="lg"
+                className="rounded-full px-8 font-semibold"
+                onClick={() => openModal("register")}
+              >
                 Become a Rider
               </Button>
-              <Link href="/waitlist">
-                <button className="border border-white/40 text-white rounded-full px-8 py-3 text-sm font-semibold hover:bg-white/10 transition-colors">
-                  Join the Waitlist
-                </button>
-              </Link>
+              {country != "CA" && (
+                <Link href="/waitlist">
+                  <button className="border border-white/40 text-white rounded-full px-8 py-3 text-sm font-semibold hover:bg-white/10 transition-colors">
+                    Join the Waitlist
+                  </button>
+                </Link>
+              )}
             </div>
 
             <div className="flex items-center gap-3 pt-1">

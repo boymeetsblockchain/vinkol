@@ -67,6 +67,7 @@ interface OrderData {
   vehicleRequest: string;
   orderType: string;
   deliveryFee: number;
+  riderFee: number;
   paystackReference: string;
   paymentStatus: string;
   products: any[];
@@ -133,14 +134,14 @@ function OrderHistory() {
       }
 
       return true;
-    }
+    },
   );
 
   // Pagination logic
   const totalPages = Math.ceil(filteredOrders.length / ITEMS_PER_PAGE);
   const paginatedOrders = filteredOrders.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
+    currentPage * ITEMS_PER_PAGE,
   );
 
   // Reset to first page when filters change
@@ -167,7 +168,7 @@ function OrderHistory() {
 
   const handleStatusChange = (
     orderId: string,
-    status: "Delivered" | "Picked"
+    status: "Delivered" | "Picked",
   ) => {
     if (status === "Delivered") {
       setCurrentOrderId(orderId);
@@ -193,10 +194,10 @@ function OrderHistory() {
                 error.response?.data?.message ||
                 error.message ||
                 "Unknown error"
-              }`
+              }`,
             );
           },
-        }
+        },
       );
     }
   };
@@ -218,10 +219,10 @@ function OrderHistory() {
           toast.error(
             `Failed to mark as delivered: ${
               error.response?.data?.message || error.message || "Unknown error"
-            }`
+            }`,
           );
         },
-      }
+      },
     );
   };
 
@@ -229,7 +230,7 @@ function OrderHistory() {
     (order: OrderData) =>
       order.status === "Delivered" ||
       order.status === "Picked" ||
-      order.status === "Accepted"
+      order.status === "Accepted",
   );
 
   return (
@@ -437,7 +438,7 @@ function OrderHistory() {
                   Amount:{" "}
                   <span className="text-blue-primary">
                     {formatMoney(
-                      order?.deliveryFee ?? 0,
+                      order?.riderFee ?? 0,
                       order?.currency ?? market.currency,
                     )}
                   </span>
@@ -484,7 +485,7 @@ function OrderHistory() {
                       {page}
                     </PaginationLink>
                   </PaginationItem>
-                )
+                ),
               )}
 
               <PaginationItem>

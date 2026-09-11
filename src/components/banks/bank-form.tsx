@@ -64,17 +64,37 @@ export const BankForm = ({ owner, country, onSaved, submitLabel }: Props) => {
   const debounce = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Prefill when editing, so correcting one field does not mean retyping all.
+  // useEffect(() => {
+  //   if (!existing) return;
+  //   setBankName(existing.bankName ?? "");
+  //   setBankCode(existing.bankCode ?? "");
+  //   setInstitutionNumber(existing.institutionNumber ?? "");
+  //   setTransitNumber(existing.transitNumber ?? "");
+  //   setAccountNumber(existing.accountNumber ?? "");
+  //   setAccountName(existing.accountName ?? "");
+  //   setInteracEmail(existing.interacEmail ?? "");
+  //   setResolved(existing.verified);
+  // }, [existing]);
+
   useEffect(() => {
     if (!existing) return;
+
     setBankName(existing.bankName ?? "");
-    setBankCode(existing.bankCode ?? "");
+
+    const matchingBank = banks.find(
+      (bank) =>
+        bank.code === existing.bankCode || bank.name === existing.bankName,
+    );
+
+    setBankCode(matchingBank?.code ?? existing.bankCode ?? "");
+
     setInstitutionNumber(existing.institutionNumber ?? "");
     setTransitNumber(existing.transitNumber ?? "");
     setAccountNumber(existing.accountNumber ?? "");
     setAccountName(existing.accountName ?? "");
     setInteracEmail(existing.interacEmail ?? "");
     setResolved(existing.verified);
-  }, [existing]);
+  }, [existing, banks]);
 
   const { min, max } = shape.accountNumberLength;
 
@@ -145,7 +165,9 @@ export const BankForm = ({ owner, country, onSaved, submitLabel }: Props) => {
 
     const parsed = bankSchemaFor(market.country).safeParse(payload);
     if (!parsed.success) {
-      toast.error(parsed.error.issues[0]?.message ?? "Please check the details.");
+      toast.error(
+        parsed.error.issues[0]?.message ?? "Please check the details.",
+      );
       return;
     }
 
@@ -264,7 +286,10 @@ export const BankForm = ({ owner, country, onSaved, submitLabel }: Props) => {
       )}
 
       <div className="flex flex-col gap-1.5">
-        <label htmlFor="accountNumber" className="text-sm font-medium text-gray-700">
+        <label
+          htmlFor="accountNumber"
+          className="text-sm font-medium text-gray-700"
+        >
           Account number
         </label>
         <input
@@ -280,7 +305,10 @@ export const BankForm = ({ owner, country, onSaved, submitLabel }: Props) => {
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <label htmlFor="accountName" className="text-sm font-medium text-gray-700">
+        <label
+          htmlFor="accountName"
+          className="text-sm font-medium text-gray-700"
+        >
           Account name
         </label>
         <input
@@ -318,7 +346,10 @@ export const BankForm = ({ owner, country, onSaved, submitLabel }: Props) => {
 
       {shape.requiresInstitutionAndTransit && (
         <div className="flex flex-col gap-1.5">
-          <label htmlFor="interac" className="text-sm font-medium text-gray-700">
+          <label
+            htmlFor="interac"
+            className="text-sm font-medium text-gray-700"
+          >
             Interac e-Transfer email{" "}
             <span className="font-normal text-gray-400">(optional)</span>
           </label>

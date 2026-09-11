@@ -27,7 +27,11 @@ import { useGetQuoteMutation } from "@/services/orders/mutation";
 import { toast } from "sonner";
 
 import { useMarket } from "@/lib/markets/useMarket";
-import { contentFor, placesCountry, resolveRegionFromPlace } from "@/lib/markets";
+import {
+  contentFor,
+  placesCountry,
+  resolveRegionFromPlace,
+} from "@/lib/markets";
 import { useRouter } from "next/navigation";
 import { TermsCheckbox } from "../shared/terms";
 import { useState } from "react";
@@ -41,8 +45,6 @@ const getCurrentTime = () => {
   const now = new Date();
   return now.toTimeString().slice(0, 5);
 };
-
-
 
 export const BookADeliveryForm = () => {
   const router = useRouter();
@@ -176,17 +178,16 @@ export const BookADeliveryForm = () => {
       <div className="w-full">
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 md:p-10">
           <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className="space-y-10"
-            >
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
               {/* Contact Information */}
               <div className="space-y-6">
                 <div className="flex items-center gap-3 pb-3 border-b border-gray-100">
                   <div className="bg-blue-50 p-2 rounded-lg">
                     <User className="w-5 h-5 text-blue-600" />
                   </div>
-                  <h2 className="text-xl font-semibold text-gray-800">Contact Information</h2>
+                  <h2 className="text-xl font-semibold text-gray-800">
+                    Contact Information
+                  </h2>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <FormField
@@ -194,9 +195,15 @@ export const BookADeliveryForm = () => {
                     name="firstname"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-gray-700">First Name</FormLabel>
+                        <FormLabel className="text-gray-700">
+                          First Name
+                        </FormLabel>
                         <FormControl>
-                          <Input {...field} className="h-12 bg-gray-50/50" placeholder="Enter your first name" />
+                          <Input
+                            {...field}
+                            className="h-12 bg-gray-50/50"
+                            placeholder="Enter your first name"
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -207,9 +214,15 @@ export const BookADeliveryForm = () => {
                     name="lastname"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-gray-700">Last Name</FormLabel>
+                        <FormLabel className="text-gray-700">
+                          Last Name
+                        </FormLabel>
                         <FormControl>
-                          <Input {...field} className="h-12 bg-gray-50/50" placeholder="Enter your last name" />
+                          <Input
+                            {...field}
+                            className="h-12 bg-gray-50/50"
+                            placeholder="Enter your last name"
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -220,9 +233,16 @@ export const BookADeliveryForm = () => {
                     name="email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-gray-700">Email Address</FormLabel>
+                        <FormLabel className="text-gray-700">
+                          Email Address
+                        </FormLabel>
                         <FormControl>
-                          <Input {...field} type="email" className="h-12 bg-gray-50/50" placeholder="Enter your email" />
+                          <Input
+                            {...field}
+                            type="email"
+                            className="h-12 bg-gray-50/50"
+                            placeholder="Enter your email"
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -233,7 +253,9 @@ export const BookADeliveryForm = () => {
                     name="phonenumber"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-gray-700">Phone Number</FormLabel>
+                        <FormLabel className="text-gray-700">
+                          Phone Number
+                        </FormLabel>
                         <FormControl>
                           <Input
                             {...field}
@@ -255,7 +277,9 @@ export const BookADeliveryForm = () => {
                   <div className="bg-blue-50 p-2 rounded-lg">
                     <MapPin className="w-5 h-5 text-blue-600" />
                   </div>
-                  <h2 className="text-xl font-semibold text-gray-800">Location Details</h2>
+                  <h2 className="text-xl font-semibold text-gray-800">
+                    Location Details
+                  </h2>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <FormField
@@ -263,7 +287,9 @@ export const BookADeliveryForm = () => {
                     name="pickup"
                     render={({ field }) => (
                       <FormItem className="md:col-span-2">
-                        <FormLabel className="text-gray-700">Pickup Location</FormLabel>
+                        <FormLabel className="text-gray-700">
+                          Pickup Location
+                        </FormLabel>
                         <FormControl>
                           <Autocomplete
                             apiKey={process.env.NEXT_PUBLIC_Maps_API_KEY}
@@ -313,7 +339,9 @@ export const BookADeliveryForm = () => {
                     name="dropoff"
                     render={({ field }) => (
                       <FormItem className="md:col-span-2">
-                        <FormLabel className="text-gray-700">Dropoff Location</FormLabel>
+                        <FormLabel className="text-gray-700">
+                          Dropoff Location
+                        </FormLabel>
                         <FormControl>
                           <Autocomplete
                             apiKey={process.env.NEXT_PUBLIC_Maps_API_KEY}
@@ -363,7 +391,9 @@ export const BookADeliveryForm = () => {
                     name="state"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-gray-700">State (Auto-detected)</FormLabel>
+                        <FormLabel className="text-gray-700">
+                          State (Auto-detected)
+                        </FormLabel>
                         <FormControl>
                           <Input
                             {...field}
@@ -385,7 +415,9 @@ export const BookADeliveryForm = () => {
                   <div className="bg-blue-50 p-2 rounded-lg">
                     <Clock className="w-5 h-5 text-blue-600" />
                   </div>
-                  <h2 className="text-xl font-semibold text-gray-800">Schedule & Type</h2>
+                  <h2 className="text-xl font-semibold text-gray-800">
+                    Schedule & Type
+                  </h2>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <FormField
@@ -393,9 +425,15 @@ export const BookADeliveryForm = () => {
                     name="date"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-gray-700">Delivery Date</FormLabel>
+                        <FormLabel className="text-gray-700">
+                          Delivery Date
+                        </FormLabel>
                         <FormControl>
-                          <Input type="date" {...field} className="h-12 bg-gray-50/50 block w-full" />
+                          <Input
+                            type="date"
+                            {...field}
+                            className="h-12 bg-gray-50/50 block w-full"
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -406,9 +444,15 @@ export const BookADeliveryForm = () => {
                     name="time"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-gray-700">Delivery Time</FormLabel>
+                        <FormLabel className="text-gray-700">
+                          Delivery Time
+                        </FormLabel>
                         <FormControl>
-                          <Input type="time" {...field} className="h-12 bg-gray-50/50 block w-full" />
+                          <Input
+                            type="time"
+                            {...field}
+                            className="h-12 bg-gray-50/50 block w-full"
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -419,8 +463,13 @@ export const BookADeliveryForm = () => {
                     name="type"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-gray-700">Delivery Type</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormLabel className="text-gray-700">
+                          Delivery Type
+                        </FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
                           <FormControl>
                             <SelectTrigger className="h-12 bg-gray-50/50">
                               <SelectValue placeholder="Select delivery type" />
@@ -440,8 +489,13 @@ export const BookADeliveryForm = () => {
                     name="orderType"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-gray-700">Order Type</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormLabel className="text-gray-700">
+                          Order Type
+                        </FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
                           <FormControl>
                             <SelectTrigger className="h-12 bg-gray-50/50">
                               <SelectValue placeholder="Select order type" />
@@ -464,7 +518,9 @@ export const BookADeliveryForm = () => {
                   <div className="bg-blue-50 p-2 rounded-lg">
                     <Package className="w-5 h-5 text-blue-600" />
                   </div>
-                  <h2 className="text-xl font-semibold text-gray-800">Vehicle & Package Details</h2>
+                  <h2 className="text-xl font-semibold text-gray-800">
+                    Vehicle & Package Details
+                  </h2>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <FormField
@@ -472,8 +528,13 @@ export const BookADeliveryForm = () => {
                     name="vehicle"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-gray-700">Vehicle Type</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormLabel className="text-gray-700">
+                          Vehicle Type
+                        </FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
                           <FormControl>
                             <SelectTrigger className="h-12 bg-gray-50/50">
                               <SelectValue placeholder="Select vehicle type" />
@@ -497,7 +558,9 @@ export const BookADeliveryForm = () => {
                   name="note"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-gray-700">Additional Notes</FormLabel>
+                      <FormLabel className="text-gray-700">
+                        Additional Notes
+                      </FormLabel>
                       <FormControl>
                         <textarea
                           {...field}
@@ -517,7 +580,10 @@ export const BookADeliveryForm = () => {
                 <div className="bg-blue-50/50 p-4 rounded-xl border border-blue-100 flex gap-4 items-start">
                   <Info className="w-6 h-6 text-blue-500 shrink-0 mt-0.5" />
                   <p className="text-sm text-blue-900 leading-relaxed">
-                    <strong>Insurance Coverage:</strong> Vinkol will cover up to {coverAmount} of damage or loss. Please explicitly specify in the notes section if your goods are fragile.
+                    <strong>Insurance Coverage:</strong> Vinkol will cover up to{" "}
+                    {coverAmount} of damage or loss. Please explicitly specify
+                    in the notes section if your goods are fragile. Ensure that
+                    you are not sending items with value of above {coverAmount}.
                   </p>
                 </div>
 

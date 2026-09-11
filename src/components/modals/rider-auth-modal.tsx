@@ -32,7 +32,7 @@ export const RiderAuthModal = ({
 }: ShopperAuthModalProps) => {
   // State to manage whether the user is in login or register mode
   const [swithAuthType, setSwitchAuthType] = useState<"login" | "register">(
-    "login"
+    "login",
   );
   // State to store email and password input values
   const [email, setEmail] = useState("");
@@ -122,7 +122,7 @@ export const RiderAuthModal = ({
             // Assuming the error object has a 'message' property
             toast.error(error.message || "Login failed. Please try again.");
           },
-        }
+        },
       );
     } else {
       // Handle registration
@@ -131,7 +131,7 @@ export const RiderAuthModal = ({
         {
           onSuccess: () => {
             toast.success(
-              "Registration successful! Please check your email for OTP."
+              "Registration successful! Please check your email for OTP.",
             );
             router.push(`/rider/auth/otp?email=${encodeURIComponent(email)}`); // Navigate to OTP verification page
             onClose(); // Close the modal on successful registration
@@ -140,10 +140,10 @@ export const RiderAuthModal = ({
             console.error("Registration failed:", error);
             // Assuming the error object has a 'message' property
             toast.error(
-              error.message || "Registration failed. Please try again."
+              error.message || "Registration failed. Please try again.",
             );
           },
-        }
+        },
       );
 
       localStorage.setItem("ride-email", email);
@@ -197,7 +197,7 @@ export const RiderAuthModal = ({
             <input
               type="email"
               placeholder="Email"
-              className="w-full py-2 px-3 focus:outline-none border border-[#A5A4A0] rounded-[5px] placeholder:text-blue-primary placeholder:text-base"
+              className="w-3/4 py-2 px-3 focus:outline-none border border-[#A5A4A0] rounded-[5px] placeholder:text-blue-primary placeholder:text-base"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
