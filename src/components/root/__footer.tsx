@@ -43,7 +43,11 @@ export const Footer = () => {
           {/* Brand column */}
           <div className="space-y-5">
             <Link href="/">
-              <img src="/logo.png" alt="Vinkol" className="w-28 h-12 brightness-0 invert" />
+              <img
+                src="/logo.png"
+                alt="Vinkol"
+                className="w-28 h-12 brightness-0 invert"
+              />
             </Link>
             <p className="text-white/50 text-sm leading-relaxed max-w-[200px]">
               Fast, verified, and insured delivery across {serviceAreaPhrase}.
@@ -67,7 +71,7 @@ export const Footer = () => {
                 <RiTwitterXLine size={18} />
               </a>
               <a
-                href="https://www.instagram.com/vinkollogistics?igsh=cHFveTlnY2Fuc3Mw&utm_source=qr"
+                href="https://www.instagram.com/vinkoldelivery?igsi=cnlwcDdoMGQ5bTgz"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-white/40 hover:text-white transition-colors"
