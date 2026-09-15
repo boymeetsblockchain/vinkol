@@ -1,8 +1,7 @@
 "use client";
-import { RiTwitterXLine } from "react-icons/ri";
-import { FaInstagram } from "react-icons/fa6";
-import { FaLinkedin } from "react-icons/fa";
 import { IoMdMail } from "react-icons/io";
+
+import { SOCIAL_LINKS } from "@/lib/socials";
 import Link from "next/link";
 
 import { contentFor, marketLink } from "@/lib/markets";
@@ -58,30 +57,18 @@ export const Footer = () => {
               </a>
             </div>
             <div className="flex items-center gap-3 pt-1">
-              <a
-                href="https://x.com/vinkolltd?s=21&t=fwDDLMrWPBCeOetcu1W7Gw"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-white/40 hover:text-white transition-colors"
-              >
-                <RiTwitterXLine size={18} />
-              </a>
-              <a
-                href="https://www.instagram.com/vinkollogistics?igsh=cHFveTlnY2Fuc3Mw&utm_source=qr"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-white/40 hover:text-white transition-colors"
-              >
-                <FaInstagram size={18} />
-              </a>
-              <a
-                href="https://www.linkedin.com/in/vinkol-materials-and-commercial-ventures-ltd-8224441b6"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-white/40 hover:text-white transition-colors"
-              >
-                <FaLinkedin size={18} />
-              </a>
+              {SOCIAL_LINKS.map(({ label, icon: Icon, href }) => (
+                <a
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={label}
+                  className="text-white/40 hover:text-white transition-colors"
+                >
+                  <Icon size={18} />
+                </a>
+              ))}
             </div>
           </div>
 

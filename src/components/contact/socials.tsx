@@ -2,8 +2,7 @@ import { contentFor } from "@/lib/markets";
 import { MarketContent } from "@/lib/markets/content";
 import { Country } from "@/lib/markets/types";
 import { Clock, Mail, MapPin, Phone } from "lucide-react";
-import { FaInstagram, FaLinkedin, FaYoutube } from "react-icons/fa6";
-import { RiTwitterXLine } from "react-icons/ri";
+import { SOCIAL_LINKS } from "@/lib/socials";
 
 const infoArray = (contact: MarketContent["contact"]) =>
   [
@@ -30,29 +29,6 @@ const infoArray = (contact: MarketContent["contact"]) =>
     // A market without a published address or phone shows neither, rather
     // than an empty row or another market's details.
   ].filter((item) => item.lines.length > 0);
-
-const socials = [
-  {
-    label: "LinkedIn",
-    icon: FaLinkedin,
-    href: "https://www.linkedin.com/in/vinkol-materials-and-commercial-ventures-ltd-8224441b6",
-  },
-  {
-    label: "Instagram",
-    icon: FaInstagram,
-    href: "https://www.instagram.com/vinkollogistics?igsh=cHFveTlnY2Fuc3Mw&utm_source=qr",
-  },
-  {
-    label: "YouTube",
-    icon: FaYoutube,
-    href: "https://youtube.com/@vinkollogistics?si=XaJO73rzoDq8Z1Sk",
-  },
-  {
-    label: "X / Twitter",
-    icon: RiTwitterXLine,
-    href: "https://x.com/vinkolltd?s=21&t=fwDDLMrWPBCeOetcu1W7Gw",
-  },
-];
 
 export const Socials = ({ country }: { country: Country }) => {
   const { contact } = contentFor(country);
@@ -97,7 +73,7 @@ export const Socials = ({ country }: { country: Country }) => {
           Follow us
         </p>
         <div className="flex items-center gap-3">
-          {socials.map(({ label, icon: Icon, href }) => (
+          {SOCIAL_LINKS.map(({ label, icon: Icon, href }) => (
             <a
               key={label}
               href={href}

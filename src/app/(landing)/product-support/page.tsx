@@ -25,7 +25,7 @@ import {
 import { FaHandsAslInterpreting } from "react-icons/fa6";
 
 const SupportAndPrivacyPage = async () => {
-  const { coverAmount } = contentFor(await marketFromRequest());
+  const { coverAmount, serviceAreaPhrase } = contentFor(await marketFromRequest());
 
   return (
     <main className="min-h-screen bg-[#F7F8FA]">
@@ -48,7 +48,7 @@ const SupportAndPrivacyPage = async () => {
             </div>
             <p className="text-base text-gray-600 leading-relaxed mb-6">
               At Vinkol, we are committed to delivering reliable and efficient logistics solutions
-              tailored for businesses and individuals across Nigeria. Our product support ensures
+              tailored for businesses and individuals across {serviceAreaPhrase}. Our product support ensures
               that your experience with our platform and services is smooth, secure, and satisfactory.
             </p>
 

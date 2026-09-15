@@ -66,6 +66,32 @@ export interface MarketContent {
     tagline: string;
     defaultDescription: string;
   };
+
+  /**
+   * The clauses in the terms and privacy pages that name a jurisdiction.
+   *
+   * Both markets render the same documents, so every phrase that would
+   * otherwise read "Nigeria" on a Canadian page lives here. These are legal
+   * statements, not marketing copy -- change them with counsel, not on a hunch.
+   */
+  legal: {
+    /** Where a reader must be able to enter a binding contract. */
+    contractJurisdiction: string;
+    /** Completes "governed by ...". */
+    governingLaw: string;
+    /** Completes "disputes shall be settled through ...". */
+    disputeResolution: string;
+    /** Completes "referred to mediation at ...". */
+    mediationVenue: string;
+    /** Completes "shall comply with ...". */
+    dataProtectionLaw: string;
+    /** Completes "must comply with all ...". */
+    transportRegulations: string;
+    /** Completes "validly exists under ...". Also "standards under ...". */
+    lawOfTheLand: string;
+    /** Who declares the public holidays that are not business days. */
+    publicHolidayAuthority: string;
+  };
 }
 
 const NIGERIA: MarketContent = {
@@ -86,6 +112,18 @@ const NIGERIA: MarketContent = {
     address:
       "No 1 Sea Shopping Complex, Oko Afo along Badagry Express Way, Lagos",
     phones: ["+234 807 972 231", "+234 336 707 45"],
+  },
+
+  legal: {
+    contractJurisdiction: "Nigeria",
+    governingLaw: "the laws of the Federal Republic of Nigeria",
+    disputeResolution: "arbitration in Lagos, Nigeria",
+    mediationVenue: "the Lagos Multi Door Courthouse (LMDC)",
+    dataProtectionLaw:
+      "Nigeria Data Protection Regulations 2019 and Nigeria Data Protection Act 2023",
+    transportRegulations: "Nigerian transport regulations",
+    lawOfTheLand: "Nigerian law",
+    publicHolidayAuthority: "the Federal Government in Nigeria",
   },
 
   payout: {
@@ -168,7 +206,7 @@ const CANADA: MarketContent = {
   serviceArea: "Toronto",
   serviceAreaPhrase: "Toronto",
 
-  coverAmount: "CA$100",
+  coverAmount: "CA$50",
   coverStat: {
     value: 100,
     suffix: "",
@@ -179,6 +217,19 @@ const CANADA: MarketContent = {
     email: "vinkollogistics@gmail.com",
     address: "151 Mill Street, Toronto, ON M5A 4T8",
     phones: ["647-573-2867"],
+  },
+
+  legal: {
+    contractJurisdiction: "Canada",
+    governingLaw: "the laws of Canada",
+    disputeResolution:
+      "arbitration before a court of competent jurisdiction in Canada",
+    mediationVenue: "a court of competent jurisdiction in Canada",
+    dataProtectionLaw:
+      "the Personal Information Protection and Electronic Documents Act (PIPEDA)",
+    transportRegulations: "Canadian transport regulations",
+    lawOfTheLand: "Canadian law",
+    publicHolidayAuthority: "the Government of Canada",
   },
 
   payout: {
