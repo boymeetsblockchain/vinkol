@@ -5,6 +5,10 @@ import { ReactNode, useState } from "react";
 import { Menu } from "lucide-react";
 import { ShopperDashBoardSidebBar } from "@/components/shop/sidebar";
 import { useGetStoreProfile } from "@/services/shops/query";
+import { useBank } from "@/services/banks/query";
+import { DashboardGate } from "@/components/onboarding/dashboard-gate";
+import { SetupReminder } from "@/components/onboarding/setup-reminder";
+import { ApiError } from "@/lib/interfaces/error";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -12,6 +16,7 @@ import Link from "next/link";
 const Layout = ({ children }: { children: ReactNode }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { data, isLoading, error } = useGetStoreProfile();
+  const { data: bank } = useBank("store");
   const router = useRouter();
 
   if (isLoading) {
@@ -122,80 +127,15 @@ const Layout = ({ children }: { children: ReactNode }) => {
     );
   }
 
-  // @ts-ignore
-  if (error?.status == 401) {
-    localStorage.removeItem("accessToken");
-    router.push("/shop/login");
-  }
-
-  // Show KYC verification states only after data is loaded
-  if (data?.data) {
-    if (!data.data.kyc) {
-      return (
-        <section className="max-w-screen-2xl min-h-screen w-full px-4 md:px-20 py-10 mx-auto">
-          <div className="flex flex-col items-center justify-center w-full h-full text-center gap-2">
-            <div className="w-40 h-40 md:w-1/3 md:h-1/3">
-              <img
-                src="/assets/document.png"
-                alt="Check Icon"
-                className="w-full h-full object-cover"
-                loading="lazy"
-              />
-            </div>
-            <h1 className="text-2xl md:text-3xl font-bold">Upload Documents</h1>
-            <p className="text-sm md:text-base text-gray-700 max-w-md">
-              You do not have any uploaded documents. Please upload your
-              documents.
-            </p>
-            <Button asChild>
-              <Link href="/shop/complete">Upload Documents</Link>
-            </Button>
-          </div>
-        </section>
-      );
-    }
-
-    if (!data?.data.name || !data?.data.address) {
-      router.push("/shop/setup-profile");
-    }
-
-    // console.log(data.data);
-    if (!data.data.isKYCVerified) {
-      return (
-        <section className="max-w-screen-2xl min-h-screen w-full px-4 md:px-20 py-10 mx-auto">
-          <div className="flex flex-col items-center justify-center w-full h-full text-center gap-2">
-            <div className="w-40 h-40 md:w-1/3 md:h-1/3">
-              <img
-                src="/assets/document.png"
-                alt="Check Icon"
-                className="w-full h-full object-cover"
-                loading="lazy"
-              />
-            </div>
-            <h1 className="text-2xl md:text-3xl font-bold">
-              {data.data.kyc?.status === "rejected"
-                ? "Documents Rejected"
-                : "Documents Under Review"}
-            </h1>
-            <p className="text-sm md:text-base text-gray-700 max-w-md">
-              {data.data.kyc?.status === "rejected"
-                ? `Your documents have been rejected for the reason ${
-                    data.data.kyc?.remark || ""
-                  }. Please re-upload your documents.`
-                : "Your documents are being reviewed. You'll be ready to take orders in less than 20 minutes if everything checks out."}
-            </p>
-            {data.data.kyc?.status === "rejected" && (
-              <Button asChild>
-                <Link href="/shop/complete">Reupload Documents</Link>
-              </Button>
-            )}
-          </div>
-        </section>
-      );
-    }
-  }
 
   return (
+    <DashboardGate
+      role="store"
+      profile={data?.data}
+      hasBank={!!bank}
+      unauthorized={(error as ApiError | null)?.status === 401}
+      loginPath="/shop/login"
+    >
     <div className="flex flex-col md:flex-row h-screen overflow-hidden">
       {/* Mobile hamburger */}
       <div className="md:hidden fixed top-5 right-5 z-50">
@@ -216,9 +156,19 @@ const Layout = ({ children }: { children: ReactNode }) => {
         {/* <ShopHeader /> */}
 
         {/* Scrollable content */}
-        <div className="flex-1 overflow-auto">{children}</div>
+        <div className="flex-1 overflow-auto">
+          <div className="px-4 md:px-6 pt-6">
+            <SetupReminder
+              role="store"
+              profile={data?.data}
+              hasBank={!!bank}
+            />
+          </div>
+          {children}
+        </div>
       </div>
     </div>
+    </DashboardGate>
   );
 };
 

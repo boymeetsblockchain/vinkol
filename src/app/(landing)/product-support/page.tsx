@@ -1,3 +1,19 @@
+import type { Metadata } from "next";
+
+import { pageMetadata } from "@/lib/markets/metadata";
+import { marketFromRequest } from "@/lib/markets/server";
+
+export async function generateMetadata(): Promise<Metadata> {
+  return pageMetadata({
+    country: await marketFromRequest(),
+    title: "Product Support",
+    description:
+      "How Vinkol supports customers, riders and stores — delivery issues, claims, account help and business support.",
+    path: "/product-support",
+  });
+}
+
+import { contentFor } from "@/lib/markets";
 import React from "react";
 import {
   Headset,
@@ -8,7 +24,9 @@ import {
 } from "lucide-react";
 import { FaHandsAslInterpreting } from "react-icons/fa6";
 
-const SupportAndPrivacyPage = () => {
+const SupportAndPrivacyPage = async () => {
+  const { coverAmount } = contentFor(await marketFromRequest());
+
   return (
     <main className="min-h-screen bg-[#F7F8FA]">
       <section className="bg-white border-b border-gray-100">
@@ -59,7 +77,7 @@ const SupportAndPrivacyPage = () => {
                 <div>
                   <span className="font-semibold text-gray-900">Delivery Issue Resolution:</span>{" "}
                   In the rare event of a delay, damage, or loss due to rider negligence, Vinkol
-                  offers up to ₦50,000 maximum refund — processed within 72 hours after proper
+                  offers up to {coverAmount} maximum refund — processed within 72 hours after proper
                   investigation.
                 </div>
               </li>

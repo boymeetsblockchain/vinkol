@@ -1,3 +1,5 @@
+import { Country } from "@/lib/markets/types";
+import { handleApiError } from "@/lib/apiError";
 import {
   registerShopSchema,
   loginShopSchema,
@@ -12,37 +14,6 @@ import {
 
 import * as z from "zod";
 import axiosInstance from "@/config/store";
-import { ApiError } from "@/lib/interfaces/error";
-/**
- * Handles common API errors by throwing a new Error with a more specific message.
- * This centralizes error handling logic, making the code DRY.
- *
- * @param {any} error - The error object caught from the axios request.
- * @param {string} defaultMessage - A fallback message if no specific error message is available from the response.
- * @throws {Error} Throws a new Error object with a descriptive message.
- */
-const handleApiError = (error: any, defaultMessage: string): never => {
-  if (error.response) {
-    // The request was made and the server responded with a status code
-    // that falls out of the range of 2xx.
-    // Use the server's error message if available, otherwise the default.
-    // throw new Error(error.response.data.message || defaultMessage);
-    const message = error.response.data?.message || defaultMessage;
-    const status = error.response.status;
-
-    throw new ApiError(message, status);
-  } else if (error.request) {
-    // The request was made but no response was received.
-    throw new Error(
-      "Network Error: No response received from the server. Please check your internet connection and try again."
-    );
-  } else {
-    // Something happened in setting up the request that triggered an Error.
-    throw new Error(
-      `An unexpected error occurred: ${error.message || defaultMessage}`
-    );
-  }
-};
 
 /**
  * Registers a new Shop.
@@ -99,7 +70,7 @@ export const verifyEmail = async (data: z.infer<typeof verifyEmailSchema>) => {
  */
 export const resendOtp = async (data: z.infer<typeof resendOtpSchema>) => {
   try {
-    const response = await axiosInstance.patch("stores/resend-otp", data);
+    const response = await axiosInstance.patch("/stores/resend-otp", data);
     return response.data;
   } catch (error: any) {
     handleApiError(error, "Failed to resend OTP.");
@@ -147,6 +118,27 @@ export const resetPassword = async (
   }
 };
 
+/**
+ * Sets the market the store operates in. Sent on its own rather than as part
+ * of the profile step, because it is asked before the store has a name or an
+ * address and the profile endpoint would reject a partial update differently.
+ *
+ * Multipart because that is what the endpoint accepts.
+ */
+export const updateStoreCountry = async (country: Country) => {
+  try {
+    const body = new FormData();
+    body.append("country", country);
+
+    const response = await axiosInstance.put("/stores/update-profile", body, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return response.data;
+  } catch (error) {
+    return handleApiError(error, "Failed to save your location.");
+  }
+};
+
 export const updateStoreProfile = async (
   data: z.infer<typeof updateStoreProfileSchema>
 ) => {
@@ -162,9 +154,11 @@ export const updateStoreProfile = async (
   }
 };
 
-export const getSingleStore = async (id: string) => {
+export const getSingleStore = async (id: string, country?: Country) => {
   try {
-    const response = await axiosInstance.get(`/stores/${id}`);
+    const response = await axiosInstance.get(`/stores/${id}`, {
+      params: { country },
+    });
     return response.data;
   } catch (error) {
     handleApiError(error, "Failed to get single store");
@@ -184,6 +178,8 @@ export const getStoreProfile = async () => {
 interface GetAllStoresParams {
   search?: string;
   state?: string;
+  /** Scopes the listing to one market; the server rejects cross-market rows. */
+  country?: Country;
 }
 
 export const getAllStores = async (params?: GetAllStoresParams) => {
@@ -195,9 +191,11 @@ export const getAllStores = async (params?: GetAllStoresParams) => {
     throw error;
   }
 };
-export const getAllCollorativeStores = async () => {
+export const getAllCollorativeStores = async (country?: Country) => {
   try {
-    const response = await axiosInstance.get("stores/homepage");
+    const response = await axiosInstance.get("/stores/homepage", {
+      params: { country },
+    });
     return response.data;
   } catch (error) {
     handleApiError(error, "Failed to get stores");
@@ -207,9 +205,11 @@ export const getAllCollorativeStores = async () => {
 
 // bank details
 
-export const getBankLists = async () => {
+export const getBankLists = async (country?: Country) => {
   try {
-    const response = await axiosInstance.get("/banks/list");
+    const response = await axiosInstance.get("/banks/list", {
+      params: { country },
+    });
     return response.data;
   } catch (error) {
     handleApiError(error, "Failed to fetch Banks");
@@ -220,7 +220,7 @@ export const validateBank = async (
   data: z.infer<typeof validateBankSchema>
 ) => {
   try {
-    const response = await axiosInstance.post("banks/validate", data);
+    const response = await axiosInstance.post("/banks/validate", data);
     return response.data;
   } catch (error) {
     handleApiError(error, "Failed to validate bank");

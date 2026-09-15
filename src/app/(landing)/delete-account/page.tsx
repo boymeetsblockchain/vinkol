@@ -1,3 +1,18 @@
+import type { Metadata } from "next";
+
+import { pageMetadata } from "@/lib/markets/metadata";
+import { marketFromRequest } from "@/lib/markets/server";
+
+export async function generateMetadata(): Promise<Metadata> {
+  return pageMetadata({
+    country: await marketFromRequest(),
+    title: "Delete Your Account",
+    description:
+      "Request deletion of your Vinkol account and the personal data associated with it.",
+    path: "/delete-account",
+  });
+}
+
 import React from "react";
 import DeleteAccountForm from "./components/DeleteAccountForm";
 

@@ -12,7 +12,8 @@ import {
   FormLabel,
 } from "@/components/ui/form";
 import { waitlistSchema } from "@/dto/waitlist.form.schema";
-import { nigerianStates } from "@/lib/states";
+import { regionsFor } from "@/lib/markets";
+import { useMarket } from "@/lib/markets/useMarket";
 import { Button } from "../button";
 import { useSubmitWaitlistMutation } from "@/services/waitlist/mutation";
 import { toast } from "sonner";
@@ -20,6 +21,7 @@ import { TermsCheckbox } from "../shared/terms";
 import { useState } from "react";
 
 export const RiderWaitlistForm = () => {
+  const market = useMarket();
   const form = useForm<z.infer<typeof waitlistSchema>>({
     resolver: zodResolver(waitlistSchema),
     shouldUnregister: true,
@@ -151,8 +153,6 @@ export const RiderWaitlistForm = () => {
                   <input
                     {...field}
                     type="tel"
-                    maxLength={11}
-                    minLength={11}
                     placeholder="Phone Number"
                     className="w-full border border-blue-primary placeholder:text-blue-primary py-4 px-3 rounded-md"
                   />
@@ -175,11 +175,11 @@ export const RiderWaitlistForm = () => {
                     className="w-full border border-blue-primary text-blue-primary py-4 px-3 rounded-md appearance-none bg-white pr-8"
                   >
                     <option value="" disabled>
-                      Select State
+                      Select {market.country === "CA" ? "province" : "state"}
                     </option>
-                    {nigerianStates.map((state) => (
-                      <option key={state} value={state}>
-                        {state}
+                    {regionsFor(market.country).map((region) => (
+                      <option key={region.value} value={region.value}>
+                        {region.label}
                       </option>
                     ))}
                   </select>
@@ -416,8 +416,6 @@ export const RiderWaitlistForm = () => {
                     <input
                       {...field}
                       type="tel"
-                      maxLength={11}
-                      minLength={11}
                       placeholder="Guarantor Phone"
                       className="w-full border border-blue-primary placeholder:text-blue-primary py-4 px-3 rounded-md"
                     />

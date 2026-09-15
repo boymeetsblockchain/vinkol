@@ -10,8 +10,14 @@ import {
   useForgotPasswordMutation,
 } from "@/services/rider/mutation";
 import { toast } from "sonner"; // For user notifications
+
+import {
+  needsEmailVerification,
+  verifyEmailPathFor,
+} from "@/lib/auth/loginOutcome";
 import { TermsCheckbox } from "../shared/terms";
 import { ArrowLeft } from "lucide-react";
+import { PasswordInput } from "@/components/ui/password-input";
 
 interface ShopperAuthModalProps {
   isOpen: boolean;
@@ -26,7 +32,7 @@ export const RiderAuthModal = ({
 }: ShopperAuthModalProps) => {
   // State to manage whether the user is in login or register mode
   const [swithAuthType, setSwitchAuthType] = useState<"login" | "register">(
-    "login"
+    "login",
   );
   // State to store email and password input values
   const [email, setEmail] = useState("");
@@ -95,18 +101,28 @@ export const RiderAuthModal = ({
       riderLogin(
         { email, password },
         {
-          onSuccess: () => {
-            toast.success("Login successful!");
-            router.push("/rider/dashboard"); // Or wherever the user should go after login
+          onSuccess: (response) => {
             localStorage.setItem("ride-email", email);
-            onClose(); // Close the modal on successful login
+
+            // The server accepts an unverified login and answers 200 with no
+            // token, so this has to be checked before claiming success.
+            if (needsEmailVerification(response)) {
+              toast.info("Verify your email to finish signing in.");
+              router.push(verifyEmailPathFor("rider", email));
+              onClose();
+              return;
+            }
+
+            toast.success("Login successful!");
+            router.push("/rider/dashboard");
+            onClose();
           },
           onError: (error) => {
             console.error("Login failed:", error);
             // Assuming the error object has a 'message' property
             toast.error(error.message || "Login failed. Please try again.");
           },
-        }
+        },
       );
     } else {
       // Handle registration
@@ -115,7 +131,7 @@ export const RiderAuthModal = ({
         {
           onSuccess: () => {
             toast.success(
-              "Registration successful! Please check your email for OTP."
+              "Registration successful! Please check your email for OTP.",
             );
             router.push(`/rider/auth/otp?email=${encodeURIComponent(email)}`); // Navigate to OTP verification page
             onClose(); // Close the modal on successful registration
@@ -124,10 +140,10 @@ export const RiderAuthModal = ({
             console.error("Registration failed:", error);
             // Assuming the error object has a 'message' property
             toast.error(
-              error.message || "Registration failed. Please try again."
+              error.message || "Registration failed. Please try again.",
             );
           },
-        }
+        },
       );
 
       localStorage.setItem("ride-email", email);
@@ -187,10 +203,10 @@ export const RiderAuthModal = ({
               required
             />
 
-            <input
-              type="password"
+            <PasswordInput
+              wrapperClassName="w-3/4"
               placeholder="Password"
-              className="w-3/4 py-2 px-3 focus:outline-none border border-[#A5A4A0] rounded-[5px] placeholder:text-blue-primary placeholder:text-base"
+              className="w-full py-2 px-3 focus:outline-none border border-[#A5A4A0] rounded-[5px] placeholder:text-blue-primary placeholder:text-base"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
@@ -198,10 +214,10 @@ export const RiderAuthModal = ({
 
             {/* Confirm password only in register mode */}
             {!isLogin && (
-              <input
-                type="password"
+              <PasswordInput
+                wrapperClassName="w-3/4"
                 placeholder="Confirm password"
-                className="w-3/4 py-2 px-3 focus:outline-none border border-[#A5A4A0] rounded-[5px] placeholder:text-blue-primary placeholder:text-base"
+                className="w-full py-2 px-3 focus:outline-none border border-[#A5A4A0] rounded-[5px] placeholder:text-blue-primary placeholder:text-base"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
@@ -220,21 +236,21 @@ export const RiderAuthModal = ({
               </div>
             )}
 
-            <Button
-              size="lg"
-              variant="auth"
-              className="rounded-[5px] w-3/4 my-4"
-              type="submit" // Set type to submit for form submission
-              disabled={isPending} // Disable button while mutation is in progress
-            >
-              {isPending ? "Processing..." : isLogin ? "Log In" : "Sign Up"}
-            </Button>
             {!isLogin && (
               <TermsCheckbox
                 isChecked={isChecked}
                 onChange={() => setIsChecked(!isChecked)}
               />
             )}
+            <Button
+              size="lg"
+              variant="auth"
+              className="rounded-[5px] w-3/4 my-4"
+              type="submit" // Set type to submit for form submission
+              disabled={isPending || (!isLogin && !isChecked)}
+            >
+              {isPending ? "Processing..." : isLogin ? "Log In" : "Sign Up"}
+            </Button>
           </form>
 
           {/* Switch between login and register */}

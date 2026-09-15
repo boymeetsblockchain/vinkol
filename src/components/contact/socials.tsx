@@ -1,31 +1,35 @@
+import { contentFor } from "@/lib/markets";
+import { MarketContent } from "@/lib/markets/content";
+import { Country } from "@/lib/markets/types";
 import { Clock, Mail, MapPin, Phone } from "lucide-react";
 import { FaInstagram, FaLinkedin, FaYoutube } from "react-icons/fa6";
 import { RiTwitterXLine } from "react-icons/ri";
 
-const infoArray = [
-  {
-    name: "Office",
-    lines: [
-      "No 1 Sea Shopping Complex, Oko Afo along Badagry Express Way, Lagos",
-    ],
-    icon: MapPin,
-  },
-  {
-    name: "Phone",
-    lines: ["+234 807 972 231", "+234 336 707 45"],
-    icon: Phone,
-  },
-  {
-    name: "Work Hours",
-    lines: ["Everyday, 9am – 7pm"],
-    icon: Clock,
-  },
-  {
-    name: "Email",
-    lines: ["vinkollogistics@gmail.com"],
-    icon: Mail,
-  },
-];
+const infoArray = (contact: MarketContent["contact"]) =>
+  [
+    {
+      name: "Office",
+      lines: contact.address ? [contact.address] : [],
+      icon: MapPin,
+    },
+    {
+      name: "Phone",
+      lines: contact.phones,
+      icon: Phone,
+    },
+    {
+      name: "Work Hours",
+      lines: ["Everyday, 9am – 7pm"],
+      icon: Clock,
+    },
+    {
+      name: "Email",
+      lines: [contact.email],
+      icon: Mail,
+    },
+    // A market without a published address or phone shows neither, rather
+    // than an empty row or another market's details.
+  ].filter((item) => item.lines.length > 0);
 
 const socials = [
   {
@@ -50,7 +54,9 @@ const socials = [
   },
 ];
 
-export const Socials = () => {
+export const Socials = ({ country }: { country: Country }) => {
+  const { contact } = contentFor(country);
+
   return (
     <section className="py-2">
       <p className="text-xs font-semibold tracking-[0.2em] uppercase text-[var(--color-blue-primary)] mb-3">
@@ -61,7 +67,7 @@ export const Socials = () => {
       </h2>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-        {infoArray.map((item) => (
+        {infoArray(contact).map((item) => (
           <div
             key={item.name}
             className="bg-white rounded-2xl p-5 border border-gray-100 flex flex-col gap-4"

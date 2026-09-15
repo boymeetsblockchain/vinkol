@@ -1,11 +1,13 @@
-const benefits = [
+import { contentFor } from "@/lib/markets";
+import { Country } from "@/lib/markets/types";
+const benefits = (payoutSummary: string) => [
   {
     label: "Flexible hours",
     detail: "Work when you want. No fixed shifts, no penalties for time off.",
   },
   {
     label: "Fast payouts",
-    detail: "Daily or weekly earnings transferred directly to your bank account.",
+    detail: payoutSummary,
   },
   {
     label: "No vehicle? No problem.",
@@ -26,10 +28,15 @@ const benefits = [
 ];
 
 interface BenefitsProps {
+  country: Country;
   title?: string;
 }
 
-export const Benefits = ({ title = "What you get as a Vinkol rider." }: BenefitsProps) => {
+export const Benefits = ({
+  country,
+  title = "What you get as a Vinkol rider.",
+}: BenefitsProps) => {
+  const { payout } = contentFor(country);
   return (
     <section className="bg-[#0a0a0a]">
       <div className="max-w-7xl w-full px-6 py-20 md:px-20 md:py-24 mx-auto">
@@ -42,7 +49,7 @@ export const Benefits = ({ title = "What you get as a Vinkol rider." }: Benefits
           </h2>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
-          {benefits.map((item, index) => (
+          {benefits(payout.summary).map((item, index) => (
             <div key={index} className="bg-white/5 border border-white/8 rounded-2xl p-7 space-y-3">
               <span className="flex-shrink-0 h-8 w-8 rounded-full bg-blue-primary flex items-center justify-center">
                 <svg className="h-4 w-4 text-white" fill="none" viewBox="0 0 12 12" stroke="currentColor" strokeWidth={2.5}>

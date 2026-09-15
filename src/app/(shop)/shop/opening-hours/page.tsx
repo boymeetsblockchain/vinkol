@@ -1,11 +1,15 @@
 "use client";
 
-import React, { useState } from "react";
-import { Header } from "@/components/shop/header";
-import { Button } from "@/components/button";
-import { toast } from "sonner";
-import { useUpdateOpeningHours } from "@/services/shops/mutation";
+import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+
+import { Button } from "@/components/button";
+import { OnboardingShell } from "@/components/onboarding/shell";
+import { completedSteps, pathAfter } from "@/lib/onboarding/steps";
+import { useBank } from "@/services/banks/query";
+import { useUpdateOpeningHours } from "@/services/shops/mutation";
+import { useGetStoreProfile } from "@/services/shops/query";
 
 type Interval = { open: string; close: string };
 type DayEntry = { hours?: Interval[]; isClosed?: boolean };
@@ -27,7 +31,7 @@ const defaultState = (): OpeningHoursState =>
     return acc;
   }, {} as OpeningHoursState);
 
-const sampleStandard = {
+const sampleStandard: OpeningHoursState = {
   monday: { hours: [{ open: "08:00", close: "19:00" }] },
   tuesday: { hours: [{ open: "08:00", close: "19:00" }] },
   wednesday: { hours: [{ open: "08:00", close: "19:00" }] },
@@ -37,10 +41,35 @@ const sampleStandard = {
   sunday: { isClosed: true },
 };
 
+/** One shape, whether it came from a sample or from the store's own record. */
+const normalize = (source: Record<string, DayEntry> | undefined | null) =>
+  DAYS.reduce((acc, d) => {
+    const day = source?.[d];
+    if (day?.isClosed) acc[d] = { isClosed: true };
+    else if (day?.hours?.length) acc[d] = { hours: day.hours };
+    else acc[d] = { hours: [] };
+    return acc;
+  }, {} as OpeningHoursState);
+
 export default function OpeningHours() {
-  const [state, setState] = useState<OpeningHoursState>(defaultState);
   const router = useRouter();
+  const [state, setState] = useState<OpeningHoursState>(defaultState);
+  const [failure, setFailure] = useState("");
+
+  const { data: profileData } = useGetStoreProfile();
+  const { data: bank } = useBank("store");
+  const profile = profileData?.data;
+
   const { mutate, isPending } = useUpdateOpeningHours();
+
+  // Seeded once, so editing is not undone by a background refetch. Without
+  // this the form was empty on re-entry even though the step showed as done.
+  const seeded = useRef(false);
+  useEffect(() => {
+    if (seeded.current || !profile?.openingHours) return;
+    seeded.current = true;
+    setState(normalize(profile.openingHours as Record<string, DayEntry>));
+  }, [profile?.openingHours]);
 
   function toggleClosed(day: string) {
     setState((s) => ({
@@ -82,16 +111,6 @@ export default function OpeningHours() {
     });
   }
 
-  function loadSample(sample: OpeningHoursState | any) {
-    const normalized = DAYS.reduce((acc, d) => {
-      if (sample[d]?.isClosed) acc[d] = { isClosed: true };
-      else if (sample[d]?.hours) acc[d] = { hours: sample[d].hours };
-      else acc[d] = { hours: [] };
-      return acc;
-    }, {} as OpeningHoursState);
-    setState(normalized);
-  }
-
   function buildRequestBody() {
     const openingHours = DAYS.reduce(
       (acc, d) => {
@@ -102,149 +121,155 @@ export default function OpeningHours() {
           acc[d] = { hours: entry.hours };
         return acc;
       },
-      {} as Record<string, any>,
+      {} as Record<string, DayEntry>,
     );
     return { openingHours };
   }
 
-  async function handleSubmit() {
-    const payload = buildRequestBody();
-    mutate(payload, {
-      onSuccess: (data) => {
-        toast.success(data?.message || "Opening hours updated");
-        try {
-          router.push("/shop/account");
-        } catch (e) {
-          // ignore navigation errors in non-router contexts
-        }
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setFailure("");
+
+    const { openingHours } = buildRequestBody();
+
+    // The server records nothing for a day that is neither closed nor open,
+    // so an untouched form would save nothing and still look saved.
+    if (Object.keys(openingHours).length === 0) {
+      setFailure(
+        "Set hours for at least one day, or mark the days you are closed.",
+      );
+      return;
+    }
+
+    mutate(
+      { openingHours },
+      {
+        onSuccess: () => {
+          toast.success("Opening hours saved.");
+          router.push(pathAfter("store", "hours", profile, !!bank));
+        },
+        // The mutation reports the failure itself; this keeps it on the page
+        // instead of only in a toast that disappears.
+        onError: (error: any) =>
+          setFailure(
+            error?.message || "Could not save your hours. Please try again.",
+          ),
       },
-      onError: (err: any) => {
-        toast.error(err?.message || "Failed to update opening hours");
-      },
-    });
+    );
   }
 
   return (
-    <section className="min-h-screen flex flex-col py-6">
-      <Header />
-      <div className="max-w-screen-xl mx-auto px-4 w-full">
-        <div className="flex items-start gap-8 flex-col md:flex-row">
-          <div className="w-full md:w-2/3 bg-white rounded-lg shadow p-2">
-            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-4">
-              <div>
-                <h1 className="text-2xl font-semibold">Opening Hours</h1>
-                <p className="text-sm text-gray-500">
-                  Configure your store's daily hours.
-                </p>
-              </div>
-              <div className="flex gap-2">
-                <Button
-                  variant="ghost"
-                  onClick={() => setState(defaultState())}
-                  className="rounded"
-                >
-                  Reset
-                </Button>
-                <Button
-                  variant="auth"
-                  onClick={() => loadSample(sampleStandard)}
-                  className="rounded"
-                >
-                  Load Standard
-                </Button>
-              </div>
-            </div>
+    <OnboardingShell
+      role="store"
+      stepKey="hours"
+      profile={profile}
+      title="When are you open?"
+      description="Customers only see your shop during these hours, and orders are not sent to you outside them."
+      completed={completedSteps("store", profile, !!bank)}
+    >
+      <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+        <div className="flex gap-2">
+          <Button
+            type="button"
+            variant="auth"
+            onClick={() => setState(normalize(sampleStandard))}
+            className="rounded-md"
+          >
+            Use standard hours
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={() => setState(defaultState())}
+            className="rounded-md"
+          >
+            Clear
+          </Button>
+        </div>
 
-            <div className="space-y-4">
-              {DAYS.map((day) => {
-                const entry = state[day] || { hours: [] };
-                return (
-                  <div key={day} className="border rounded p-3">
-                    <div className="flex items-center justify-between">
-                      <h3 className="capitalize font-medium">{day}</h3>
-                      <label className="flex items-center gap-2 text-sm">
+        <div className="space-y-3">
+          {DAYS.map((day) => {
+            const entry = state[day] || { hours: [] };
+            return (
+              <div key={day} className="border border-gray-200 rounded-xl p-3">
+                <div className="flex items-center justify-between">
+                  <h3 className="capitalize font-medium text-gray-900">
+                    {day}
+                  </h3>
+                  <label className="flex items-center gap-2 text-sm">
+                    <input
+                      type="checkbox"
+                      checked={!!entry.isClosed}
+                      onChange={() => toggleClosed(day)}
+                    />
+                    <span className="text-gray-600">Closed</span>
+                  </label>
+                </div>
+
+                {!entry.isClosed && (
+                  <div className="mt-3">
+                    {(entry.hours || [])[0] ? (
+                      <div className="flex items-center gap-2">
                         <input
-                          type="checkbox"
-                          checked={!!entry.isClosed}
-                          onChange={() => toggleClosed(day)}
+                          type="time"
+                          value={(entry.hours || [])[0].open}
+                          onChange={(e) =>
+                            updateInterval(day, "open", e.target.value)
+                          }
+                          className="border border-gray-200 rounded-lg px-2 py-1 w-32"
                         />
-                        <span className="text-gray-600">Closed</span>
-                      </label>
-                    </div>
-
-                    {!entry.isClosed && (
-                      <div className="mt-3 space-y-2">
-                        {!(entry.hours || []).length && (
-                          <div className="text-sm text-gray-500">
-                            No interval set. Add one below.
-                          </div>
-                        )}
-
-                        {(entry.hours || [])[0] ? (
-                          <div className="flex items-center gap-2">
-                            <input
-                              type="time"
-                              value={(entry.hours || [])[0].open}
-                              onChange={(e) =>
-                                updateInterval(day, "open", e.target.value)
-                              }
-                              className="border rounded px-2 py-1 w-32"
-                            />
-                            <span className="text-sm text-gray-500">to</span>
-                            <input
-                              type="time"
-                              value={(entry.hours || [])[0].close}
-                              onChange={(e) =>
-                                updateInterval(day, "close", e.target.value)
-                              }
-                              className="border rounded px-2 py-1 w-32"
-                            />
-                            <Button
-                              variant="ghost"
-                              onClick={() => removeInterval(day)}
-                              className="ml-2"
-                            >
-                              Remove
-                            </Button>
-                          </div>
-                        ) : (
-                          <div>
-                            <Button
-                              variant="secondary"
-                              onClick={() => addInterval(day)}
-                            >
-                              + Add Interval
-                            </Button>
-                          </div>
-                        )}
+                        <span className="text-sm text-gray-500">to</span>
+                        <input
+                          type="time"
+                          value={(entry.hours || [])[0].close}
+                          onChange={(e) =>
+                            updateInterval(day, "close", e.target.value)
+                          }
+                          className="border border-gray-200 rounded-lg px-2 py-1 w-32"
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          onClick={() => removeInterval(day)}
+                          className="ml-2"
+                        >
+                          Remove
+                        </Button>
                       </div>
+                    ) : (
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        onClick={() => addInterval(day)}
+                      >
+                        + Set hours
+                      </Button>
                     )}
                   </div>
-                );
-              })}
-            </div>
-
-            <div className="mt-6 flex items-center gap-3">
-              <Button
-                onClick={handleSubmit}
-                disabled={isPending}
-                variant="auth"
-              >
-                {isPending ? "Preparing..." : "Save Opening Hours"}
-              </Button>
-            </div>
-          </div>
-
-          {/* <aside className="w-full md:w-1/3">
-            <div className="bg-white rounded-lg shadow p-4">
-              <h4 className="font-medium mb-2">Request Preview</h4>
-              <pre className="text-xs bg-gray-100 p-3 rounded max-h-96 overflow-auto">
-                {JSON.stringify(buildRequestBody(), null, 2)}
-              </pre>
-            </div>
-          </aside> */}
+                )}
+              </div>
+            );
+          })}
         </div>
-      </div>
-    </section>
+
+        {failure && (
+          <p
+            role="alert"
+            className="text-sm text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2"
+          >
+            {failure}
+          </p>
+        )}
+
+        <Button
+          variant="auth"
+          type="submit"
+          className="w-full rounded-md"
+          disabled={isPending}
+        >
+          {isPending ? "Saving…" : "Save opening hours"}
+        </Button>
+      </form>
+    </OnboardingShell>
   );
 }

@@ -1,7 +1,18 @@
 "use client";
+import { phonePlaceholder } from "@/lib/phone";
 
 import { useEffect, useRef, useState } from "react";
 import { useGetStoreProfile } from "@/services/shops/query";
+import Autocomplete from "react-google-autocomplete";
+
+import {
+  localityLabel,
+  placesCountry,
+  regionFieldLabel,
+  resolveLocalityFromPlace,
+  resolveRegionFromPlace,
+} from "@/lib/markets";
+import { useMarket } from "@/lib/markets/useMarket";
 import { useUpdateOpeningHours, useUpdateStoreProfile } from "@/services/shops/mutation";
 import { toast } from "sonner";
 import { Camera, Clock, MapPin, Phone, Store, User, X, Plus, Check, Pencil } from "lucide-react";
@@ -57,6 +68,7 @@ const ProfileSkeleton = () => (
 
 function StoreProfile() {
   const { data: profile, isLoading, isError } = useGetStoreProfile();
+  const market = useMarket(profile?.data?.country);
   const { mutate: updateProfile, isPending: isPendingProfile } = useUpdateStoreProfile();
   const { mutate: updateOpeningHoursMutate, isPending: isPendingHours } = useUpdateOpeningHours();
   const [isEditing, setIsEditing] = useState(false);
@@ -195,19 +207,59 @@ function StoreProfile() {
               <Field label="Bio">
                 <textarea value={formData.bio} onChange={(e) => set("bio", e.target.value)} placeholder="Describe your store…" rows={3} className={inputCls + " resize-none"} />
               </Field>
+              {/* An autocomplete, not free text: editing a plain address left
+                  lat/lng pointing at wherever the store used to be, and a
+                  hand-typed state is one store search will never match. */}
               <Field label="Address">
-                <input type="text" value={formData.address} onChange={(e) => set("address", e.target.value)} placeholder="Full address" className={inputCls} />
+                <Autocomplete
+                  apiKey={process.env.NEXT_PUBLIC_Maps_API_KEY}
+                  defaultValue={formData.address}
+                  onPlaceSelected={(place) => {
+                    const components = place.address_components ?? [];
+
+                    set("address", place.formatted_address || "");
+                    if (place.geometry?.location) {
+                      set("lat", place.geometry.location.lat().toString());
+                      set("lng", place.geometry.location.lng().toString());
+                    }
+
+                    set(
+                      "lga",
+                      resolveLocalityFromPlace(components, market.country),
+                    );
+
+                    const region = resolveRegionFromPlace(
+                      components,
+                      market.country,
+                    );
+                    if (region) set("state", region.value);
+                  }}
+                  options={{
+                    types: ["address"],
+                    componentRestrictions: {
+                      country: [placesCountry(market.country)],
+                    },
+                    fields: [
+                      "formatted_address",
+                      "name",
+                      "geometry.location",
+                      "address_components",
+                    ],
+                  }}
+                  placeholder="Full address"
+                  className={inputCls}
+                />
               </Field>
               <div className="grid grid-cols-2 gap-5">
-                <Field label="LGA">
-                  <input type="text" value={formData.lga} onChange={(e) => set("lga", e.target.value)} placeholder="Local govt" className={inputCls} />
+                <Field label={localityLabel(market.country)}>
+                  <input type="text" value={formData.lga} onChange={(e) => set("lga", e.target.value)} placeholder={localityLabel(market.country)} className={inputCls} />
                 </Field>
-                <Field label="State">
-                  <input type="text" value={formData.state} onChange={(e) => set("state", e.target.value)} placeholder="State" className={inputCls} />
+                <Field label={regionFieldLabel(market.country)}>
+                  <input type="text" value={formData.state} onChange={(e) => set("state", e.target.value)} placeholder={regionFieldLabel(market.country)} className={inputCls} />
                 </Field>
               </div>
               <Field label="Phone">
-                <input type="tel" value={formData.phone} onChange={(e) => set("phone", e.target.value)} placeholder="+234…" className={inputCls} />
+                <input type="tel" value={formData.phone} onChange={(e) => set("phone", e.target.value)} placeholder={phonePlaceholder(market.country)} className={inputCls} />
               </Field>
             </div>
           ) : (

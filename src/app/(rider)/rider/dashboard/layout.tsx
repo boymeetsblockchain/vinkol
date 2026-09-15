@@ -3,7 +3,10 @@ import { ReactNode, useState, useEffect } from "react";
 import { Menu } from "lucide-react";
 import { RiderDashBoardSidebBar } from "@/components/rider/sidebar";
 import { Profile } from "@/components/rider/profile";
-import { useUserProfile } from "@/services/rider/query";
+import { useGetUserBank, useUserProfile } from "@/services/rider/query";
+import { DashboardGate } from "@/components/onboarding/dashboard-gate";
+import { SetupReminder } from "@/components/onboarding/setup-reminder";
+import { ApiError } from "@/lib/interfaces/error";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -11,7 +14,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 const Layout = ({ children }: { children: ReactNode }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isClient, setIsClient] = useState(false);
-  const { data, isLoading } = useUserProfile();
+  const { data, isLoading, error } = useUserProfile();
+  const { data: userBank } = useGetUserBank();
 
   // Set isClient to true after component mounts to avoid SSR mismatch
   useEffect(() => {
@@ -127,73 +131,16 @@ const Layout = ({ children }: { children: ReactNode }) => {
     );
   }
 
-  // Show KYC verification states only after data is loaded
-  if (data?.data) {
-    // console.log({ data });
-    if (!data.data.isKYCVerified) {
-      // console.log(data.data);
-      return (
-        <section className="max-w-screen-2xl min-h-screen w-full px-4 md:px-20 py-10 mx-auto">
-          <div className="flex flex-col items-center justify-center w-full h-full text-center gap-2">
-            <div className="w-40 h-40 md:w-1/3 md:h-1/3">
-              <img
-                src="/assets/document.png"
-                alt="Check Icon"
-                className="w-full h-full object-cover"
-                loading="lazy"
-              />
-            </div>
-            <h1 className="text-2xl md:text-3xl font-bold">
-              {data.data.kyc?.status === "rejected"
-                ? "Documents Rejected"
-                : "Documents Under Review"}
-            </h1>
-            <p className="text-sm md:text-base text-gray-700 max-w-md">
-              {data.data.kyc?.status === "rejected"
-                ? `Your documents have been rejected for the reason ${
-                    data.data.kyc?.remark || ""
-                  }. Please re-upload your documents.`
-                : "Your documents are being reviewed. You'll be ready to take orders in less than 20 minutes if everything checks out."}
-            </p>
-            {data.data.kyc?.status === "rejected" && (
-              <Button asChild>
-                <Link href="/rider/complete">Reupload Documents</Link>
-              </Button>
-            )}
-          </div>
-        </section>
-      );
-    }
-
-    if (!data.data.kyc) {
-      return (
-        <section className="max-w-screen-2xl min-h-screen w-full px-4 md:px-20 py-10 mx-auto">
-          <div className="flex flex-col items-center justify-center w-full h-full text-center gap-2">
-            <div className="w-40 h-40 md:w-1/3 md:h-1/3">
-              <img
-                src="/assets/document.png"
-                alt="Check Icon"
-                className="w-full h-full object-cover"
-                loading="lazy"
-              />
-            </div>
-            <h1 className="text-2xl md:text-3xl font-bold">Upload Documents</h1>
-            <p className="text-sm md:text-base text-gray-700 max-w-md">
-              You do not have any uploaded documents. Please upload your
-              documents.
-            </p>
-            <Button asChild>
-              <Link href="/rider/complete">Upload Documents</Link>
-            </Button>
-          </div>
-        </section>
-      );
-    }
-  }
-
   // Main dashboard layout
   return (
-    <div className="min-h-screen flex flex-col md:flex-row">
+    <DashboardGate
+      role="rider"
+      profile={data?.data}
+      hasBank={!!userBank?.data}
+      unauthorized={(error as ApiError | null)?.status === 401}
+      loginPath="/become-a-rider?login=1"
+    >
+    <div className="min-h-screen flex flex-col md:flex-row bg-gray-50">
       {/* Mobile Hamburger */}
       <div className="md:hidden fixed top-4 left-4 z-50">
         <button onClick={() => setIsSidebarOpen(true)}>
@@ -208,16 +155,26 @@ const Layout = ({ children }: { children: ReactNode }) => {
       />
 
       {/* Main Content */}
-      <div className="flex-1 w-full">
+      <div className="flex-1 w-full min-w-0">
         {/* Top Bar with Profile */}
-        <div className="flex justify-end items-center px-4 pt-6">
-          <Profile />
+        <div className="flex justify-end items-center px-5 md:px-8 h-16 bg-white border-b border-gray-100">
+          <Profile role="rider" />
         </div>
 
         {/* Page Content */}
-        <div className="max-w-screen-2xl bg-white mx-auto">{children}</div>
+        <div className="max-w-screen-2xl mx-auto">
+          <div className="px-5 md:px-8 pt-5 md:pt-8">
+            <SetupReminder
+              role="rider"
+              profile={data?.data}
+              hasBank={!!userBank?.data}
+            />
+          </div>
+          {children}
+        </div>
       </div>
     </div>
+    </DashboardGate>
   );
 };
 

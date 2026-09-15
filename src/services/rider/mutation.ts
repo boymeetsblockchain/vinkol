@@ -1,3 +1,4 @@
+import { Country } from "@/lib/markets/types";
 import { useMutation } from "@tanstack/react-query";
 import * as z from "zod";
 import {
@@ -13,22 +14,26 @@ import {
   contactFormSchema,
 } from "@/types/rider";
 import {
-  registerRider,
-  loginRider,
-  verifyEmail,
-  resendOtp,
+  contactMessage,
+  createUserBank,
   forgotPassword,
+  loginRider,
+  registerRider,
+  registerShopper,
+  resendOtp,
   resetPassword,
-  updateProfile,
+  sendSmsOtp,
+  submitGuarantor,
   submitKyc,
   submitVehicle,
-  registerShopper,
-  sendSmsOtp,
-  verifySmsOtp,
-  contactMessage,
+  submitVehicleInsurance,
+  submitVehicleRegistration,
   subscribe,
+  updateProfile,
+  updateUserCountry,
+  verifyEmail,
+  verifySmsOtp,
   withdraw,
-  createUserBank,
 } from "./api"; // Assuming 'api' is the file containing all the API functions
 import { toast } from "sonner";
 import { createStoreBankSchema } from "@/types/shop";
@@ -240,6 +245,15 @@ export function useResetPasswordMutation(
  * Custom React Query hook for updating rider profile.
  * @param {MutationOptions<any, Error>} [options] - Optional configuration for the mutation.
  */
+/** See useUpdateStoreCountry. */
+export function useUpdateUserCountry() {
+  const { mutateAsync, isPending } = useMutation({
+    mutationFn: (country: Country) => updateUserCountry(country),
+  });
+
+  return { updateCountry: mutateAsync, isPending };
+}
+
 export function useUpdateProfileMutation(
   options?: MutationOptions<any, Error>
 ) {
@@ -322,7 +336,7 @@ export function useSubmitVechicle(options?: MutationOptions<any, Error>) {
 }
 
 export function useSendSmsOtp(options?: MutationOptions<any, Error>) {
-  const { mutate, data, error, isPending, isSuccess, isError } = useMutation({
+  const { mutate, mutateAsync, data, error, isPending, isSuccess, isError } = useMutation({
     mutationFn: async (payload: z.infer<typeof sendSmsOtpSchema>) => {
       return await sendSmsOtp(payload);
     },
@@ -335,11 +349,11 @@ export function useSendSmsOtp(options?: MutationOptions<any, Error>) {
     },
   });
 
-  return { mutate, data, error, isPending, isSuccess, isError };
+  return { mutate, mutateAsync, data, error, isPending, isSuccess, isError };
 }
 
 export function useVerifyPhoneNumber(options?: MutationOptions<any, Error>) {
-  const { mutate, data, error, isPending, isSuccess, isError } = useMutation({
+  const { mutate, mutateAsync, data, error, isPending, isSuccess, isError } = useMutation({
     mutationFn: async (payload: z.infer<typeof verifyPhoneSchema>) => {
       return await verifySmsOtp(payload);
     },
@@ -351,7 +365,7 @@ export function useVerifyPhoneNumber(options?: MutationOptions<any, Error>) {
     },
   });
 
-  return { mutate, data, error, isPending, isSuccess, isError };
+  return { mutate, mutateAsync, data, error, isPending, isSuccess, isError };
 }
 
 export function useSendContactMessageMutation(
@@ -419,3 +433,33 @@ export function useWithDraw(options?: MutationOptions<any, Error>) {
 
   return { mutate, data, error, isPending, isSuccess, isError };
 }
+
+const kycMutation = (
+  fn: (body: FormData) => Promise<any>,
+  failure: string,
+) =>
+  function useKycUpload(options?: MutationOptions<any, Error>) {
+    const { mutate, isPending, isSuccess, isError, error } = useMutation({
+      mutationFn: fn,
+      onSuccess: (data) => options?.onSuccess?.(data),
+      onError: (err: Error) => {
+        console.error(failure, err.message);
+        options?.onError?.(err);
+      },
+    });
+
+    return { mutate, isPending, isSuccess, isError, error };
+  };
+
+export const useSubmitGuarantor = kycMutation(
+  submitGuarantor,
+  "Submit guarantor failed:",
+);
+export const useSubmitVehicleRegistration = kycMutation(
+  submitVehicleRegistration,
+  "Submit vehicle registration failed:",
+);
+export const useSubmitVehicleInsurance = kycMutation(
+  submitVehicleInsurance,
+  "Submit insurance failed:",
+);

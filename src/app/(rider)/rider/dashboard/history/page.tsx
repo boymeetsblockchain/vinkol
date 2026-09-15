@@ -1,4 +1,6 @@
 "use client";
+import { useMarket } from "@/lib/markets/useMarket";
+import { formatMoney } from "@/lib/money";
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/button";
@@ -38,6 +40,11 @@ import { useRouter } from "next/navigation";
 
 interface OrderData {
   _id: string;
+  // Every order document carries these; the four per-page copies of
+  // this interface each omitted them, so the client had no way to know
+  // an order's market and fell back to naira.
+  country?: "NG" | "CA";
+  currency?: "NGN" | "CAD";
   guest?: {
     email: string;
     firstname: string;
@@ -60,6 +67,7 @@ interface OrderData {
   vehicleRequest: string;
   orderType: string;
   deliveryFee: number;
+  riderFee: number;
   paystackReference: string;
   paymentStatus: string;
   products: any[];
@@ -81,6 +89,8 @@ interface OrderData {
 const ITEMS_PER_PAGE = 5;
 
 function OrderHistory() {
+  const { data: userProfile } = useUserProfile();
+  const market = useMarket(userProfile?.data?.country);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -124,14 +134,14 @@ function OrderHistory() {
       }
 
       return true;
-    }
+    },
   );
 
   // Pagination logic
   const totalPages = Math.ceil(filteredOrders.length / ITEMS_PER_PAGE);
   const paginatedOrders = filteredOrders.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
+    currentPage * ITEMS_PER_PAGE,
   );
 
   // Reset to first page when filters change
@@ -139,27 +149,26 @@ function OrderHistory() {
     setCurrentPage(1);
   }, [statusFilter, deliveryTypeFilter, searchTerm]);
 
-  const handleAcceptOrder = async (orderId: string) => {
+  const handleAcceptOrder = (orderId: string) => {
     setAcceptingOrderId(orderId);
-    try {
-      await acceptOrderMutate(orderId);
-      refetch();
-      toast.success("Order accepted successfully!");
-    } catch (error: any) {
-      console.error("Failed to accept order:", error);
-      toast.error(
-        `Failed to accept order: ${
-          error.response?.data?.message || error.message || "Unknown error"
-        }`
-      );
-    } finally {
-      setAcceptingOrderId(null);
-    }
+
+    // mutate() returns void, so awaiting it resolved immediately: the catch
+    // was dead, the success toast fired before the request had been answered,
+    // and the finally cleared the spinner before it was ever seen.
+    acceptOrderMutate(orderId, {
+      onSuccess: () => {
+        refetch();
+        toast.success("Order accepted successfully!");
+      },
+      onError: (error: Error) =>
+        toast.error(error.message || "Failed to accept order"),
+      onSettled: () => setAcceptingOrderId(null),
+    });
   };
 
   const handleStatusChange = (
     orderId: string,
-    status: "Delivered" | "Picked"
+    status: "Delivered" | "Picked",
   ) => {
     if (status === "Delivered") {
       setCurrentOrderId(orderId);
@@ -185,10 +194,10 @@ function OrderHistory() {
                 error.response?.data?.message ||
                 error.message ||
                 "Unknown error"
-              }`
+              }`,
             );
           },
-        }
+        },
       );
     }
   };
@@ -210,10 +219,10 @@ function OrderHistory() {
           toast.error(
             `Failed to mark as delivered: ${
               error.response?.data?.message || error.message || "Unknown error"
-            }`
+            }`,
           );
         },
-      }
+      },
     );
   };
 
@@ -221,7 +230,7 @@ function OrderHistory() {
     (order: OrderData) =>
       order.status === "Delivered" ||
       order.status === "Picked" ||
-      order.status === "Accepted"
+      order.status === "Accepted",
   );
 
   return (
@@ -427,22 +436,15 @@ function OrderHistory() {
                   </div>
                 </div>
 
-                {order && typeof order.deliveryFee === "number" ? (
-                  <p className="text-sm font-semibold text-gray-700">
-                    Amount:{" "}
-                    <span className="text-blue-primary">
-                      ₦
-                      {order.deliveryFee.toLocaleString("en-NG", {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
-                    </span>
-                  </p>
-                ) : (
-                  <p className="text-sm font-semibold text-gray-700">
-                    Amount: <span className="text-blue-primary">₦0.00</span>
-                  </p>
-                )}
+                <p className="text-sm font-semibold text-gray-700">
+                  Amount:{" "}
+                  <span className="text-blue-primary">
+                    {formatMoney(
+                      order?.riderFee ?? 0,
+                      order?.currency ?? market.currency,
+                    )}
+                  </span>
+                </p>
               </div>
             );
           })
@@ -485,7 +487,7 @@ function OrderHistory() {
                       {page}
                     </PaginationLink>
                   </PaginationItem>
-                )
+                ),
               )}
 
               <PaginationItem>

@@ -1,8 +1,10 @@
 "use client";
+import { contentFor } from "@/lib/markets";
+import { Country } from "@/lib/markets/types";
 
 import { useState } from "react";
 
-const faqs = [
+const faqs = (payoutAnswer: string) => [
   {
     question: "Do I need a bike to become a rider?",
     answer:
@@ -11,7 +13,7 @@ const faqs = [
   {
     question: "How do I get paid?",
     answer:
-      "Riders are paid daily or weekly via direct bank transfer. Daily payouts carry a processing fee under 1% of total daily income. Earnings are calculated based on completed deliveries, distance covered, and any applicable bonuses — credited to your Vinkol wallet after each delivery.",
+      payoutAnswer,
   },
   {
     question: "Can I choose which tasks to accept?",
@@ -25,8 +27,9 @@ const faqs = [
   },
 ];
 
-export const Question = () => {
+export const Question = ({ country }: { country: Country }) => {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const { payout } = contentFor(country);
 
   return (
     <section className="w-full py-20 md:py-24 bg-[#F7F8FA]">
@@ -51,7 +54,7 @@ export const Question = () => {
           </div>
 
           <div className="divide-y divide-gray-200">
-            {faqs.map((faq, index) => (
+            {faqs(payout.riderFaq).map((faq, index) => (
               <div key={index} className="py-6">
                 <button
                   className="flex items-center justify-between w-full text-left"

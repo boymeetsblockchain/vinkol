@@ -1,3 +1,4 @@
+import { Country } from "@/lib/markets/types";
 import { useQuery } from "@tanstack/react-query";
 import {
   getAllCollorativeStores,
@@ -9,10 +10,10 @@ import {
   getWithdrawalHistory,
 } from "./api";
 
-export const useGetSingleStore = (id?: string) => {
+export const useGetSingleStore = (id?: string, country?: Country) => {
   return useQuery({
-    queryKey: ["store", id],
-    queryFn: () => getSingleStore(id!),
+    queryKey: ["store", id, country],
+    queryFn: () => getSingleStore(id!, country),
     enabled: !!id,
   });
 };
@@ -27,6 +28,8 @@ export const useGetStoreProfile = () => {
 interface GetAllStoresParams {
   search?: string;
   state?: string;
+  /** Scopes the listing to one market. The server rejects cross-market rows. */
+  country?: Country;
 }
 
 export const useGetAllStores = (params?: GetAllStoresParams) => {
@@ -35,16 +38,16 @@ export const useGetAllStores = (params?: GetAllStoresParams) => {
     queryFn: () => getAllStores(params),
   });
 };
-export const useGetAllCollaborativeStores = () => {
+export const useGetAllCollaborativeStores = (country?: Country) => {
   return useQuery({
-    queryKey: ["stores", "collaborative"],
-    queryFn: () => getAllCollorativeStores(),
+    queryKey: ["stores", "collaborative", country],
+    queryFn: () => getAllCollorativeStores(country),
   });
 };
-export const useGetAllBanks = () => {
+export const useGetAllBanks = (country?: Country) => {
   return useQuery({
-    queryKey: ["banks"],
-    queryFn: getBankLists,
+    queryKey: ["banks", country],
+    queryFn: () => getBankLists(country),
   });
 };
 

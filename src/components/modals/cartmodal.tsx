@@ -1,5 +1,8 @@
-// components/modals/cartmodal.tsx
 "use client";
+
+import { Currency } from "@/lib/markets/types";
+import { formatMoney } from "@/lib/money";
+// components/modals/cartmodal.tsx
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -23,6 +26,8 @@ interface CartModalProps {
   onRemoveItem: (id: string) => void;
   onUpdateQuantity: (id: string, quantity: number) => void;
   total: number;
+  /** The store's currency, so a basket cannot be relabelled by a switch. */
+  currency: Currency;
 }
 
 export const CartModal = ({
@@ -33,6 +38,7 @@ export const CartModal = ({
   onUpdateQuantity,
   total,
   shopId,
+  currency,
 }: CartModalProps) => {
   const router = useRouter();
 
@@ -42,13 +48,8 @@ export const CartModal = ({
     router.push(`/shops/checkout/${shopId}`);
   };
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("en-NG", {
-      style: "currency",
-      currency: "NGN",
-      maximumFractionDigits: 0
-    }).format(price);
-  };
+  const formatPrice = (price: number) =>
+    formatMoney(price, currency);
 
   return (
     <div className="fixed inset-0 z-50 overflow-hidden flex justify-end">

@@ -1,20 +1,16 @@
-import { AboutVinkol } from "@/components/about/about-vinkol";
-import { Achievement } from "@/components/about/achievement";
-import { Mission } from "@/components/about/mission";
-import { ShopList } from "@/components/about/shop-list";
-import { Teams } from "@/components/about/team";
-import { AboutHero } from "@/components/shared/hero";
+import type { Metadata } from "next";
 
-function About() {
-  return (
-    <section className="min-h-screen">
-      <AboutHero />
-      <AboutVinkol />
-      <Mission />
-      <Teams />
-      <Achievement />
-      <ShopList />
-    </section>
-  );
+import { AboutPage } from "@/components/pages/about";
+import { pageMetadata } from "@/lib/markets/metadata";
+
+export const metadata: Metadata = pageMetadata({
+  country: "NG",
+  title: "About Vinkol",
+  description:
+    "Nigerian-founded and incorporated in 2012, Vinkol builds on-demand delivery rooted in technology, accountability and genuine care for every customer.",
+  path: "/about",
+});
+
+export default function Page() {
+  return <AboutPage country="NG" />;
 }
-export default About;

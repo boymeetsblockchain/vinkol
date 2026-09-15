@@ -1,11 +1,17 @@
 "use client";
-import SearchPage from "@/components/search/page";
+
 import { Suspense } from "react";
 
-export default function OtpPage() {
+import SearchPage from "@/components/search/page";
+import { ShopHeader } from "@/components/shop-page/header";
+
+export default function StoreSearchPage() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <SearchPage />
-    </Suspense>
+    <>
+      <ShopHeader isLogo />
+      <Suspense fallback={<div className="p-10">Loading…</div>}>
+        <SearchPage />
+      </Suspense>
+    </>
   );
 }

@@ -1,8 +1,10 @@
 "use client";
+import { contentFor } from "@/lib/markets";
+import { Country } from "@/lib/markets/types";
 
 import { useState } from "react";
 
-const faqs = [
+const faqs = (payoutAnswer: string) => [
   {
     question: "Do I need a bike to become a personal shopper?",
     answer:
@@ -11,7 +13,7 @@ const faqs = [
   {
     question: "How do I get paid?",
     answer:
-      "You get paid daily or weekly via bank transfer based on completed and verified tasks. Your earnings include service fees, bonuses, and tips where applicable.",
+      payoutAnswer,
   },
   {
     question: "Can I choose which tasks to accept?",
@@ -25,8 +27,9 @@ const faqs = [
   },
 ];
 
-export const Question = () => {
+export const Question = ({ country }: { country: Country }) => {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const { payout } = contentFor(country);
 
   return (
     <section className="w-full py-20 md:py-24 bg-[#F7F8FA]">
@@ -51,7 +54,7 @@ export const Question = () => {
           </div>
 
           <div className="space-y-0 divide-y divide-gray-200">
-            {faqs.map((faq, index) => (
+            {faqs(payout.storeFaq).map((faq, index) => (
               <div key={index} className="py-6">
                 <button
                   className="flex items-center justify-between w-full text-left"

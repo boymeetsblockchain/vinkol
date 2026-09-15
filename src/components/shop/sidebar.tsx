@@ -13,6 +13,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { FaSignOutAlt } from "react-icons/fa";
 import { Dialog, DialogContent, DialogTrigger, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
+import { useLogout } from "@/lib/auth/useLogout";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -25,11 +26,11 @@ const dashboardLinks = [
     icon: <Package size={18} />,
     route: "/shop/dashboard/",
   },
-  // {
-  //   label: "Order History",
-  //   icon: <History size={18} />,
-  //   route: "/shop/dashboard/history",
-  // },
+  {
+    label: "Order History",
+    icon: <History size={18} />,
+    route: "/shop/dashboard/history",
+  },
   {
     label: "Products",
     icon: <ShoppingBasket size={18} />,
@@ -46,16 +47,18 @@ const dashboardLinks = [
     icon: <Wallet size={18} />,
     route: "/shop/dashboard/wallet",
   },
+  {
+    label: "Settings",
+    icon: <Settings size={18} />,
+    route: "/shop/dashboard/settings",
+  },
 ];
 
 export const ShopperDashBoardSidebBar = ({ isOpen, onClose }: SidebarProps) => {
   const pathname = usePathname();
 
   const router = useRouter();
-  const handleLogout = () => {
-    localStorage.clear();
-    router.push("/");
-  };
+  const handleLogout = useLogout();
 
   return (
     <aside

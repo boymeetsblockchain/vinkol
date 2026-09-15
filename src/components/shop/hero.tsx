@@ -1,24 +1,23 @@
 "use client";
+import { contentFor, placesCountry, regionsFor } from "@/lib/markets";
+import { Country } from "@/lib/markets/types";
 import { MapPin, Search, ShoppingBag, Star, Store, ChevronDown } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Autocomplete from "react-google-autocomplete";
 
-const nigerianStates = [
-  "Abia","Adamawa","Akwa Ibom","Anambra","Bauchi","Bayelsa","Benue","Borno",
-  "Cross River","Delta","Ebonyi","Edo","Ekiti","Enugu","Gombe","Imo","Jigawa",
-  "Kaduna","Kano","Katsina","Kebbi","Kogi","Kwara","Lagos","Nasarawa","Niger",
-  "Ogun","Ondo","Osun","Oyo","Plateau","Rivers","Sokoto","Taraba","Yobe",
-  "Zamfara","Federal Capital Territory (Abuja)",
-];
-
-export const ShopHero = () => {
+export const ShopHero = ({ country }: { country: Country }) => {
+  const { serviceAreaPhrase } = contentFor(country);
+  const regions = regionsFor(country);
   const [selectedState, setSelectedState] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const router = useRouter();
 
   const handleSearch = () => {
-    router.push(`/shops/search?state=${selectedState}&q=${encodeURIComponent(searchQuery)}`);
+    const params = new URLSearchParams();
+    if (selectedState) params.set("state", selectedState);
+    if (searchQuery.trim()) params.set("search", searchQuery.trim());
+    router.push(`/shops/search?${params.toString()}`);
   };
 
   return (
@@ -47,7 +46,8 @@ export const ShopHero = () => {
         </h1>
 
         <p className="text-white/70 text-base md:text-lg max-w-xl mb-12 leading-relaxed">
-          Browse hundreds of verified stores and get your order delivered same day anywhere in Nigeria.
+          Browse verified stores and get your order delivered same day across{" "}
+          {serviceAreaPhrase}.
         </p>
 
         {/* Search card */}
@@ -62,7 +62,7 @@ export const ShopHero = () => {
               }
               options={{
                 types: ["geocode", "establishment"],
-                componentRestrictions: { country: "ng" },
+                componentRestrictions: { country: placesCountry(country) },
                 fields: ["formatted_address", "name", "geometry.location"],
               }}
               value={searchQuery}
@@ -82,9 +82,13 @@ export const ShopHero = () => {
               onChange={(e) => setSelectedState(e.target.value)}
               className="w-full sm:w-40 pl-3 pr-8 py-3 rounded-xl bg-gray-50 text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-blue-primary)]/30 appearance-none"
             >
-              <option value="">All states</option>
-              {nigerianStates.map((s) => (
-                <option key={s} value={s}>{s}</option>
+              <option value="">
+                {country === "CA" ? "All provinces" : "All states"}
+              </option>
+              {regions.map((region) => (
+                <option key={region.value} value={region.value}>
+                  {region.label}
+                </option>
               ))}
             </select>
             <ChevronDown size={14} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />

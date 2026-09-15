@@ -2,41 +2,77 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import { CheckCircle, XCircle, Loader2, HelpCircle } from "lucide-react";
+import { CheckCircle, XCircle, Loader2, HelpCircle, Clock } from "lucide-react";
 import { useVerifyPaymentMutation } from "@/services/payments/mutation";
+import { ApiError } from "@/lib/interfaces/error";
 import { Button } from "@/components/button";
+import { clearCart } from "@/config/storage";
+import { clearCheckoutSession } from "@/config/checkout";
 
-type Status = "verifying" | "success" | "failed" | "error" | "invalid";
+type Status =
+  | "verifying"
+  | "success"
+  | "failed"
+  | "pending"
+  | "cancelled"
+  | "error"
+  | "invalid";
 
 const OrderSuccessPage = () => {
   const searchParams = useSearchParams();
   const reference = searchParams.get("reference");
+  // Stripe returns here for a cancellation too, and the server marks which.
+  const cancelled = searchParams.get("status") === "cancelled";
   const router = useRouter();
 
   const [status, setStatus] = useState<Status>("verifying");
 
   const { mutate: verify } = useVerifyPaymentMutation({
+    // This page renders every outcome full-screen; a toast alongside it is
+    // noise, and during a pending retry it would be wrong as well.
+    silent: true,
     onSuccess: (res) => {
-      // console.log({ response: res });
-      if (res.success) {
-        setStatus("success");
-      } else {
+      if (!res.success) {
         setStatus("failed");
+        return;
       }
+
+      // Cleared here rather than when leaving for the gateway: a customer who
+      // abandons the payment page still has their basket, and one who paid
+      // does not carry the same items into their next order.
+      clearCart();
+      clearCheckoutSession();
+      setStatus("success");
     },
-    onError: () => {
-      setStatus("error");
+    onError: (error) => {
+      // Reached only once the retries are spent, so a pending payment here is
+      // one that is taking unusually long, not one that failed.
+      const reported =
+        error instanceof ApiError ? error.data?.status : undefined;
+
+      if (reported === "pending") setStatus("pending");
+      else if (reported === "failed") setStatus("failed");
+      else setStatus("error");
     },
   });
 
   useEffect(() => {
-    if (reference) {
-      verify(reference);
-    } else {
+    if (cancelled) {
+      setStatus("cancelled");
+      return;
+    }
+    if (!reference) {
       setStatus("invalid");
       return;
     }
-  }, [reference, verify]);
+    verify(reference);
+  }, [cancelled, reference, verify]);
+
+  const home = (
+    <Button className="py-2 px-4" onClick={() => router.push("/")}>
+      Return Home
+    </Button>
+  );
 
   return (
     <section className="min-h-screen flex items-center justify-center px-4">
@@ -63,9 +99,27 @@ const OrderSuccessPage = () => {
                 team.
               </>
             }
+            actions={home}
+          />
+        )}
+
+        {status === "pending" && (
+          <State
+            icon={<Clock className="text-blue-600" size={48} />}
+            title="Still confirming your payment"
+            description="Your bank has not finished confirming this yet. We will email you as soon as it clears — there is no need to pay again."
+            actions={home}
+          />
+        )}
+
+        {status === "cancelled" && (
+          <State
+            icon={<XCircle className="text-gray-500" size={48} />}
+            title="Payment cancelled"
+            description="You closed the payment page before it finished, so nothing was charged. Your basket is still where you left it."
             actions={
-              <Button className="py-2 px-4" onClick={() => router.push("/")}>
-                Return Home
+              <Button variant="outline" onClick={() => router.back()}>
+                Back to checkout
               </Button>
             }
           />
@@ -104,11 +158,7 @@ const OrderSuccessPage = () => {
             icon={<XCircle className="text-gray-500" size={48} />}
             title="Invalid payment reference"
             description="This page was accessed incorrectly."
-            actions={
-              <Button className="py-2 px-4" onClick={() => router.push("/")}>
-                Return Home
-              </Button>
-            }
+            actions={home}
           />
         )}
       </div>

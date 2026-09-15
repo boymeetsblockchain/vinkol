@@ -1,3 +1,4 @@
+import { Country } from "@/lib/markets/types";
 import {
   registerShopSchema,
   loginShopSchema,
@@ -17,6 +18,7 @@ import {
   registerShop,
   resendOtp,
   resetPassword,
+  updateStoreCountry,
   updateStoreProfile,
   validateBank,
   verifyEmail,
@@ -97,9 +99,12 @@ export function useVerifyEmailMutation(options?: MutationOptions<any, Error>) {
       return await verifyEmail(payload);
     },
     onSuccess: (responseData) => {
-      // console.log("Email verification successful:", responseData);
+      // Guarded: an unguarded write stores the string "undefined", which
+      // reads as a token everywhere and ejects the user on the first request.
+      if (responseData.token) {
+        localStorage.setItem("accessToken", responseData.token);
+      }
       options?.onSuccess?.(responseData);
-      localStorage.setItem("accessToken", responseData.token);
     },
     onError: (errorData: Error) => {
       console.error("Email verification failed:", errorData.message);
@@ -178,6 +183,18 @@ export function useResetPasswordMutation(
   });
 
   return { mutate, data, error, isPending, isSuccess, isError };
+}
+
+/**
+ * mutateAsync rather than mutate: the country step awaits the write before
+ * navigating, so it cannot advance past a failed save.
+ */
+export function useUpdateStoreCountry() {
+  const { mutateAsync, isPending } = useMutation({
+    mutationFn: (country: Country) => updateStoreCountry(country),
+  });
+
+  return { updateCountry: mutateAsync, isPending };
 }
 
 export function useUpdateStoreProfile(options?: MutationOptions<any, Error>) {

@@ -1,4 +1,5 @@
 "use client";
+import { phonePlaceholder } from "@/lib/phone";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, useFieldArray } from "react-hook-form";
@@ -24,26 +25,23 @@ import { Button } from "../button";
 import Autocomplete from "react-google-autocomplete";
 import { useGetMultiOrderQuoteMutation } from "@/services/orders/mutation";
 import { toast } from "sonner";
+
+import { contentFor, placesCountry, resolveRegionFromPlace } from "@/lib/markets";
+import { useMarket } from "@/lib/markets/useMarket";
 import { useRouter } from "next/navigation";
 import { TermsCheckbox } from "../shared/terms";
 import { useState } from "react";
 import { X, Plus, User, Info, MapPin, Package, FileText } from "lucide-react";
 
-const getStateFromAddressComponents = (addressComponents: any[]) => {
-  if (!addressComponents) return null;
 
-  const stateComponent = addressComponents.find((component) =>
-    component.types.includes("administrative_area_level_1"),
-  );
-
-  return stateComponent ? stateComponent.long_name.toLowerCase() : null;
-};
 
 export const MultiDeliveryForm = ({
   handleSetQuote,
 }: {
   handleSetQuote: (data: any) => void;
 }) => {
+  const market = useMarket();
+  const { coverAmount } = contentFor(market.country);
   const form = useForm<z.infer<typeof multiDeliverySchema>>({
     resolver: zodResolver(multiDeliverySchema),
     defaultValues: {
@@ -204,10 +202,8 @@ export const MultiDeliveryForm = ({
                           <Input
                             {...field}
                             type="tel"
-                            maxLength={11}
-                            minLength={11}
                             className="h-12 bg-gray-50/50"
-                            placeholder="e.g. 08012345678"
+                            placeholder={phonePlaceholder(market.country)}
                           />
                         </FormControl>
                         <FormMessage />
@@ -270,8 +266,9 @@ export const MultiDeliveryForm = ({
                                     onPlaceSelected={(place) => {
                                       const lat = place.geometry?.location?.lat();
                                       const lng = place.geometry?.location?.lng();
-                                      const state = getStateFromAddressComponents(
+                                      const region = resolveRegionFromPlace(
                                         place.address_components,
+                                        market.country,
                                       );
 
                                       form.setValue(
@@ -279,16 +276,18 @@ export const MultiDeliveryForm = ({
                                         { lat, lng },
                                       );
 
-                                      if (state) {
+                                      if (region) {
                                         form.setValue(
                                           `orders.${index}.state`,
-                                          state,
+                                          region.value,
                                         );
                                       }
                                     }}
                                     options={{
                                       types: ["geocode", "establishment"],
-                                      componentRestrictions: { country: ["ng"] },
+                                      componentRestrictions: {
+                                country: [placesCountry(market.country)],
+                              },
                                       fields: [
                                         "formatted_address",
                                         "name",
@@ -328,7 +327,9 @@ export const MultiDeliveryForm = ({
                                     }}
                                     options={{
                                       types: ["geocode", "establishment"],
-                                      componentRestrictions: { country: ["ng"] },
+                                      componentRestrictions: {
+                                country: [placesCountry(market.country)],
+                              },
                                       fields: [
                                         "formatted_address",
                                         "name",
@@ -383,9 +384,7 @@ export const MultiDeliveryForm = ({
                                   <Input
                                     {...field}
                                     type="tel"
-                                    maxLength={11}
-                                    minLength={11}
-                                    placeholder="e.g. 08012345678"
+                                    placeholder={phonePlaceholder(market.country)}
                                     className="h-12 bg-gray-50/50"
                                   />
                                 </FormControl>
@@ -526,7 +525,7 @@ export const MultiDeliveryForm = ({
                 <div className="bg-blue-50/50 p-4 rounded-xl border border-blue-100 flex gap-4 items-start">
                   <Info className="w-6 h-6 text-blue-500 shrink-0 mt-0.5" />
                   <p className="text-sm text-blue-900 leading-relaxed">
-                    <strong>Insurance Coverage:</strong> Vinkol will cover up to ₦50,000 of damage or stolen package per order. Please explicitly specify in the notes section if your goods are fragile.
+                    <strong>Insurance Coverage:</strong> Vinkol will cover up to {coverAmount} of damage or loss per order. Please explicitly specify in the notes section if your goods are fragile.
                   </p>
                 </div>
 

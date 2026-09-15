@@ -1,4 +1,10 @@
 "use client";
+import { useMarket } from "@/lib/markets/useMarket";
+import { Package } from "lucide-react";
+import { PageHeader } from "@/components/dashboard/page-header";
+import { StatCard } from "@/components/dashboard/stat-card";
+import { EmptyState } from "@/components/dashboard/empty-state";
+import { formatMoney } from "@/lib/money";
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/button";
@@ -26,7 +32,13 @@ import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
 
 interface OrderData {
+  // Every order document carries these; the four per-page copies of
+  // this interface each omitted them, so the client had no way to know
+  // an order's market and fell back to naira.
+  country?: "NG" | "CA";
+  currency?: "NGN" | "CAD";
   deliveryFee: any;
+  riderFee: any;
   _id: string;
   guest?: {
     email: string;
@@ -72,6 +84,7 @@ const ITEMS_PER_PAGE = 5;
 
 function Orders() {
   const { data: userProfile } = useUserProfile();
+  const market = useMarket(userProfile?.data?.country);
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
@@ -115,14 +128,14 @@ function Orders() {
       }
 
       return true;
-    }
+    },
   );
   // console.log(data);
   // Pagination logic
   const totalPages = Math.ceil(filteredOrders.length / ITEMS_PER_PAGE);
   const paginatedOrders = filteredOrders.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
+    currentPage * ITEMS_PER_PAGE,
   );
 
   // Reset to first page when filters change
@@ -144,7 +157,7 @@ function Orders() {
           toast.error(
             `Failed to accept order: ${
               error.response?.data?.message || error.message || "Unknown error"
-            }`
+            }`,
           );
         },
       });
@@ -153,33 +166,44 @@ function Orders() {
       toast.error(
         `Failed to accept order: ${
           error.response?.data?.message || error.message || "Unknown error"
-        }`
+        }`,
       );
     } finally {
       setAcceptingOrderId(null);
     }
   };
 
+  const isFiltered =
+    statusFilter !== "all" || deliveryTypeFilter !== "all" || !!searchTerm;
+
   const acceptedOrders = filteredOrders.filter(
     (order: OrderData) =>
       order.status === "Delivered" ||
       order.status === "Picked" ||
-      order.status === "Accepted"
+      order.status === "Accepted",
   );
 
   return (
-    <section className="py-6 px-4">
-      <div className="bg-blue-primary w-full rounded-md p-4 text-sm text-white mb-6 shadow-md">
-        You currently have{" "}
-        <span className="font-bold">{acceptedOrders?.length}</span> accepted
-        orders
+    <section className="p-5 md:p-8">
+      <PageHeader
+        title="Available orders"
+        subtitle={
+          userProfile?.data?.state
+            ? `Orders you can accept in ${userProfile.data.state}`
+            : "Orders you can accept"
+        }
+      />
+
+      <div className="grid grid-cols-2 gap-4 mb-6 max-w-sm">
+        <StatCard label="Available now" value={filteredOrders.length} />
+        <StatCard label="Accepted" value={acceptedOrders.length} />
       </div>
 
       {/* Filter and Search Controls */}
-      <div className="mb-6 grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="bg-white border border-gray-100 rounded-2xl p-4 mb-6 grid grid-cols-1 md:grid-cols-4 gap-3">
         <div className="md:col-span-1">
           <Select onValueChange={(value: any) => setStatusFilter(value)}>
-            <SelectTrigger>
+            <SelectTrigger className="w-full">
               <SelectValue placeholder="Filter by status" />
             </SelectTrigger>
             <SelectContent>
@@ -195,7 +219,7 @@ function Orders() {
 
         <div className="md:col-span-1">
           <Select onValueChange={(value: any) => setDeliveryTypeFilter(value)}>
-            <SelectTrigger>
+            <SelectTrigger className="w-full">
               <SelectValue placeholder="Filter by delivery type" />
             </SelectTrigger>
             <SelectContent>
@@ -219,7 +243,18 @@ function Orders() {
       {/* Orders List */}
       <div className="flex flex-col space-y-6">
         {isPending ? (
-          <p className="text-center text-gray-600">Loading orders...</p>
+          <div className="flex flex-col gap-4">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div
+                key={i}
+                className="bg-white border border-gray-100 rounded-2xl p-5 animate-pulse"
+              >
+                <div className="h-4 w-40 bg-gray-100 rounded mb-3" />
+                <div className="h-3 w-64 bg-gray-100 rounded mb-2" />
+                <div className="h-3 w-52 bg-gray-100 rounded" />
+              </div>
+            ))}
+          </div>
         ) : paginatedOrders.length > 0 ? (
           paginatedOrders.map((order: OrderData) => {
             const isThisOrderBeingAccepted = acceptingOrderId === order._id;
@@ -249,10 +284,10 @@ function Orders() {
                       order.status === "Pending"
                         ? "bg-gray-500"
                         : order.status === "Accepted"
-                        ? "bg-blue-primary"
-                        : order.status === "Picked"
-                        ? "bg-yellow-500"
-                        : "bg-green-500"
+                          ? "bg-blue-primary"
+                          : order.status === "Picked"
+                            ? "bg-yellow-500"
+                            : "bg-green-500"
                     }`}
                   >
                     {order.status}
@@ -302,22 +337,15 @@ function Orders() {
                   </div>
                 </div>
 
-                {order && typeof order?.deliveryFee === "number" ? (
-                  <p className="text-sm font-semibold text-gray-700">
-                    Amount:{" "}
-                    <span className="text-blue-primary">
-                      ₦
-                      {order.deliveryFee.toLocaleString("en-NG", {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
-                    </span>
-                  </p>
-                ) : (
-                  <p className="text-sm font-semibold text-gray-700">
-                    Amount: <span className="text-blue-primary">₦0.00</span>
-                  </p>
-                )}
+                <p className="text-sm font-semibold text-gray-700">
+                  Amount:{" "}
+                  <span className="text-blue-primary">
+                    {formatMoney(
+                      order?.riderFee ?? 0,
+                      order?.currency ?? market.currency,
+                    )}
+                  </span>
+                </p>
 
                 <div className="flex justify-end gap-3 pt-4">
                   {["Pending", "Confirmed"].includes(order.status) && (
@@ -342,9 +370,19 @@ function Orders() {
             );
           })
         ) : (
-          <p className="text-center text-gray-600">
-            No orders match your filters.
-          </p>
+          <EmptyState
+            icon={Package}
+            title={
+              isFiltered
+                ? "No orders match your filters"
+                : "No orders right now"
+            }
+            body={
+              isFiltered
+                ? "Try clearing a filter or searching for something else."
+                : "New orders in your area will appear here as they come in."
+            }
+          />
         )}
       </div>
 
@@ -380,7 +418,7 @@ function Orders() {
                       {page}
                     </PaginationLink>
                   </PaginationItem>
-                )
+                ),
               )}
 
               <PaginationItem>

@@ -1,29 +1,8 @@
+import { handleApiError } from "@/lib/apiError";
 import * as z from "zod";
 import axiosInstance from "@/config/store";
 import { createProductSchema, updateProductSchema } from "@/types/product";
 
-/**
- * Handles common API errors by throwing a new Error with a more specific message.
- * This centralizes error handling logic, making the code DRY.
- *
- * @param {any} error - The error object caught from the axios request.
- * @param {string} defaultMessage - A fallback message if no specific error message is available from the response.
- * @throws {Error} Throws a new Error object with a descriptive message.
- */
-const handleApiError = (error: any, defaultMessage: string): never => {
-  if (error.response) {
-    throw new Error(error.response.data.message || defaultMessage);
-  } else if (error.request) {
-    throw new Error(
-      "Network Error: No response received from the server. Please check your internet connection and try again."
-    );
-  } else {
-    // Something happened in setting up the request that triggered an Error.
-    throw new Error(
-      `An unexpected error occurred: ${error.message || defaultMessage}`
-    );
-  }
-};
 
 export const createProduct = async (
   data: z.infer<typeof createProductSchema>

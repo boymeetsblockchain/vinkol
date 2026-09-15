@@ -6,15 +6,17 @@ import { CartModal } from "@/components/modals/cartmodal";
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useGetSingleStore } from "@/services/shops/query";
+import { formatMoney } from "@/lib/money";
+import { useMarket } from "@/lib/markets/useMarket";
 import { useGetAllProductsQuery } from "@/services/products/query";
 import { ShopSideBar } from "@/components/shop-page/sidebar";
 import {
+  AlertCircle,
   Menu,
   ShoppingCart,
   ArrowLeft,
   MapPin,
   Star,
-  Clock,
   Plus,
   Search,
   X,
@@ -70,14 +72,28 @@ function ShopIdPage() {
   const id = params.id as string;
 
   // Fetch the store details
-  const { data: store, isLoading: isStoreLoading } = useGetSingleStore(id);
-  const { data: productsData, isLoading: areProductsLoading } =
-    useGetAllProductsQuery(undefined, {
-      store: id,
-      category: selectedCategory,
-    });
+  const requestMarket = useMarket();
+  const { data: store, isLoading: isStoreLoading } = useGetSingleStore(
+    id,
+    requestMarket.country,
+  );
 
-  const products = productsData?.data.fetchedData || [];
+  // Prices follow the store's own market, not the visitor's. The basket lives
+  // in localStorage and survives a market switch, so resolving currency from
+  // the visitor would relabel a naira basket as dollars.
+  const market = useMarket(store?.data?.store?.country);
+  const {
+    data: productsData,
+    isLoading: areProductsLoading,
+    isError: productsFailed,
+    refetch: refetchProducts,
+  } = useGetAllProductsQuery(undefined, {
+    store: id,
+    category: selectedCategory,
+  });
+
+  const products = productsData?.data?.fetchedData ?? [];
+  const storeRating = store?.data?.store?.avgRating;
 
   // Extract slugs
   const productCategorySlugs = new Set(products.flatMap((p) => p.category));
@@ -249,15 +265,19 @@ function ShopIdPage() {
                     {store?.data?.store?.address}
                   </p>
                 </div>
-                {/* Badges */}
-                <div className="flex gap-2">
-                  <div className="bg-green-50 text-green-700 px-3 py-1.5 rounded-2xl text-xs font-bold flex items-center gap-1 border border-green-100 shadow-sm">
-                    <Star size={13} className="fill-green-700" /> 4.8 Excellent
+                {/* A rating is shown only where the store actually has one.
+                    A fixed "4.8 Excellent" and "20-35 min" used to render on
+                    every store regardless of its data, which is a claim we
+                    cannot stand behind — and in a market with no delivery
+                    history yet, plainly false. */}
+                {typeof storeRating === "number" && storeRating > 0 && (
+                  <div className="flex gap-2">
+                    <div className="bg-green-50 text-green-700 px-3 py-1.5 rounded-2xl text-xs font-bold flex items-center gap-1 border border-green-100 shadow-sm">
+                      <Star size={13} className="fill-green-700" />
+                      {storeRating.toFixed(1)}
+                    </div>
                   </div>
-                  <div className="bg-gray-50 text-gray-700 px-3 py-1.5 rounded-2xl text-xs font-bold flex items-center gap-1 border border-gray-100 shadow-sm">
-                    <Clock size={13} /> 20-35 min
-                  </div>
-                </div>
+                )}
               </div>
             </div>
           </div>
@@ -285,7 +305,21 @@ function ShopIdPage() {
 
           {/* ── Product Grid ── */}
           <div className="px-4 md:px-8 py-6 max-w-7xl mx-auto">
-            {areProductsLoading ? (
+            {productsFailed ? (
+              <div className="flex flex-col items-center gap-3 py-16 text-center">
+                <AlertCircle size={28} className="text-red-500" />
+                <p className="font-semibold text-gray-900">
+                  We could not load this store&rsquo;s items
+                </p>
+                <button
+                  type="button"
+                  onClick={() => refetchProducts()}
+                  className="text-sm font-semibold text-[var(--color-blue-primary)] hover:underline underline-offset-4"
+                >
+                  Try again
+                </button>
+              </div>
+            ) : areProductsLoading ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {[1, 2, 3, 4, 5, 6].map((i) => (
                   <div
@@ -313,9 +347,30 @@ function ShopIdPage() {
                   {products.map((product) => (
                     <div
                       key={product._id}
-                      className="bg-white rounded-2xl p-4 flex gap-4 border border-gray-100 hover:border-blue-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] transition-all duration-300 group cursor-pointer"
+                      className="bg-white rounded-2xl p-4 flex flex-col gap-4 border border-gray-100 hover:border-blue-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] transition-all duration-300 group cursor-pointer"
                       onClick={() => setSelectedProduct(product)}
                     >
+                      <div className="flex items-center gap-4">
+                        <div className="w-32 h-32 flex-shrink-0 bg-gray-50 rounded-xl overflow-hidden relative border border-gray-100">
+                          {product.image?.imageUrl ? (
+                            <img
+                              src={product.image.imageUrl}
+                              alt={product.title}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-gray-300">
+                              <ShoppingCart size={24} />
+                            </div>
+                          )}
+                        </div>
+
+                        <div>
+                          <span className="font-extrabold text-gray-900 text-[15px]">
+                            {formatMoney(product.price, market.currency)}
+                          </span>
+                        </div>
+                      </div>
                       <div className="flex-1 min-w-0 flex flex-col">
                         <h3 className="font-bold text-gray-900 text-[15px] leading-snug line-clamp-2 group-hover:text-[var(--color-blue-primary)] transition-colors">
                           {product.title}
@@ -325,14 +380,8 @@ function ShopIdPage() {
                         </p>
 
                         <div className="mt-auto pt-4 flex items-center justify-between">
-                          <span className="font-extrabold text-gray-900 text-[15px]">
-                            {new Intl.NumberFormat("en-NG", {
-                              style: "currency",
-                              currency: "NGN",
-                              maximumFractionDigits: 0,
-                            }).format(product.price)}
-                          </span>
-                          {!product.isAvailable || (product.inventory ?? 0) <= 0 ? (
+                          {!product.isAvailable ||
+                          (product.inventory ?? 0) <= 0 ? (
                             <span className="text-red-500 font-bold text-[13px] bg-red-50 px-3 py-1.5 rounded-xl border border-red-100 shadow-sm shrink-0">
                               Out of stock
                             </span>
@@ -342,26 +391,12 @@ function ShopIdPage() {
                                 e.stopPropagation();
                                 handleAddToCart(product);
                               }}
-                              className="bg-[var(--color-blue-primary)] text-white text-sm font-bold px-3 py-1.5 rounded-xl flex items-center justify-center hover:bg-blue-700 transition-colors shadow-sm"
+                              className="bg-blue-primary text-white text-sm font-bold w-full px-3 py-1.5 rounded-xl flex items-center justify-center hover:bg-blue-700 transition-colors shadow-sm"
                             >
                               Add to cart
                             </button>
                           )}
                         </div>
-                      </div>
-
-                      <div className="w-32 h-32 flex-shrink-0 bg-gray-50 rounded-xl overflow-hidden relative border border-gray-100">
-                        {product.image?.imageUrl ? (
-                          <img
-                            src={product.image.imageUrl}
-                            alt={product.title}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-gray-300">
-                            <ShoppingCart size={24} />
-                          </div>
-                        )}
                       </div>
                     </div>
                   ))}
@@ -407,11 +442,6 @@ function ShopIdPage() {
                   <ShoppingCart size={40} />
                 </div>
               )}
-              <DialogClose asChild>
-                <button className="absolute top-4 right-4 w-10 h-10 bg-white/90 backdrop-blur-md rounded-full shadow-md text-gray-800 flex items-center justify-center hover:scale-105 transition">
-                  <X size={20} />
-                </button>
-              </DialogClose>
             </div>
             <div className="p-6">
               <div className="flex justify-between items-start gap-4 mb-4">
@@ -419,11 +449,7 @@ function ShopIdPage() {
                   {selectedProduct.title}
                 </DialogTitle>
                 <span className="font-extrabold text-[var(--color-blue-primary)] text-xl shrink-0">
-                  {new Intl.NumberFormat("en-NG", {
-                    style: "currency",
-                    currency: "NGN",
-                    maximumFractionDigits: 0,
-                  }).format(selectedProduct.price)}
+                  {formatMoney(selectedProduct.price, market.currency)}
                 </span>
               </div>
               <DialogDescription className="text-gray-600 text-[15px] leading-relaxed mb-8">
@@ -474,6 +500,7 @@ function ShopIdPage() {
       </Dialog>
 
       <CartModal
+        currency={market.currency}
         isOpen={openCartModal}
         onClose={() => setOpenCartModal(false)}
         shopId={id as string}

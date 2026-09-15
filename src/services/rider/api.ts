@@ -1,3 +1,5 @@
+import { Country } from "@/lib/markets/types";
+import { handleApiError } from "@/lib/apiError";
 import axiosInstance from "@/config/rider";
 import {
   contactFormSchema,
@@ -13,33 +15,6 @@ import {
 } from "@/types/rider";
 import { createStoreBankSchema } from "@/types/shop";
 import * as z from "zod";
-
-/**
- * Handles common API errors by throwing a new Error with a more specific message.
- * This centralizes error handling logic, making the code DRY.
- *
- * @param {any} error - The error object caught from the axios request.
- * @param {string} defaultMessage - A fallback message if no specific error message is available from the response.
- * @throws {Error} Throws a new Error object with a descriptive message.
- */
-const handleApiError = (error: any, defaultMessage: string): never => {
-  if (error.response) {
-    // The request was made and the server responded with a status code
-    // that falls out of the range of 2xx.
-    // Use the server's error message if available, otherwise the default.
-    throw new Error(error.response.data.message || defaultMessage);
-  } else if (error.request) {
-    // The request was made but no response was received.
-    throw new Error(
-      "Network Error: No response received from the server. Please check your internet connection and try again."
-    );
-  } else {
-    // Something happened in setting up the request that triggered an Error.
-    throw new Error(
-      `An unexpected error occurred: ${error.message || defaultMessage}`
-    );
-  }
-};
 
 /**
  * Registers a new rider.
@@ -167,6 +142,21 @@ export const resetPassword = async (
  * @returns {Promise<any>} The response data from the server.
  * @throws {Error} If the profile update fails.
  */
+/** Sets the market this account operates in. See updateStoreCountry. */
+export const updateUserCountry = async (country: Country) => {
+  try {
+    const body = new FormData();
+    body.append("country", country);
+
+    const response = await axiosInstance.put("/users/update-profile", body, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return response.data;
+  } catch (error) {
+    return handleApiError(error, "Failed to save your location.");
+  }
+};
+
 export const updateProfile = async (
   data: z.infer<typeof updateProfileSchema>
 ) => {
@@ -205,6 +195,47 @@ export const submitVehicle = async (data: any) => {
     return response.data;
   } catch (error) {
     handleApiError(error, "Failed to submit vehicle.");
+  }
+};
+
+/**
+ * The three KYC endpoints the website never called, which is why no rider or
+ * shopper could reach a submitted KYC: the server requires a guarantor from
+ * both, and a registration and insurance certificate from anyone driving a car,
+ * truck or van.
+ */
+export const submitGuarantor = async (data: FormData) => {
+  try {
+    const response = await axiosInstance.patch("/kyc/submit-guarantor", data, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return response.data;
+  } catch (error) {
+    handleApiError(error, "Failed to submit guarantor.");
+  }
+};
+
+export const submitVehicleRegistration = async (data: FormData) => {
+  try {
+    const response = await axiosInstance.patch(
+      "/kyc/submit-vehicle-registration",
+      data,
+      { headers: { "Content-Type": "multipart/form-data" } },
+    );
+    return response.data;
+  } catch (error) {
+    handleApiError(error, "Failed to submit vehicle registration.");
+  }
+};
+
+export const submitVehicleInsurance = async (data: FormData) => {
+  try {
+    const response = await axiosInstance.patch("/kyc/submit-insurance", data, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return response.data;
+  } catch (error) {
+    handleApiError(error, "Failed to submit insurance certificate.");
   }
 };
 
@@ -277,7 +308,7 @@ export const contactMessage = async (
   data: z.infer<typeof contactFormSchema>
 ) => {
   try {
-    const response = await axiosInstance.post("others/contact", data);
+    const response = await axiosInstance.post("/others/contact", data);
     return response;
   } catch (error) {
     handleApiError(error, "failed to send message");
@@ -286,7 +317,7 @@ export const contactMessage = async (
 
 export const subscribe = async (email: string) => {
   try {
-    const response = await axiosInstance.post("others/subscribe", { email });
+    const response = await axiosInstance.post("/others/subscribe", { email });
     return response;
   } catch (error) {
     handleApiError(error, "failed to send message");

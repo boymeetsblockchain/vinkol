@@ -38,6 +38,9 @@ export const resetPasswordSchema = z.object({
 
 export const updateProfileSchema = z.object({
   firstname: z.string().min(1, { message: "First name is required" }),
+  // Optional because the dashboard's settings card edits only the first name;
+  // the onboarding step collects both. The server accepts either.
+  lastname: z.string().min(1, { message: "Last name is required" }).optional(),
   state: z.string().min(1, { message: "State is required" }),
   avatar: z
     .instanceof(File, { message: "Avatar must be a file" })

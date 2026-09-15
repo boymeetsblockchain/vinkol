@@ -34,9 +34,12 @@ type Product = {
   inventory?: number;
 };
 
+/**
+ * onSuccess and onError were removed from useQuery in TanStack Query v5, so
+ * passing them here did nothing. Kept only for the call sites that still supply
+ * them; react to a query result with the returned state instead.
+ */
 interface QueryOptions<TData = unknown, TError = Error> {
-  onSuccess?: (data: TData) => void;
-  onError?: (error: TError) => void;
   enabled?: boolean;
   staleTime?: number;
   cacheTime?: number;
@@ -75,14 +78,6 @@ export function useGetAllProductsQuery(
       const data = await getAllProducts(params);
       return data;
     },
-    onSuccess: (data: Product[]) => {
-      console.log("Successfully fetched all products:", data);
-      options?.onSuccess?.(data);
-    },
-    onError: (error: Error) => {
-      console.error("Failed to fetch all products:", error.message);
-      options?.onError?.(error);
-    },
     ...options,
   });
 }
@@ -97,14 +92,6 @@ export function useGetStoreProductsQuery(
     queryFn: async () => {
       const data = await getStoreProducts(params);
       return data;
-    },
-    onSuccess: (data: Product[]) => {
-      console.log("Successfully fetched all products:", data);
-      options?.onSuccess?.(data);
-    },
-    onError: (error: Error) => {
-      console.error("Failed to fetch all products:", error.message);
-      options?.onError?.(error);
     },
     ...options,
   });
@@ -124,17 +111,5 @@ export function useGetSingleProductQuery(
       return data;
     },
     enabled: !!productId && (options?.enabled ?? true),
-    onSuccess: (data: Product) => {
-      console.log(`Successfully fetched product with ID ${productId}:`, data);
-      options?.onSuccess?.(data);
-    },
-    onError: (error: Error) => {
-      console.error(
-        `Failed to fetch product with ID ${productId}:`,
-        error.message,
-      );
-      options?.onError?.(error);
-    },
-    ...options,
   });
 }

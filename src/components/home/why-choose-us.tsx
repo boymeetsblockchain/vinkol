@@ -1,6 +1,8 @@
+import { contentFor } from "@/lib/markets";
+import { Country } from "@/lib/markets/types";
 import Link from "next/link";
 
-const whyChooseUs = [
+const whyChooseUs = (coverAmount: string) => [
   {
     tag: "Speed",
     title: "Fast delivery, every time",
@@ -13,7 +15,7 @@ const whyChooseUs = [
   },
   {
     tag: "Protection",
-    title: "Up to ₦50,000 item protection",
+    title: `Up to ${coverAmount} item protection`,
     metric: "Claims resolved in 72 hours",
     img: "/assets/transfer.svg",
     description:
@@ -33,7 +35,9 @@ const whyChooseUs = [
   },
 ];
 
-export const WhyChooseUs = () => {
+export const WhyChooseUs = ({ country }: { country: Country }) => {
+  const { coverAmount } = contentFor(country);
+
   return (
     <section className="max-w-7xl w-full px-6 py-12 md:px-20 md:py-16 mx-auto">
       <div className="mb-14">
@@ -45,7 +49,7 @@ export const WhyChooseUs = () => {
         </h2>
       </div>
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-        {whyChooseUs.map((data, index) => (
+        {whyChooseUs(coverAmount).map((data, index) => (
           <div
             key={index}
             className="bg-[#F7F8FA] rounded-2xl p-8 flex flex-col justify-between gap-6 hover:shadow-md transition-shadow"

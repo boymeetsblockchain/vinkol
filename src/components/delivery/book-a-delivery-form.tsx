@@ -1,4 +1,5 @@
 "use client";
+import { phonePlaceholder } from "@/lib/phone";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -24,10 +25,21 @@ import { Button } from "../button";
 import Autocomplete from "react-google-autocomplete";
 import { useGetQuoteMutation } from "@/services/orders/mutation";
 import { toast } from "sonner";
+
+import { useMarket } from "@/lib/markets/useMarket";
+import {
+  contentFor,
+  placesCountry,
+  resolveRegionFromPlace,
+} from "@/lib/markets";
 import { useRouter } from "next/navigation";
 import { TermsCheckbox } from "../shared/terms";
 import { useState } from "react";
-import { Package, MapPin, User, Clock, Info } from "lucide-react";
+import { Package, MapPin, User, Clock, Info, UserRound } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+
+import { saveCheckoutSession } from "@/config/checkout";
+import { formatMoney } from "@/lib/money";
 
 // Helper to get current time in HH:MM format
 const getCurrentTime = () => {
@@ -35,18 +47,10 @@ const getCurrentTime = () => {
   return now.toTimeString().slice(0, 5);
 };
 
-const getStateFromAddressComponents = (addressComponents: any[]) => {
-  if (!addressComponents) return null;
-
-  const stateComponent = addressComponents.find((component) =>
-    component.types.includes("administrative_area_level_1"),
-  );
-
-  return stateComponent ? stateComponent.long_name.toLowerCase() : null;
-};
-
 export const BookADeliveryForm = () => {
   const router = useRouter();
+  const market = useMarket();
+  const { coverAmount } = contentFor(market.country);
   const form = useForm<z.infer<typeof deliverySchema>>({
     resolver: zodResolver(deliverySchema),
     defaultValues: {
@@ -64,11 +68,13 @@ export const BookADeliveryForm = () => {
       priority: "low",
       note: "",
       state: "",
+      receiverContact: { name: "", phone: "" },
     },
   });
 
   const { mutate, isPending } = useGetQuoteMutation();
   const [isChecked, setIsChecked] = useState<boolean>(false);
+  const [addRecipient, setAddRecipient] = useState<boolean>(false);
 
   const onSubmit = (data: z.infer<typeof deliverySchema>) => {
     if (!isChecked) {
@@ -96,6 +102,15 @@ export const BookADeliveryForm = () => {
       },
       {
         onSuccess: (responseData) => {
+          const quote = responseData?.data;
+
+          if (!quote?.quoteId) {
+            toast.error(
+              "We could not hold a price for this delivery. Please try again.",
+            );
+            return;
+          }
+
           const dateObj = new Date(data.date);
           const formattedDate = dateObj.toLocaleDateString("en-US", {
             year: "numeric",
@@ -112,29 +127,55 @@ export const BookADeliveryForm = () => {
             hour12: true,
           });
 
-          const params = new URLSearchParams();
-          params.append("firstname", data.firstname);
-          params.append("lastname", data.lastname);
-          params.append("phonenumber", data.phonenumber);
-          params.append("email", data.email);
-          params.append("state", data.state);
-          params.append("pickupLocation", data.pickup);
-          params.append("dropoffLocation", data.dropoff);
-          params.append("date", formattedDate);
-          params.append("time", formattedTime);
-          params.append("deliveryType", data.type);
-          params.append("vehicleRequest", data.vehicle);
-          params.append("orderType", data.orderType);
-          params.append("amount", String(responseData.data.price || 0));
-          params.append("note", data.note || "");
-
-          toast.success("Quote successfully retrieved!", {
-            description: `Amount: ₦${
-              responseData.data.price?.toLocaleString() || "N/A"
-            }`,
+          // Handed over in sessionStorage, not the query string: this carries
+          // the customer's contact details, and a fee in the URL is a fee the
+          // customer can edit.
+          saveCheckoutSession({
+            quoteId: quote.quoteId,
+            country: quote.country,
+            currency: quote.currency,
+            guest: {
+              firstname: data.firstname,
+              lastname: data.lastname,
+              email: data.email,
+              phone: data.phonenumber,
+            },
+            state: data.state,
+            // Only when the section is open and someone was actually named.
+            // Collapsing it discards whatever was typed rather than submitting
+            // details the customer decided against.
+            ...(addRecipient && data.receiverContact?.name.trim()
+              ? {
+                  receiverContact: {
+                    name: data.receiverContact.name.trim(),
+                    phone: data.receiverContact.phone.trim(),
+                  },
+                }
+              : {}),
+            pickupLocation: data.pickup,
+            dropoffLocation: data.dropoff,
+            date: formattedDate,
+            time: formattedTime,
+            deliveryType: data.type,
+            vehicleRequest: data.vehicle,
+            orderType: data.orderType,
+            note: data.note || "",
+            deliveryFee: quote.discountedPrice ?? quote.price,
+            serviceFee: quote.serviceFee,
+            taxAmount: quote.taxAmount,
+            taxLabel: quote.taxLabel,
+            grandTotal: quote.grandTotal,
+            expiresAt: quote.expiresAt,
           });
 
-          router.push(`/quote?${params.toString()}`);
+          toast.success("Quote successfully retrieved!", {
+            description: `Total: ${formatMoney(
+              quote.grandTotal ?? quote.price,
+              quote.currency,
+            )}`,
+          });
+
+          router.push("/quote");
         },
         onError: (error: any) => {
           console.error("Get Quote failed:", error);
@@ -151,17 +192,16 @@ export const BookADeliveryForm = () => {
       <div className="w-full">
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 md:p-10">
           <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className="space-y-10"
-            >
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
               {/* Contact Information */}
               <div className="space-y-6">
                 <div className="flex items-center gap-3 pb-3 border-b border-gray-100">
                   <div className="bg-blue-50 p-2 rounded-lg">
                     <User className="w-5 h-5 text-blue-600" />
                   </div>
-                  <h2 className="text-xl font-semibold text-gray-800">Contact Information</h2>
+                  <h2 className="text-xl font-semibold text-gray-800">
+                    Contact Information
+                  </h2>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <FormField
@@ -169,9 +209,15 @@ export const BookADeliveryForm = () => {
                     name="firstname"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-gray-700">First Name</FormLabel>
+                        <FormLabel className="text-gray-700">
+                          First Name
+                        </FormLabel>
                         <FormControl>
-                          <Input {...field} className="h-12 bg-gray-50/50" placeholder="Enter your first name" />
+                          <Input
+                            {...field}
+                            className="h-12 bg-gray-50/50"
+                            placeholder="Enter your first name"
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -182,9 +228,15 @@ export const BookADeliveryForm = () => {
                     name="lastname"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-gray-700">Last Name</FormLabel>
+                        <FormLabel className="text-gray-700">
+                          Last Name
+                        </FormLabel>
                         <FormControl>
-                          <Input {...field} className="h-12 bg-gray-50/50" placeholder="Enter your last name" />
+                          <Input
+                            {...field}
+                            className="h-12 bg-gray-50/50"
+                            placeholder="Enter your last name"
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -195,9 +247,16 @@ export const BookADeliveryForm = () => {
                     name="email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-gray-700">Email Address</FormLabel>
+                        <FormLabel className="text-gray-700">
+                          Email Address
+                        </FormLabel>
                         <FormControl>
-                          <Input {...field} type="email" className="h-12 bg-gray-50/50" placeholder="Enter your email" />
+                          <Input
+                            {...field}
+                            type="email"
+                            className="h-12 bg-gray-50/50"
+                            placeholder="Enter your email"
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -208,15 +267,15 @@ export const BookADeliveryForm = () => {
                     name="phonenumber"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-gray-700">Phone Number</FormLabel>
+                        <FormLabel className="text-gray-700">
+                          Phone Number
+                        </FormLabel>
                         <FormControl>
                           <Input
                             {...field}
                             type="tel"
-                            maxLength={11}
-                            minLength={11}
                             className="h-12 bg-gray-50/50"
-                            placeholder="e.g. 08012345678"
+                            placeholder={phonePlaceholder(market.country)}
                           />
                         </FormControl>
                         <FormMessage />
@@ -226,13 +285,88 @@ export const BookADeliveryForm = () => {
                 </div>
               </div>
 
+              {/* Recipient Details — optional, so it stays collapsed until asked for */}
+              <div className="space-y-6">
+                <div className="flex items-center justify-between gap-3 pb-3 border-b border-gray-100">
+                  <div className="flex items-center gap-3">
+                    <div className="bg-blue-50 p-2 rounded-lg">
+                      <UserRound className="w-5 h-5 text-blue-600" />
+                    </div>
+                    <div>
+                      <h2
+                        className="text-xl font-semibold text-gray-800"
+                        id="recipient-details-heading"
+                      >
+                        Add recipient details
+                      </h2>
+                      <p className="text-sm text-gray-500">
+                        Optional. Helps the rider know who to hand the package to.
+                      </p>
+                    </div>
+                  </div>
+                  <Switch
+                    checked={addRecipient}
+                    onCheckedChange={setAddRecipient}
+                    aria-labelledby="recipient-details-heading"
+                  />
+                </div>
+
+                {addRecipient && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FormField
+                      control={form.control}
+                      name="receiverContact.name"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-gray-700">
+                            Recipient Name
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              type="text"
+                              className="h-12 bg-gray-50/50"
+                              placeholder="e.g. Jane Doe"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="receiverContact.phone"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-gray-700">
+                            Recipient Phone
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              type="tel"
+                              className="h-12 bg-gray-50/50"
+                              placeholder={phonePlaceholder(market.country)}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                )}
+              </div>
+
               {/* Delivery Locations */}
               <div className="space-y-6">
                 <div className="flex items-center gap-3 pb-3 border-b border-gray-100">
                   <div className="bg-blue-50 p-2 rounded-lg">
                     <MapPin className="w-5 h-5 text-blue-600" />
                   </div>
-                  <h2 className="text-xl font-semibold text-gray-800">Location Details</h2>
+                  <h2 className="text-xl font-semibold text-gray-800">
+                    Location Details
+                  </h2>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <FormField
@@ -240,15 +374,18 @@ export const BookADeliveryForm = () => {
                     name="pickup"
                     render={({ field }) => (
                       <FormItem className="md:col-span-2">
-                        <FormLabel className="text-gray-700">Pickup Location</FormLabel>
+                        <FormLabel className="text-gray-700">
+                          Pickup Location
+                        </FormLabel>
                         <FormControl>
                           <Autocomplete
                             apiKey={process.env.NEXT_PUBLIC_Maps_API_KEY}
                             onPlaceSelected={(place) => {
                               const lat = place.geometry?.location?.lat();
                               const lng = place.geometry?.location?.lng();
-                              const state = getStateFromAddressComponents(
+                              const region = resolveRegionFromPlace(
                                 place.address_components,
+                                market.country,
                               );
 
                               form.setValue(
@@ -257,13 +394,15 @@ export const BookADeliveryForm = () => {
                               );
                               form.setValue("pickupCoords", { lat, lng });
 
-                              if (state) {
-                                form.setValue("state", state);
+                              if (region) {
+                                form.setValue("state", region.value);
                               }
                             }}
                             options={{
                               types: ["geocode", "establishment"],
-                              componentRestrictions: { country: ["ng"] },
+                              componentRestrictions: {
+                                country: [placesCountry(market.country)],
+                              },
                               fields: [
                                 "formatted_address",
                                 "name",
@@ -287,15 +426,18 @@ export const BookADeliveryForm = () => {
                     name="dropoff"
                     render={({ field }) => (
                       <FormItem className="md:col-span-2">
-                        <FormLabel className="text-gray-700">Dropoff Location</FormLabel>
+                        <FormLabel className="text-gray-700">
+                          Dropoff Location
+                        </FormLabel>
                         <FormControl>
                           <Autocomplete
                             apiKey={process.env.NEXT_PUBLIC_Maps_API_KEY}
                             onPlaceSelected={(place) => {
                               const lat = place.geometry?.location?.lat();
                               const lng = place.geometry?.location?.lng();
-                              const state = getStateFromAddressComponents(
+                              const region = resolveRegionFromPlace(
                                 place.address_components,
+                                market.country,
                               );
 
                               form.setValue(
@@ -304,13 +446,15 @@ export const BookADeliveryForm = () => {
                               );
                               form.setValue("dropoffCoords", { lat, lng });
 
-                              if (state && !form.getValues("state")) {
-                                form.setValue("state", state);
+                              if (region && !form.getValues("state")) {
+                                form.setValue("state", region.value);
                               }
                             }}
                             options={{
                               types: ["geocode", "establishment"],
-                              componentRestrictions: { country: ["ng"] },
+                              componentRestrictions: {
+                                country: [placesCountry(market.country)],
+                              },
                               fields: [
                                 "formatted_address",
                                 "name",
@@ -334,7 +478,9 @@ export const BookADeliveryForm = () => {
                     name="state"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-gray-700">State (Auto-detected)</FormLabel>
+                        <FormLabel className="text-gray-700">
+                          State (Auto-detected)
+                        </FormLabel>
                         <FormControl>
                           <Input
                             {...field}
@@ -356,7 +502,9 @@ export const BookADeliveryForm = () => {
                   <div className="bg-blue-50 p-2 rounded-lg">
                     <Clock className="w-5 h-5 text-blue-600" />
                   </div>
-                  <h2 className="text-xl font-semibold text-gray-800">Schedule & Type</h2>
+                  <h2 className="text-xl font-semibold text-gray-800">
+                    Schedule & Type
+                  </h2>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <FormField
@@ -364,9 +512,15 @@ export const BookADeliveryForm = () => {
                     name="date"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-gray-700">Delivery Date</FormLabel>
+                        <FormLabel className="text-gray-700">
+                          Delivery Date
+                        </FormLabel>
                         <FormControl>
-                          <Input type="date" {...field} className="h-12 bg-gray-50/50 block w-full" />
+                          <Input
+                            type="date"
+                            {...field}
+                            className="h-12 bg-gray-50/50 block w-full"
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -377,9 +531,15 @@ export const BookADeliveryForm = () => {
                     name="time"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-gray-700">Delivery Time</FormLabel>
+                        <FormLabel className="text-gray-700">
+                          Delivery Time
+                        </FormLabel>
                         <FormControl>
-                          <Input type="time" {...field} className="h-12 bg-gray-50/50 block w-full" />
+                          <Input
+                            type="time"
+                            {...field}
+                            className="h-12 bg-gray-50/50 block w-full"
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -390,8 +550,13 @@ export const BookADeliveryForm = () => {
                     name="type"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-gray-700">Delivery Type</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormLabel className="text-gray-700">
+                          Delivery Type
+                        </FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
                           <FormControl>
                             <SelectTrigger className="h-12 bg-gray-50/50">
                               <SelectValue placeholder="Select delivery type" />
@@ -411,8 +576,13 @@ export const BookADeliveryForm = () => {
                     name="orderType"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-gray-700">Order Type</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormLabel className="text-gray-700">
+                          Order Type
+                        </FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
                           <FormControl>
                             <SelectTrigger className="h-12 bg-gray-50/50">
                               <SelectValue placeholder="Select order type" />
@@ -435,7 +605,9 @@ export const BookADeliveryForm = () => {
                   <div className="bg-blue-50 p-2 rounded-lg">
                     <Package className="w-5 h-5 text-blue-600" />
                   </div>
-                  <h2 className="text-xl font-semibold text-gray-800">Vehicle & Package Details</h2>
+                  <h2 className="text-xl font-semibold text-gray-800">
+                    Vehicle & Package Details
+                  </h2>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <FormField
@@ -443,8 +615,13 @@ export const BookADeliveryForm = () => {
                     name="vehicle"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-gray-700">Vehicle Type</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormLabel className="text-gray-700">
+                          Vehicle Type
+                        </FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
                           <FormControl>
                             <SelectTrigger className="h-12 bg-gray-50/50">
                               <SelectValue placeholder="Select vehicle type" />
@@ -468,7 +645,9 @@ export const BookADeliveryForm = () => {
                   name="note"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-gray-700">Additional Notes</FormLabel>
+                      <FormLabel className="text-gray-700">
+                        Additional Notes
+                      </FormLabel>
                       <FormControl>
                         <textarea
                           {...field}
@@ -488,7 +667,10 @@ export const BookADeliveryForm = () => {
                 <div className="bg-blue-50/50 p-4 rounded-xl border border-blue-100 flex gap-4 items-start">
                   <Info className="w-6 h-6 text-blue-500 shrink-0 mt-0.5" />
                   <p className="text-sm text-blue-900 leading-relaxed">
-                    <strong>Insurance Coverage:</strong> Vinkol will cover up to ₦50,000 of damage or stolen package. Please explicitly specify in the notes section if your goods are fragile.
+                    <strong>Insurance Coverage:</strong> Vinkol will cover up to{" "}
+                    {coverAmount} of damage or loss. Please explicitly specify
+                    in the notes section if your goods are fragile. Ensure that
+                    you are not sending items with value of above {coverAmount}.
                   </p>
                 </div>
 

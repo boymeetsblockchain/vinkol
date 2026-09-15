@@ -1,11 +1,13 @@
 "use client";
-import { VerifyOtpPage } from "@/components/shop/shopper-otp";
+
 import { Suspense } from "react";
 
-export default function OtpPage() {
+import { VerifyEmailStep } from "@/components/onboarding/verify-email-step";
+
+export default function VerifyEmailPage() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <VerifyOtpPage />
+    <Suspense fallback={null}>
+      <VerifyEmailStep role="shopper" />
     </Suspense>
   );
 }

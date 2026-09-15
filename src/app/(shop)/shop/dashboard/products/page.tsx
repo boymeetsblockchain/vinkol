@@ -1,6 +1,12 @@
 "use client";
 
 import { useGetStoreProductsQuery } from "@/services/products/query";
+import { useGetStoreProfile } from "@/services/shops/query";
+import { useMarket } from "@/lib/markets/useMarket";
+import { currencySymbol, formatMoney } from "@/lib/money";
+import { Currency } from "@/lib/markets/types";
+
+const PAGE_SIZE = 24;
 import {
   useCreateProductMutation,
   useUpdateProductMutation,
@@ -93,7 +99,8 @@ const GridCard: React.FC<{
   onDelete: (id: string) => void;
   isDeleting: boolean;
   onZoom: (src: string) => void;
-}> = ({ product, onEdit, onDelete, isDeleting, onZoom }) => {
+  currency: Currency;
+}> = ({ product, onEdit, onDelete, isDeleting, onZoom, currency }) => {
   return (
     <div className="bg-white border border-gray-100/80 rounded-2xl overflow-hidden hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:border-blue-100 transition-all group flex flex-col">
       {/* Image */}
@@ -122,7 +129,7 @@ const GridCard: React.FC<{
       <div className="p-4 flex flex-col flex-1 bg-white relative z-10">
         <h3 className="font-semibold text-gray-900 text-[15px] leading-snug line-clamp-1 group-hover:text-[var(--color-blue-primary)] transition-colors">{product.title}</h3>
         <div className="flex items-center justify-between mt-1 mb-2">
-          <span className="text-[var(--color-blue-primary)] font-bold text-[15px] tracking-tight">₦{product.price.toLocaleString()}</span>
+          <span className="text-[var(--color-blue-primary)] font-bold text-[15px] tracking-tight">{formatMoney(product.price, currency)}</span>
           {!product.isAvailable ? (
             <span className="flex-shrink-0 text-[10px] font-bold text-red-600 bg-red-50 border border-red-100 px-2 py-0.5 rounded-full">Offline</span>
           ) : product.inventory !== undefined ? (
@@ -156,7 +163,8 @@ const ListRow: React.FC<{
   onDelete: (id: string) => void;
   isDeleting: boolean;
   onZoom: (src: string) => void;
-}> = ({ product, onEdit, onDelete, isDeleting, onZoom }) => {
+  currency: Currency;
+}> = ({ product, onEdit, onDelete, isDeleting, onZoom, currency }) => {
   return (
     <div className="bg-white border border-gray-100/80 rounded-2xl p-4 flex gap-4 transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:border-blue-100 group">
       {/* Image */}
@@ -197,7 +205,7 @@ const ListRow: React.FC<{
             ) : null}
           </div>
         </div>
-        <p className="text-[var(--color-blue-primary)] font-bold text-[15px] tracking-tight">₦{product.price.toLocaleString()}</p>
+        <p className="text-[var(--color-blue-primary)] font-bold text-[15px] tracking-tight">{formatMoney(product.price, currency)}</p>
         <p className="text-gray-500 text-sm mt-1.5 line-clamp-2 flex-1 leading-relaxed">{product.description}</p>
       </div>
 
@@ -223,7 +231,7 @@ interface ProductFormProps {
   isOpen: boolean;
 }
 
-const ProductFormDrawer: React.FC<ProductFormProps> = ({ onSubmit, initialData, isSubmitting, onClose, isOpen }) => {
+const ProductFormDrawer: React.FC<ProductFormProps & { currency: Currency }> = ({ onSubmit, initialData, isSubmitting, onClose, isOpen, currency }) => {
   const [title, setTitle] = useState("");
   const [price, setPrice] = useState<number | "">("");
   const [inventory, setInventory] = useState<number | "">("");
@@ -369,7 +377,7 @@ const ProductFormDrawer: React.FC<ProductFormProps> = ({ onSubmit, initialData, 
           {/* Price + Category */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">Price (₦) <span className="text-red-500">*</span></label>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Price ({currencySymbol(currency)}) <span className="text-red-500">*</span></label>
               <input type="number" value={price} onChange={(e) => setPrice(e.target.value === "" ? "" : parseFloat(e.target.value))} placeholder="0" min={0} className={inputCls} />
             </div>
             <div>
@@ -418,7 +426,22 @@ const ProductFormDrawer: React.FC<ProductFormProps> = ({ onSubmit, initialData, 
 
 // ─── Main page ────────────────────────────────────────────────────────────────
 function ProductPage() {
-  const { data: products, isLoading, isError, error, refetch } = useGetStoreProductsQuery();
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
+  const [filterCategory, setFilterCategory] = useState<string>("All");
+
+  const { data: storeProfile } = useGetStoreProfile();
+  const market = useMarket(storeProfile?.data?.country);
+
+  // Search and category are sent to the server, not applied to one page of
+  // results — a store with 200 products could not otherwise manage them.
+  const { data: products, isLoading, isError, error, refetch } =
+    useGetStoreProductsQuery(undefined, {
+      pageNo: page,
+      pageSize: PAGE_SIZE,
+      search: search.trim() || undefined,
+      category: filterCategory !== "All" ? filterCategory : undefined,
+    });
   const productList: Product[] = (products?.data?.fetchedData ?? []).map((p: any) => ({
     _id: p._id, title: p.title, price: p.price, category: p.category,
     image: p.image?.imageUrl, description: p.description || "",
@@ -426,26 +449,14 @@ function ProductPage() {
   }));
 
   const [view, setView] = useState<"grid" | "list">("list");
-  const [search, setSearch] = useState("");
-  const [filterCategory, setFilterCategory] = useState<string>("All");
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
 
-  const filtered = useMemo(() => {
-    let result = productList;
-    if (filterCategory !== "All") {
-      result = result.filter(p => p.category === filterCategory);
-    }
-    if (search.trim()) {
-      const q = search.toLowerCase();
-      result = result.filter((p) => p.title.toLowerCase().includes(q) || p.description.toLowerCase().includes(q));
-    }
-    return result;
-  }, [productList, search, filterCategory]);
-
-  const totalValue = productList.reduce((sum, p) => sum + p.price, 0);
+  const filtered = productList;
+  const totalProducts = products?.data?.total ?? productList.length;
+  const totalPages = products?.data?.noOfPages ?? 1;
 
   const createMutation = useCreateProductMutation({
     onSuccess: () => { toast.success("Product added!"); refetch(); setDrawerOpen(false); },
@@ -482,8 +493,9 @@ function ProductPage() {
           <h1 className="text-3xl font-extrabold tracking-tight text-gray-900">Products</h1>
           {!isLoading && (
             <p className="text-sm text-gray-500 mt-1.5 font-medium flex items-center gap-2">
-              <span className="bg-white border border-gray-200 px-2.5 py-1 rounded-full">{productList.length} listed</span>
-              <span className="bg-[var(--color-blue-primary)]/10 text-[var(--color-blue-primary)] border border-blue-200/50 px-2.5 py-1 rounded-full">₦{totalValue.toLocaleString()} inventory value</span>
+              <span className="bg-white border border-gray-200 px-2.5 py-1 rounded-full">
+                {totalProducts} listed
+              </span>
             </p>
           )}
         </div>
@@ -584,7 +596,15 @@ function ProductPage() {
       {!isLoading && !isError && filtered.length > 0 && view === "grid" && (
         <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
           {filtered.map((p) => (
-            <GridCard key={p._id} product={p} onEdit={openEdit} onDelete={handleDelete} isDeleting={deletingId === p._id} onZoom={setLightboxSrc} />
+            <GridCard
+              key={p._id}
+              product={p}
+              onEdit={openEdit}
+              onDelete={handleDelete}
+              isDeleting={deletingId === p._id}
+              onZoom={setLightboxSrc}
+              currency={market.currency}
+            />
           ))}
         </div>
       )}
@@ -593,8 +613,40 @@ function ProductPage() {
       {!isLoading && !isError && filtered.length > 0 && view === "list" && (
         <div className="space-y-2.5">
           {filtered.map((p) => (
-            <ListRow key={p._id} product={p} onEdit={openEdit} onDelete={handleDelete} isDeleting={deletingId === p._id} onZoom={setLightboxSrc} />
+            <ListRow
+              key={p._id}
+              product={p}
+              onEdit={openEdit}
+              onDelete={handleDelete}
+              isDeleting={deletingId === p._id}
+              onZoom={setLightboxSrc}
+              currency={market.currency}
+            />
           ))}
+        </div>
+      )}
+
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-3 mt-8">
+          <button
+            type="button"
+            onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+            disabled={page <= 1}
+            className="px-4 py-2 rounded-lg text-sm font-medium bg-white border border-gray-200 disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            Previous
+          </button>
+          <span className="text-sm text-gray-500">
+            Page {page} of {totalPages}
+          </span>
+          <button
+            type="button"
+            onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}
+            disabled={page >= totalPages}
+            className="px-4 py-2 rounded-lg text-sm font-medium bg-white border border-gray-200 disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            Next
+          </button>
         </div>
       )}
 
@@ -608,6 +660,7 @@ function ProductPage() {
         onSubmit={handleSubmit}
         initialData={editingProduct}
         isSubmitting={createMutation.isPending || updateMutation.isPending}
+        currency={market.currency}
       />
     </div>
   );

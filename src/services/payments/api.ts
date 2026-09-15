@@ -1,22 +1,6 @@
+import { handleApiError } from "@/lib/apiError";
 import axiosInstance from "@/config/guest";
 
-/**
- * Handles common API errors by throwing a new Error with a more specific message.
- * This duplicates logic used elsewhere so services remain self-contained.
- */
-const handleApiError = (error: any, defaultMessage: string): never => {
-  if (error.response) {
-    throw new Error(error.response.data.message || defaultMessage);
-  } else if (error.request) {
-    throw new Error(
-      "Network Error: No response received from the server. Please check your internet connection and try again.",
-    );
-  } else {
-    throw new Error(
-      `An unexpected error occurred: ${error.message || defaultMessage}`,
-    );
-  }
-};
 
 /**
  * Verify a payment using the reference provided by the payment gateway.

@@ -1,15 +1,30 @@
 "use client";
-import React, { useState } from "react";
+import { contentFor } from "@/lib/markets";
+import { Country } from "@/lib/markets/types";
+import React, { useEffect, useState } from "react";
 import { FaGooglePlay } from "react-icons/fa6";
 import { IoLogoApple } from "react-icons/io";
 import { Button } from "../button";
 import { AppStoreCard } from "../shared/appstore";
 import { RiderAuthModal } from "../modals/rider-auth-modal";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 
-export const Hero = () => {
+export const Hero = ({ country }: { country: Country }) => {
+  const { appStore, serviceAreaPhrase } = contentFor(country);
+
   const [isOpen, setIsOpen] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
+
+  // The dashboards redirect here when a session has expired; there is no
+  // standalone login route for these roles, only this modal.
+  const wantsLogin = useSearchParams().get("login") === "1";
+  useEffect(() => {
+    if (wantsLogin) {
+      setIsLogin(true);
+      setIsOpen(true);
+    }
+  }, [wantsLogin]);
 
   const openModal = (mode: "login" | "register") => {
     setIsLogin(mode === "login");
@@ -40,19 +55,26 @@ export const Hero = () => {
             </h1>
 
             <p className="text-base sm:text-lg font-medium text-white/80 max-w-lg leading-relaxed">
-              Join 200+ verified riders delivering across Lagos. Set your own
-              hours, accept tasks near you, and get paid fast.
+              Join our network of verified riders delivering across{" "}
+              {serviceAreaPhrase}. Set your own hours, accept tasks near you,
+              and get paid fast.
             </p>
 
             <div className="flex flex-wrap items-center gap-3 pt-1">
-              <Button size="lg" className="rounded-full px-8 font-semibold" onClick={() => openModal("register")}>
+              <Button
+                size="lg"
+                className="rounded-full px-8 font-semibold"
+                onClick={() => openModal("register")}
+              >
                 Become a Rider
               </Button>
-              <Link href="/waitlist">
-                <button className="border border-white/40 text-white rounded-full px-8 py-3 text-sm font-semibold hover:bg-white/10 transition-colors">
-                  Join the Waitlist
-                </button>
-              </Link>
+              {country != "CA" && (
+                <Link href="/waitlist">
+                  <button className="border border-white/40 text-white rounded-full px-8 py-3 text-sm font-semibold hover:bg-white/10 transition-colors">
+                    Join the Waitlist
+                  </button>
+                </Link>
+              )}
             </div>
 
             <div className="flex items-center gap-3 pt-1">
@@ -64,7 +86,7 @@ export const Hero = () => {
               <AppStoreCard
                 platform="App Store"
                 icon={<IoLogoApple color="black" size={20} />}
-                link="https://apps.apple.com/ng/app/vinkol-go/id6751474425"
+                link={appStore.rider}
               />
             </div>
           </div>

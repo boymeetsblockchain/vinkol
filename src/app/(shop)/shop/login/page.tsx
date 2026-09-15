@@ -10,6 +10,12 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 
+import {
+  needsEmailVerification,
+  verifyEmailPathFor,
+} from "@/lib/auth/loginOutcome";
+import { PasswordInput } from "@/components/ui/password-input";
+
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
   password: z.string().min(1, "Password is required"),
@@ -36,9 +42,18 @@ function ShopperAuth() {
         password: data.password,
       },
       {
-        onSuccess: () => {
-          toast.success("Login successful! Welcome back.");
+        onSuccess: (response) => {
           reset();
+
+          // The server accepts an unverified login and answers 200 with no
+          // token, so this has to be checked before claiming success.
+          if (needsEmailVerification(response)) {
+            toast.info("Verify your email to finish signing in.");
+            router.push(verifyEmailPathFor("store", data.email));
+            return;
+          }
+
+          toast.success("Login successful! Welcome back.");
           router.push("/shop/dashboard");
         },
         onError: (error: any) => {
@@ -82,8 +97,8 @@ function ShopperAuth() {
               )}
             </div>
             <div>
-              <input
-                type="password"
+              <PasswordInput
+                
                 placeholder="Password"
                 {...register("password")}
                 className="w-full py-2 px-3 focus:outline-none border border-[#A5A4A0] rounded-[5px] placeholder:text-blue-primary placeholder:text-base"

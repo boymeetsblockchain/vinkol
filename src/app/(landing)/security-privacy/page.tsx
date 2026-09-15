@@ -1,3 +1,18 @@
+import type { Metadata } from "next";
+
+import { pageMetadata } from "@/lib/markets/metadata";
+import { marketFromRequest } from "@/lib/markets/server";
+
+export async function generateMetadata(): Promise<Metadata> {
+  return pageMetadata({
+    country: await marketFromRequest(),
+    title: "Security & Privacy",
+    description:
+      "How Vinkol protects your account, your data and your packages, and what we do with the information you share.",
+    path: "/security-privacy",
+  });
+}
+
 import { Eye, Lock, MapPin, ShieldCheck, Truck } from "lucide-react";
 
 function SecurityandPrivacy() {

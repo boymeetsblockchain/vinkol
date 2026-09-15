@@ -8,6 +8,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { BiX } from "react-icons/bi";
 import { cn } from "@/lib/utils"; // Assuming you have this utility from your previous code
+import { marketLink, marketPath } from "@/lib/markets";
+import { useMarket } from "@/lib/markets/useMarket";
 
 const navLinks = [
   { name: "About", path: "/about" },
@@ -30,6 +32,8 @@ export const Navbar: React.FC<{ shop?: boolean }> = ({ shop }) => {
   const [showDeliveryDropdown, setShowDeliveryDropdown] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
+  const { country } = useMarket();
+  const href = (path: string) => marketLink(path, country);
 
   const navigate = () => {
     if (shop) {
@@ -56,7 +60,7 @@ export const Navbar: React.FC<{ shop?: boolean }> = ({ shop }) => {
       {/* This div acts as the sticky header content */}
       <div className="flex justify-between items-center max-w-screen-2xl sticky top-0 left-0 mx-auto py-2 px-4 md:px-10 w-full bg-white z-20 shadow-sm">
         {/* logo */}
-        <Link href={"/"} onClick={closeMobileMenu}>
+        <Link href={marketPath("/", country)} onClick={closeMobileMenu}>
           {" "}
           {/* Close mobile on logo click too */}
           <img src="/logo.png" alt="Company Logo" className="w-28 h-12" />
@@ -82,7 +86,7 @@ export const Navbar: React.FC<{ shop?: boolean }> = ({ shop }) => {
                 {deliverLinks.map((link) => (
                   <Link
                     key={link.path}
-                    href={link.path}
+                    href={href(link.path)}
                     onClick={() => setShowDeliveryDropdown(false)}
                     className={cn(
                       "block px-4 py-2.5 text-sm transition-colors hover:bg-gray-50 hover:text-blue-primary",
@@ -108,7 +112,7 @@ export const Navbar: React.FC<{ shop?: boolean }> = ({ shop }) => {
               {partnerLinks.map((link) => (
                 <Link
                   key={link.path}
-                  href={link.path}
+                  href={href(link.path)}
                   className={cn(
                     "block px-4 py-2.5 text-sm transition-colors hover:bg-gray-50 hover:text-blue-primary",
                     pathname === link.path ? "text-blue-primary font-medium" : "text-gray-700"
@@ -125,7 +129,7 @@ export const Navbar: React.FC<{ shop?: boolean }> = ({ shop }) => {
           {navLinks.map((data) => (
             <Link
               key={data.path}
-              href={data.path}
+              href={href(data.path)}
               className={cn(
                 "text-sm font-medium px-3 py-2 rounded-md transition-colors hover:text-blue-primary",
                 pathname === data.path ? "text-blue-primary" : "text-gray-700",
@@ -156,7 +160,7 @@ export const Navbar: React.FC<{ shop?: boolean }> = ({ shop }) => {
         <div className="md:hidden fixed inset-0 z-50 bg-white flex flex-col">
           {/* Header row */}
           <div className="flex items-center justify-between px-5 py-3 border-b border-gray-100">
-            <Link href="/" onClick={closeMobileMenu}>
+            <Link href={marketPath("/", country)} onClick={closeMobileMenu}>
               <img src="/logo.png" alt="Vinkol" className="w-24 h-10 object-contain" />
             </Link>
             <button onClick={closeMobileMenu} className="p-2 text-gray-500 hover:text-gray-900">
@@ -172,7 +176,7 @@ export const Navbar: React.FC<{ shop?: boolean }> = ({ shop }) => {
             {deliverLinks.map((link) => (
               <Link
                 key={link.path}
-                href={link.path}
+                href={href(link.path)}
                 onClick={closeMobileMenu}
                 className={cn(
                   "block text-base font-medium transition-colors hover:text-blue-primary w-full px-2 py-3 rounded-lg",
@@ -189,7 +193,7 @@ export const Navbar: React.FC<{ shop?: boolean }> = ({ shop }) => {
             {partnerLinks.map((link) => (
               <Link
                 key={link.path}
-                href={link.path}
+                href={href(link.path)}
                 onClick={closeMobileMenu}
                 className={cn(
                   "block text-base font-medium transition-colors hover:text-blue-primary w-full px-2 py-3 rounded-lg",
@@ -206,7 +210,7 @@ export const Navbar: React.FC<{ shop?: boolean }> = ({ shop }) => {
             {navLinks.map((link) => (
               <Link
                 key={link.path}
-                href={link.path}
+                href={href(link.path)}
                 onClick={closeMobileMenu}
                 className={cn(
                   "block text-base font-medium transition-colors hover:text-blue-primary w-full px-2 py-3 rounded-lg",

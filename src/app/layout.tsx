@@ -2,25 +2,42 @@ import type { Metadata } from "next";
 
 import "./globals.css";
 import ReactQueryProvider from "@/providers/react-query";
+import { MarketProvider } from "@/lib/markets/context";
+import { metadataBase } from "@/lib/markets/metadata";
+import { marketFromRequest } from "@/lib/markets/server";
 import { Toaster } from "@/components/ui/sonner";
+import { MarketDetector } from "@/components/root/market-detector";
 
 export const metadata: Metadata = {
+  // Per-page titles come from lib/markets/metadata. This is only the fallback
+  // for any route that has not declared its own yet.
   title: "Vinkol",
-  description: "Vinkol Logistics",
+  description: "Think Vinkol, feel delivery valour.",
+  metadataBase,
   verification: {
     google: "gE62S8YMos99yfz3krkRnWgaiaEZfofw3IDnIr5VMrs",
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const country = await marketFromRequest();
+
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html
+      lang={country === "CA" ? "en-CA" : "en-NG"}
+      suppressHydrationWarning
+    >
       <body className="antialiased">
-        <ReactQueryProvider>{children}</ReactQueryProvider>
+        <ReactQueryProvider>
+          <MarketProvider country={country}>
+            <MarketDetector />
+            {children}
+          </MarketProvider>
+        </ReactQueryProvider>
         <Toaster position="top-right" richColors />
       </body>
     </html>

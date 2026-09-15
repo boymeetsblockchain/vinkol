@@ -1,19 +1,16 @@
-import { CTA } from "@/components/rider/cta";
-import { Benefits } from "@/components/rider/benefits";
-import { Hero } from "@/components/rider/hero";
-import { Question } from "@/components/rider/questions";
-import { Steps } from "@/components/rider/steps";
+import type { Metadata } from "next";
 
-function BecomeARider() {
-  return (
-    <section>
-      <Hero />
-      <Steps />
+import { BecomeARiderPage } from "@/components/pages/become-a-rider";
+import { pageMetadata } from "@/lib/markets/metadata";
 
-      <Benefits />
-      <Question />
-      <CTA />
-    </section>
-  );
+export const metadata: Metadata = pageMetadata({
+  country: "NG",
+  title: "Become a Rider",
+  description:
+    "Ride with Vinkol on your own hours. Verified riders, jobs near you, earnings credited per delivery and withdrawal whenever you want it.",
+  path: "/become-a-rider",
+});
+
+export default function Page() {
+  return <BecomeARiderPage country="NG" />;
 }
-export default BecomeARider;
