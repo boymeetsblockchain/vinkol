@@ -42,7 +42,11 @@ export const Footer = () => {
           {/* Brand column */}
           <div className="space-y-5">
             <Link href="/">
-              <img src="/logo.png" alt="Vinkol" className="w-28 h-12 brightness-0 invert" />
+              <img
+                src="/logo.png"
+                alt="Vinkol"
+                className="w-28 h-12 brightness-0 invert"
+              />
             </Link>
             <p className="text-white/50 text-sm leading-relaxed max-w-[200px]">
               Fast, verified, and insured delivery across {serviceAreaPhrase}.
