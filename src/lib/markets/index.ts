@@ -84,6 +84,7 @@ export const MARKET_ROUTES = [
   "/become-a-personal-shopper",
   "/privacy-policy",
   "/terms-and-conditions",
+  "/terms-and-conditions-customer",
 ] as const;
 
 /** Exact match: /terms-and-conditions-customer is not /terms-and-conditions. */

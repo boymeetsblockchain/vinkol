@@ -8,6 +8,7 @@ import { ApiError } from "@/lib/interfaces/error";
 import { Button } from "@/components/button";
 import { clearCart } from "@/config/storage";
 import { clearCheckoutSession } from "@/config/checkout";
+import { OrderState, OrderStateShell } from "@/components/order/state";
 
 type Status =
   | "verifying"
@@ -75,10 +76,9 @@ const OrderSuccessPage = () => {
   );
 
   return (
-    <section className="min-h-screen flex items-center justify-center px-4">
-      <div className="max-w-md w-full text-center space-y-6">
+    <OrderStateShell>
         {status === "verifying" && (
-          <State
+          <OrderState
             icon={<Loader2 className="animate-spin" size={48} />}
             title="Verifying payment"
             description="Please wait while we confirm your payment."
@@ -86,7 +86,7 @@ const OrderSuccessPage = () => {
         )}
 
         {status === "success" && (
-          <State
+          <OrderState
             icon={<CheckCircle className="text-green-600" size={48} />}
             title="Order placed successfully 🎉"
             description={
@@ -104,7 +104,7 @@ const OrderSuccessPage = () => {
         )}
 
         {status === "pending" && (
-          <State
+          <OrderState
             icon={<Clock className="text-blue-600" size={48} />}
             title="Still confirming your payment"
             description="Your bank has not finished confirming this yet. We will email you as soon as it clears — there is no need to pay again."
@@ -113,7 +113,7 @@ const OrderSuccessPage = () => {
         )}
 
         {status === "cancelled" && (
-          <State
+          <OrderState
             icon={<XCircle className="text-gray-500" size={48} />}
             title="Payment cancelled"
             description="You closed the payment page before it finished, so nothing was charged. Your basket is still where you left it."
@@ -126,7 +126,7 @@ const OrderSuccessPage = () => {
         )}
 
         {status === "failed" && (
-          <State
+          <OrderState
             icon={<XCircle className="text-red-600" size={48} />}
             title="Payment not completed"
             description="Your payment was not successful. No charges were made."
@@ -139,7 +139,7 @@ const OrderSuccessPage = () => {
         )}
 
         {status === "error" && (
-          <State
+          <OrderState
             icon={<HelpCircle className="text-yellow-600" size={48} />}
             title="Something went wrong"
             description="We couldn’t verify your payment at the moment. Please contact support if you were charged."
@@ -154,32 +154,15 @@ const OrderSuccessPage = () => {
         )}
 
         {status === "invalid" && (
-          <State
+          <OrderState
             icon={<XCircle className="text-gray-500" size={48} />}
             title="Invalid payment reference"
             description="This page was accessed incorrectly."
             actions={home}
           />
         )}
-      </div>
-    </section>
+    </OrderStateShell>
   );
 };
 
 export default OrderSuccessPage;
-
-interface StateProps {
-  icon: React.ReactNode;
-  title: string;
-  description: React.ReactNode;
-  actions?: React.ReactNode;
-}
-
-const State = ({ icon, title, description, actions }: StateProps) => (
-  <div className="space-y-4">
-    <div className="flex justify-center">{icon}</div>
-    <h1 className="text-2xl font-semibold">{title}</h1>
-    <p className="text-gray-600 text-sm leading-relaxed">{description}</p>
-    {actions && <div className="pt-4">{actions}</div>}
-  </div>
-);

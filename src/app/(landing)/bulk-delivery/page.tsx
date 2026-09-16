@@ -13,10 +13,27 @@ import { useState } from "react";
 import { LuBuilding2, LuTruck, LuRepeat2, LuBadgeCheck } from "react-icons/lu";
 
 const perks = (coverAmount: string) => [
-  { icon: LuTruck, label: "High-volume capacity", detail: "Send 10 to 1,000+ packages in one request" },
-  { icon: LuRepeat2, label: "Flexible routing", detail: "One pickup with many dropoffs, or multiple pickup points" },
-  { icon: LuBadgeCheck, label: "Insured shipments", detail: `Up to ${coverAmount} protection per item` },
-  { icon: LuBuilding2, label: "Business invoicing", detail: "Get itemized receipts for every bulk run" },
+  {
+    icon: LuTruck,
+    label: "High-volume capacity",
+    detail: "Send 10 to 1,000+ packages in one request",
+  },
+  {
+    icon: LuRepeat2,
+    label: "Flexible routing",
+    detail: "One pickup with many dropoffs, or multiple pickup points",
+  },
+  {
+    icon: LuBadgeCheck,
+    label: "Insured shipments",
+    detail: `Up to ${coverAmount} protection per item`,
+  },
+  {
+    icon: LuBuilding2,
+    label: "Business invoicing",
+    detail: "Get itemized receipts for every bulk run",
+    href: "https://buy.stripe.com/9B68wR2t27tmfJTfmadZ601",
+  },
 ];
 
 const BulkDeliveryPage = () => {
@@ -38,15 +55,23 @@ const BulkDeliveryPage = () => {
             Ship in bulk. Move fast.
           </h1>
           <p className="text-gray-500 text-base max-w-xl">
-            Built for businesses, distributors, and high-volume senders. Send multiple packages in a single request — with instant quotes.
+            Built for businesses, distributors, and high-volume senders. Send
+            multiple packages in a single request — with instant quotes.
           </p>
 
           {/* Perks grid */}
           <div className="mt-10 grid grid-cols-2 md:grid-cols-4 gap-6">
-            {perks(coverAmount).map(({ icon: Icon, label, detail }) => (
-              <div key={label} className="flex flex-col gap-2">
+            {perks(coverAmount).map(({ icon: Icon, label, detail, href }) => (
+              <div
+                key={label}
+                className="flex flex-col gap-2"
+                onClick={() => window.open(href || "#", "_blank")}
+              >
                 <span className="h-9 w-9 rounded-xl bg-[var(--color-blue-primary)]/10 flex items-center justify-center">
-                  <Icon size={18} className="text-[var(--color-blue-primary)]" />
+                  <Icon
+                    size={18}
+                    className="text-[var(--color-blue-primary)]"
+                  />
                 </span>
                 <p className="text-sm font-semibold text-gray-900">{label}</p>
                 <p className="text-xs text-gray-500 leading-snug">{detail}</p>

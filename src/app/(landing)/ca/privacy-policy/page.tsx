@@ -1,20 +1,16 @@
 import type { Metadata } from "next";
 
-import { LegalPendingPage } from "@/components/pages/legal-pending";
+import { PrivacyPolicyPage } from "@/components/pages/privacy-policy";
 import { pageMetadata } from "@/lib/markets/metadata";
 
-export const metadata: Metadata = {
-  ...pageMetadata({
-    country: "CA",
-    title: "Privacy Policy",
-    description:
-      "Our Canadian privacy policy is being prepared. Contact us for a copy or with any question about how we handle your data.",
-    path: "/privacy-policy",
-  }),
-  // Nothing to index until counsel delivers the content.
-  robots: { index: false, follow: true },
-};
+export const metadata: Metadata = pageMetadata({
+  country: "CA",
+  title: "Privacy Policy",
+  description:
+    "How Vinkol collects, uses and protects personal information, and the rights you have over your data.",
+  path: "/privacy-policy",
+});
 
 export default function Page() {
-  return <LegalPendingPage country="CA" title="Privacy Policy" />;
+  return <PrivacyPolicyPage country="CA" />;
 }
