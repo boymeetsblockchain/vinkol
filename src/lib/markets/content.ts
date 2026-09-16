@@ -108,7 +108,7 @@ const NIGERIA: MarketContent = {
   },
 
   contact: {
-    email: "vinkollogistics@gmail.com",
+    email: "customercare@vinkolgroup.com",
     address:
       "No 1 Sea Shopping Complex, Oko Afo along Badagry Express Way, Lagos",
     phones: ["+234 807 972 231", "+234 336 707 45"],
@@ -214,7 +214,7 @@ const CANADA: MarketContent = {
   },
 
   contact: {
-    email: "vinkollogistics@gmail.com",
+    email: "customercare@vinkolgroup.com",
     address: "151 Mill Street, Toronto, ON M5A 4T8",
     phones: ["647-573-2867"],
   },
