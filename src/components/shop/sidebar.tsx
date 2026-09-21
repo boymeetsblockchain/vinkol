@@ -58,7 +58,7 @@ export const ShopperDashBoardSidebBar = ({ isOpen, onClose }: SidebarProps) => {
   const pathname = usePathname();
 
   const router = useRouter();
-  const handleLogout = useLogout();
+  const handleLogout = useLogout("/shop/login");
 
   return (
     <aside
@@ -68,7 +68,7 @@ export const ShopperDashBoardSidebBar = ({ isOpen, onClose }: SidebarProps) => {
     >
       {/* Close button (mobile only) */}
       <div className="flex justify-between items-center p-4 md:hidden border-b border-gray-200">
-        <Link href={"/"}>
+        <Link href={"/shop/dashboard"}>
           {" "}
           <img src="/logo.png" alt="Vinkol Logo" className="w-28 h-12" />
         </Link>
@@ -82,7 +82,7 @@ export const ShopperDashBoardSidebBar = ({ isOpen, onClose }: SidebarProps) => {
 
       {/* Desktop logo */}
       <div className="hidden md:flex justify-center p-4 border-b border-gray-200">
-        <Link href={"/"}>
+        <Link href={"/shop/dashboard"}>
           {" "}
           <img src="/logo.png" alt="Vinkol Logo" className="w-28 h-12" />
         </Link>

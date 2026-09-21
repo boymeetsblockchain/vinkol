@@ -14,7 +14,7 @@ import { useRouter } from "next/navigation";
  * profile, orders and wallet stayed in memory — the next sign-in on the same
  * browser could render them before its own requests came back.
  */
-export function useLogout() {
+export function useLogout(redirectTo = "/") {
   const router = useRouter();
   const queryClient = useQueryClient();
 
@@ -26,6 +26,17 @@ export function useLogout() {
       // Nothing to clear.
     }
     queryClient.clear();
-    router.push("/");
+
+    // Cache Storage is origin-scoped rather than per-account, so whatever the
+    // store dashboard's service worker holds would otherwise outlive this
+    // session and belong to whoever signs in next. The worker owns its caches,
+    // so it is asked to empty them.
+    navigator.serviceWorker?.controller?.postMessage({ type: "CLEAR_CACHES" });
+
+    // Defaults to the landing page, which is where the rider and shopper
+    // sidebars have always gone. The store dashboard passes its own login
+    // path: "/" is outside the installed app's scope, so logging out of it
+    // would drop the owner into a browser tab.
+    router.push(redirectTo);
   };
 }
