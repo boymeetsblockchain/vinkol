@@ -31,6 +31,14 @@ export const metadata: Metadata = {
   icons: {
     apple: "/shop/apple-touch-icon.png",
   },
+  other: {
+    // Next emits only the standardised `mobile-web-app-capable`. iOS before
+    // 15.4 reads the legacy name and nothing else, and without it an installed
+    // icon opens in a Safari tab rather than its own window. Newer iOS takes
+    // `display: standalone` from the manifest, so this is purely for the old
+    // ones — it costs one tag.
+    "apple-mobile-web-app-capable": "yes",
+  },
 };
 
 export const viewport: Viewport = {
