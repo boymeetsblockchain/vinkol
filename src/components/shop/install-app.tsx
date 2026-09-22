@@ -11,8 +11,11 @@ import { Download, Share, X } from "lucide-react";
  *
  *  - Chrome and Edge fire `beforeinstallprompt`; that event is the only way to
  *    open the real install dialog, and it must be kept to call later.
- *  - iOS Safari fires nothing and has no API, so it gets the Share → Add to
- *    Home Screen wording instead.
+ *  - No browser on iOS fires it, and none has an install API, so every iOS
+ *    browser gets the Share → Add to Home Screen wording instead. That means
+ *    Chrome, Edge and Firefox as well as Safari: since iOS 16.4 they install
+ *    through the same Share menu, and excluding them showed their users
+ *    nothing at all.
  *
  * Hidden once the app is already installed, and once dismissed it stays
  * dismissed.
@@ -25,15 +28,14 @@ interface InstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 }
 
-const isIosSafari = () => {
+const isIos = () => {
   if (typeof navigator === "undefined") return false;
   const ua = navigator.userAgent;
   // iPadOS 13+ reports as Macintosh, so touch points are the tell.
-  const ios =
+  return (
     /iPad|iPhone|iPod/.test(ua) ||
-    (ua.includes("Macintosh") && navigator.maxTouchPoints > 1);
-  // Chrome and Firefox on iOS are Safari underneath but cannot install.
-  return ios && !/CriOS|FxiOS|EdgiOS/.test(ua);
+    (ua.includes("Macintosh") && navigator.maxTouchPoints > 1)
+  );
 };
 
 export const InstallApp = () => {
@@ -55,7 +57,7 @@ export const InstallApp = () => {
         true;
     if (installed) return;
 
-    if (isIosSafari()) setShowIosHint(true);
+    if (isIos()) setShowIosHint(true);
 
     const onPrompt = (event: Event) => {
       // Keep the browser's own mini-infobar out of the way; this banner is it.
