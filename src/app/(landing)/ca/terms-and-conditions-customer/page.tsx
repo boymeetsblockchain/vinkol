@@ -1,16 +1,11 @@
-import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 
-import { CustomerTermsPage } from "@/components/pages/customer-terms";
-import { pageMetadata } from "@/lib/markets/metadata";
-
-export const metadata: Metadata = pageMetadata({
-  country: "CA",
-  title: "Customer Terms & Conditions",
-  description:
-    "The terms that apply when you book a delivery with Vinkol in Canada.",
-  path: "/terms-and-conditions-customer",
-});
-
+/**
+ * Canada has one agreement covering Customers and Merchants, where Nigeria
+ * has two documents. Rather than serve the same text at a second address,
+ * this redirects. Temporary rather than permanent, so nothing is cached into
+ * browsers if a separate Canadian customer document ever appears.
+ */
 export default function Page() {
-  return <CustomerTermsPage country="CA" />;
+  redirect("/ca/terms-and-conditions");
 }
