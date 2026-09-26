@@ -202,7 +202,7 @@ const NIGERIA: MarketContent = {
 
 const CANADA: MarketContent = {
   brandName: "Vinkol Group",
-  legalName: "Vinkol Group",
+  legalName: "Vinkol Group Inc.",
   serviceArea: "Toronto",
   serviceAreaPhrase: "Toronto",
 
