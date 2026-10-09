@@ -20,6 +20,7 @@ const partners = [
   { name: "Become a Rider", path: "/become-a-rider" },
   { name: "Register a Store", path: "/shop" },
   { name: "Become a Shopper", path: "/become-a-personal-shopper" },
+  { name: "Vendors Portal", path: "https://vendor.vinkol.ng" },
 ];
 
 const company = [

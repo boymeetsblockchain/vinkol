@@ -25,6 +25,7 @@ const deliverLinks = [
 const partnerLinks = [
   { name: "Become a Rider", path: "/become-a-rider" },
   { name: "Register Your Store", path: "/shop" },
+  { name: "Vendors Portal", path: "https://vendor.vinkol.ng" },
 ];
 
 export const Navbar: React.FC<{ shop?: boolean }> = ({ shop }) => {
@@ -76,52 +77,80 @@ export const Navbar: React.FC<{ shop?: boolean }> = ({ shop }) => {
           >
             <button className="flex items-center gap-1 text-sm font-medium px-3 py-2 rounded-md transition-colors hover:text-blue-primary text-gray-700">
               Deliveries
-              <svg className="h-3.5 w-3.5 opacity-60" viewBox="0 0 16 16" fill="currentColor">
-                <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+              <svg
+                className="h-3.5 w-3.5 opacity-60"
+                viewBox="0 0 16 16"
+                fill="currentColor"
+              >
+                <path
+                  d="M4 6l4 4 4-4"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </svg>
             </button>
             {showDeliveryDropdown && (
               <div className="absolute left-0 top-full w-52 pt-1 z-50">
-              <div className="rounded-xl border bg-white shadow-lg py-1">
-                {deliverLinks.map((link) => (
-                  <Link
-                    key={link.path}
-                    href={href(link.path)}
-                    onClick={() => setShowDeliveryDropdown(false)}
-                    className={cn(
-                      "block px-4 py-2.5 text-sm transition-colors hover:bg-gray-50 hover:text-blue-primary",
-                      pathname === link.path ? "text-blue-primary font-medium" : "text-gray-700"
-                    )}
-                  >
-                    {link.name}
-                  </Link>
-                ))}
-              </div>              </div>            )}
+                <div className="rounded-xl border bg-white shadow-lg py-1">
+                  {deliverLinks.map((link) => (
+                    <Link
+                      key={link.path}
+                      href={href(link.path)}
+                      onClick={() => setShowDeliveryDropdown(false)}
+                      className={cn(
+                        "block px-4 py-2.5 text-sm transition-colors hover:bg-gray-50 hover:text-blue-primary",
+                        pathname === link.path
+                          ? "text-blue-primary font-medium"
+                          : "text-gray-700",
+                      )}
+                    >
+                      {link.name}
+                    </Link>
+                  ))}
+                </div>{" "}
+              </div>
+            )}
           </div>
 
           {/* Partners dropdown */}
           <div className="relative group">
             <button className="flex items-center gap-1 text-sm font-medium px-3 py-2 rounded-md transition-colors hover:text-blue-primary text-gray-700">
               For Partners
-              <svg className="h-3.5 w-3.5 opacity-60" viewBox="0 0 16 16" fill="currentColor">
-                <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+              <svg
+                className="h-3.5 w-3.5 opacity-60"
+                viewBox="0 0 16 16"
+                fill="currentColor"
+              >
+                <path
+                  d="M4 6l4 4 4-4"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </svg>
             </button>
             <div className="absolute left-0 top-full w-52 pt-1 z-50 hidden group-hover:block">
-            <div className="rounded-xl border bg-white shadow-lg py-1">
-              {partnerLinks.map((link) => (
-                <Link
-                  key={link.path}
-                  href={href(link.path)}
-                  className={cn(
-                    "block px-4 py-2.5 text-sm transition-colors hover:bg-gray-50 hover:text-blue-primary",
-                    pathname === link.path ? "text-blue-primary font-medium" : "text-gray-700"
-                  )}
-                >
-                  {link.name}
-                </Link>
-              ))}
-            </div>
+              <div className="rounded-xl border bg-white shadow-lg py-1">
+                {partnerLinks.map((link) => (
+                  <Link
+                    key={link.path}
+                    href={href(link.path)}
+                    className={cn(
+                      "block px-4 py-2.5 text-sm transition-colors hover:bg-gray-50 hover:text-blue-primary",
+                      pathname === link.path
+                        ? "text-blue-primary font-medium"
+                        : "text-gray-700",
+                    )}
+                  >
+                    {link.name}
+                  </Link>
+                ))}
+              </div>
             </div>
           </div>
 
@@ -161,9 +190,16 @@ export const Navbar: React.FC<{ shop?: boolean }> = ({ shop }) => {
           {/* Header row */}
           <div className="flex items-center justify-between px-5 py-3 border-b border-gray-100">
             <Link href={marketPath("/", country)} onClick={closeMobileMenu}>
-              <img src="/logo.png" alt="Vinkol" className="w-24 h-10 object-contain" />
+              <img
+                src="/logo.png"
+                alt="Vinkol"
+                className="w-24 h-10 object-contain"
+              />
             </Link>
-            <button onClick={closeMobileMenu} className="p-2 text-gray-500 hover:text-gray-900">
+            <button
+              onClick={closeMobileMenu}
+              className="p-2 text-gray-500 hover:text-gray-900"
+            >
               <BiX size={26} />
             </button>
           </div>
@@ -180,7 +216,9 @@ export const Navbar: React.FC<{ shop?: boolean }> = ({ shop }) => {
                 onClick={closeMobileMenu}
                 className={cn(
                   "block text-base font-medium transition-colors hover:text-blue-primary w-full px-2 py-3 rounded-lg",
-                  pathname === link.path ? "text-blue-primary bg-blue-primary/5" : "text-gray-800",
+                  pathname === link.path
+                    ? "text-blue-primary bg-blue-primary/5"
+                    : "text-gray-800",
                 )}
               >
                 {link.name}
@@ -197,7 +235,9 @@ export const Navbar: React.FC<{ shop?: boolean }> = ({ shop }) => {
                 onClick={closeMobileMenu}
                 className={cn(
                   "block text-base font-medium transition-colors hover:text-blue-primary w-full px-2 py-3 rounded-lg",
-                  pathname === link.path ? "text-blue-primary bg-blue-primary/5" : "text-gray-800",
+                  pathname === link.path
+                    ? "text-blue-primary bg-blue-primary/5"
+                    : "text-gray-800",
                 )}
               >
                 {link.name}
@@ -214,7 +254,9 @@ export const Navbar: React.FC<{ shop?: boolean }> = ({ shop }) => {
                 onClick={closeMobileMenu}
                 className={cn(
                   "block text-base font-medium transition-colors hover:text-blue-primary w-full px-2 py-3 rounded-lg",
-                  pathname === link.path ? "text-blue-primary bg-blue-primary/5" : "text-gray-800",
+                  pathname === link.path
+                    ? "text-blue-primary bg-blue-primary/5"
+                    : "text-gray-800",
                 )}
               >
                 {link.name}
@@ -224,7 +266,11 @@ export const Navbar: React.FC<{ shop?: boolean }> = ({ shop }) => {
 
           {/* CTA pinned to bottom */}
           <div className="px-5 pb-8 pt-4 border-t border-gray-100">
-            <Link href="/book-a-delivery" onClick={closeMobileMenu} className="block w-full">
+            <Link
+              href="/book-a-delivery"
+              onClick={closeMobileMenu}
+              className="block w-full"
+            >
               <Button size="lg" className="w-full rounded-full font-semibold">
                 Book a Delivery
               </Button>
